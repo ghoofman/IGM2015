@@ -1,4 +1,4 @@
-var OP = require('OPengine').OP;
+var OP = require('OPengine');
 var OPgameState = require('OPgameState');
 
 var data = {
