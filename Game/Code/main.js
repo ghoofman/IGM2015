@@ -1,4 +1,4 @@
-var OP = require('OPengine');
+var OP = require('OPengine').OP;
 var OPgameState = require('OPgameState');
 var Mixpanel = require('mixpanel');
 
@@ -17,25 +17,17 @@ try {
 
 	var exampleSelectorState = require('./game.js');
 
-
-	if(OP.defined.OPIFEX_OPTION_V8) {
-		process = {
-			env: {
-				WAYWARD_REPO: ''
-			}
-		}
-	}
-
 	if(!process.env.WAYWARD_REPO) {
 		process.env.WAYWARD_REPO = '..';
 	}
 
 	function AppInitialize() {
 		OP.loaders.AddDefault();
+		OP.loaders.AddVoxels();
 		OP.skeleton.AddLoader();
 
 		// TODO: (garrett) Correct it to location to load
-		OP.cman.Init('../Assets');
+		OP.cman.Init('../../Assets');
 		OP.render.Init();
 		OP.gamePad.SetDeadZones(0.2);
 
@@ -77,11 +69,6 @@ try {
 				OPgameState.Active.Exit();
 				AppDestroy();
 			} else {
-				// The OPifex engine doesn't support setImmediate yet
-				if(OP.defined.OPIFEX_OPTION_V8)
-					loop();
-				else
-					// TODO: (garrett) Implement setImmediate in the OPengine
 					setImmediate(loop);
 			}
 		}
