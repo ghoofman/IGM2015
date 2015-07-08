@@ -1,0 +1,20 @@
+{
+  "name": "engine.node",
+  "version": "0.0.1",
+  "description": "An example app for the OPengine",
+  "author": "Garrett Hoofman <garrett@teamopifex.com>",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "archive": {
+    "dependencies": true,
+    "devDependencies": false,
+    "patterns": ["**", "!test/**"]
+  },
+  "dependencies": {
+    "OPengine": "*",
+    "require-live": "*"
+  },
+  "main": "app.js"
+}
+  

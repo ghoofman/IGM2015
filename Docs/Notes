@@ -1,0 +1,20 @@
+//   __      __                            _ 
+//   \ \    / /_ _ _  ___ __ ____ _ _ _ __| |
+//    \ \/\/ / _` | || \ V  V / _` | '_/ _` |
+//     \_/\_/\__,_|\_, |\_/\_/\__,_|_| \__,_|
+//                 |__/                      
+
+* 2+ player game for adults and kids (1 adult - multiple kids)
+* Hack n' Slash style game
+
+
+Technical
+=========
+
+Landscape blocks, roughly 4x4 blocks visible at a time
+	* Assets will be merged into a single mesh at run-time
+	* Doesn't use a texture, uses a color
+
+Characters will be pieced together out of parts
+	* Head / Body / Legs / Feet / Hands / etc
+	* Armor / Weapons / etc will be added into the new mesh
