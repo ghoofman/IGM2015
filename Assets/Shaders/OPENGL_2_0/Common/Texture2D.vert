@@ -5,8 +5,8 @@ varying vec2 vUV;
 uniform mat4 uWorld;
 
 void main() {
-	vec4 screenPos = uWorld * vec4(aPosition,1);
+	vec4 screenPos = vec4(aPosition,1);
 	gl_Position = screenPos;
-	
-	vUV = aUV; 
+
+	vUV = aUV;
 }

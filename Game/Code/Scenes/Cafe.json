@@ -1,0 +1,43 @@
+{
+  "name" : "Street",
+  "planes": {
+    "xNegative" : -70,
+    "xPositive" : 360,
+    "zNegative" : -150,
+    "zPositive" : 120,
+    "yNegative" : 0
+  },
+  "models" : [
+    {
+      "file" : "BuildingTest2.qb",
+      "offset" : [ 0, 0, 0 ],
+      "scale" : [ 1, 1, 1 ],
+      "collision": {
+        "default" : false,
+        "custom" : [
+          {
+            "collide" : true,
+            "type" : "",
+            "offset" : [ 0, 0, 0 ],
+            "size" : [ 62, 65, 45 ]
+          },
+          {
+            "id" : 1,
+            "type" : "door",
+            "collide" : false,
+            "offset" : [ -14, -42, 45 ],
+            "size" : [ 13, 23, 4 ]
+          }
+        ]
+      }
+    },
+    {
+      "file" : "BuildingTest2_sidewalk.qb",
+      "offset" : [ 12, 0, 11 ]
+    },
+    {
+      "file" : "BuildingTest2_road.qb",
+      "offset" : [ 41, -4, 26 ]
+    }
+  ]
+}

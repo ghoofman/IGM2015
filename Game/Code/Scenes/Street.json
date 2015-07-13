@@ -1,0 +1,315 @@
+{
+  "name" : "Street",
+  "planes": {
+    "xNegative" : -70,
+    "xPositive" : 360,
+    "zNegative" : -150,
+    "zPositive" : 120,
+    "yNegative" : 0
+  },
+  "models" : [
+    {
+      "file" : "BuildingTest2.qb",
+      "offset" : [ 0, 0, 0 ],
+      "scale" : [ 1, 1, 1 ],
+      "collision": {
+        "default" : false,
+        "custom" : [
+          {
+            "collide" : true,
+            "type" : "",
+            "offset" : [ 0, 0, 0 ],
+            "size" : [ 62, 65, 45 ]
+          },
+          {
+            "id" : 1,
+            "type" : "door",
+            "collide" : false,
+            "offset" : [ -14, -42, 45 ],
+            "size" : [ 13, 23, 4 ]
+          }
+        ]
+      }
+    },
+    {
+      "file" : "BuildingTest2_sidewalk.qb",
+      "offset" : [ 12, 0, 11 ]
+    },
+    {
+      "file" : "BuildingTest2_road.qb",
+      "offset" : [ 41, -4, 26 ]
+    },
+    {
+      "file" : "Cafe.qb",
+      "offset" : [ 281, 0, 21 ],
+      "collision" : {
+        "default" : false,
+        "custom" : [
+          {
+            "collide" : true,
+            "offset" : [ 0, 0, -12 ],
+            "size" : [ 45, 45, 28 ]
+          },
+          {
+            "collide" : true,
+            "offset" : [ 0, 24, 24 ],
+            "size" : [ 45, 16, 8 ]
+          },
+          {
+            "id" : 2,
+            "type" : "door",
+            "collide" : false,
+            "offset" : [ 0, -20, 20 ],
+            "size" : [ 13, 23, 4 ]
+          }
+        ]
+      }
+    },
+    {
+      "file" : "Cafe_sidewalk.qb",
+      "offset" : [ 282, 0, 11 ]
+    },
+    {
+      "file" : "Cafe_road.qb",
+      "offset" : [ 251, -4, 26 ]
+    },
+    {
+      "file" : "Highway_postL.qb",
+      "offset" : [ 65, 0, -70 ]
+    },
+    {
+      "file" : "Highway_postL.qb",
+      "offset" : [ -165, 0, -70 ]
+    },
+    {
+      "file" : "Highway_postL.qb",
+      "offset" : [ -365, 0, -70 ]
+    },
+    {
+      "file" : "Highway_postL.qb",
+      "offset" : [ -165, 0, -130 ]
+    },
+    {
+      "file" : "Highway_postL.qb",
+      "offset" : [ -365, 0, -130 ]
+    },
+    {
+      "file" : "Highway_wallL.qb",
+      "offset" : [ 65, 0, -130 ]
+    },
+    {
+      "file" : "Highway_postR.qb",
+      "offset" : [ 226, 0, -70 ]
+    },
+    {
+      "file" : "Highway_postR.qb",
+      "offset" : [ 426, 0, -70 ]
+    },
+    {
+      "file" : "Highway_postR.qb",
+      "offset" : [ 626, 0, -70 ]
+    },
+    {
+      "file" : "Highway_postR.qb",
+      "offset" : [ 426, 0, -130 ]
+    },
+    {
+      "file" : "Highway_postR.qb",
+      "offset" : [ 626, 0, -130 ]
+    },
+    {
+      "file" : "Highway_wallR.qb",
+      "offset" : [ 226, 0, -130 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ -400, 114, -120 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ -300, 114, -120 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ -200, 114, -120 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ -100, 114, -120 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ 0, 114, -120 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ 100, 114, -120 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ 200, 114, -120 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ 300, 114, -120 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ 400, 114, -120 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ 500, 114, -120 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ 600, 114, -120 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ 700, 114, -120 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 115, -4, -111 ],
+      "rotation" : [ 0, 90, 0 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 175, -4, -109 ],
+      "rotation" : [ 0, -90, 0 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 115, -4, -171 ],
+      "rotation" : [ 0, 90, 0 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 175, -4, -169 ],
+      "rotation" : [ 0, -90, 0 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ -94, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ -144, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ -194, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ -244, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 386, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 436, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 486, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 536, -4, 100 ]
+    },
+    {
+      "file" : "StopSign.qb",
+      "offset" : [ 75, 0, 73 ],
+      "rotation" : [ 0, -90, 0 ]
+    },
+    {
+      "file" : "StopSign.qb",
+      "offset" : [ 210, 0, 71 ],
+      "rotation" : [ 0, 90, 0 ]
+    },
+    {
+      "file" : "grass.qb",
+      "offset" : [ 1000, -6, 390 ],
+      "scale" : [ 1000, 1, 300 ],
+      "collision" : {
+        "default" : false
+      }
+    },
+    {
+      "file" : "Sky.qb",
+      "offset" : [ 1000, 270, -200 ],
+      "scale" : [ 1000, 15, 1 ],
+      "collision" : {
+        "default" : false
+      }
+    },
+    {
+      "file" : "LampPost.qb",
+      "offset" : [ -250, 0, 75 ]
+    },
+    {
+      "file" : "LampPost.qb",
+      "offset" : [ -150, 0, 75 ]
+    },
+    {
+      "file" : "LampPost.qb",
+      "offset" : [ -50, 0, 75 ]
+    },
+    {
+      "file" : "LampPost.qb",
+      "offset" : [ 50, 0, 75 ]
+    },
+    {
+      "file" : "LampPost.qb",
+      "offset" : [ 235, 0, 75 ]
+    },
+    {
+      "file" : "LampPost.qb",
+      "offset" : [ 335, 0, 75 ]
+    },
+    {
+      "file" : "LampPost.qb",
+      "offset" : [ 435, 0, 75 ]
+    },
+    {
+      "file" : "LampPost.qb",
+      "offset" : [ 535, 0, 75 ]
+    },
+    {
+      "file" : "Flower.qb",
+      "offset" : [ 330, 0, 30 ]
+    },
+    {
+      "file" : "Flower.qb",
+      "offset" : [ 340, 0, 30 ]
+    },
+    {
+      "file" : "Flower.qb",
+      "offset" : [ 350, 0, 30 ]
+    },
+    {
+      "file" : "Bush.qb",
+      "offset" : [ 340, 0, 10 ]
+    },
+    {
+      "file" : "sidewalk_4x1.qb",
+      "offset" : [ 418, 0, 56 ]
+    },
+    {
+      "file" : "sidewalk_4x1.qb",
+      "offset" : [ 538, 0, 56 ]
+    },
+    {
+      "file" : "sidewalk_4x1.qb",
+      "offset" : [ -122, 0, 56 ]
+    },
+    {
+      "file" : "sidewalk_4x1.qb",
+      "offset" : [ -242, 0, 56 ]
+    }
+  ]
+}

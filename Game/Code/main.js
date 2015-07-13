@@ -1,21 +1,20 @@
 var OP = require('OPengine').OP;
 var OPgameState = require('OPgameState');
-var Mixpanel = require('mixpanel');
+var MixPanel = require('./Utils/MixPanel.js');
+var SceneCreator = require('./SceneCreator.js');
+
+global.game = {
+	money: 100000,
+	cash: 0
+};
 
 try {
 
-	global.GUID = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-	    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-	    return v.toString(16);
+	MixPanel.Track("Application Started", {
+		os: 'OSX'
 	});
 
-	global.mixpanel = Mixpanel.init('e7f7fdf03c6d140ff659e3b5daa5b9aa');
-	global.mixpanel.track("Application Started", {
-		os: 'OSX',
-		distinct_id: global.GUID
-	});
-
-	var exampleSelectorState = require('./game.js');
+	var scene = new SceneCreator('/Scenes/Street.json');
 
 	if(!process.env.WAYWARD_REPO) {
 		process.env.WAYWARD_REPO = '..';
@@ -31,9 +30,13 @@ try {
 		OP.render.Init();
 		OP.gamePad.SetDeadZones(0.2);
 
-		global.mixpanel.track("Application Initialized", {
-			distinct_id: global.GUID
-		});
+		// Initialize PhysX and the debugger
+		OP.physX.Init();
+		OP.physX.Debugger();
+
+		MixPanel.Track("Application Initialized");
+
+		OPgameState.Change(scene);
 	}
 
 	function AppUpdate(timer) {
@@ -41,27 +44,19 @@ try {
 		OP.gamePad.Update();
 
 		if (OP.keyboard.WasReleased(OP.KEY.ESCAPE)) return 1;
-		if (OP.keyboard.WasReleased(OP.KEY.BACKSPACE) && OPgameState.Active != exampleSelectorState) {
-			OPgameState.Change(exampleSelectorState);
-		}
 
 		return OPgameState.Active.Update(timer);
-		return 0;
 	}
 
 	function AppDestroy() {
-		global.mixpanel.track("Application Shutdown", {
-			distinct_id: global.GUID
-		});
+		MixPanel.Track("Application Shutdown");
 		process.exit(1);
 		return 1;
 	}
 
 	if(true) {
-		AppInitialize();
-
 		var timer = OP.timer.Create();
-		OPgameState.Change(exampleSelectorState);
+		AppInitialize();
 
 		function loop() {
 			OP.timer.Update(timer);
