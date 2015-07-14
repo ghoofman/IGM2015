@@ -24,21 +24,13 @@ SceneCreator.prototype = {
 				this.Data.gamePad0 = OP.gamePad.Get(0);
 
 				// Setup the font manager
-				this.Data.fontManager = OP.font.Manager.Setup('Ubuntu.opf');
+				this.Data.fontManager = OP.fontManager.Setup('Ubuntu.opf');
 
 				var self = this;
 				function RemoveOption() {
 					self.Data.option = null;
 				};
 				RemoveOption();
-
-				this.Data.optionSelector = new OptionSelector('Want a cup of coffee?', [
-					{ text: 'Yes', select: RemoveOption },
-					{ text: 'No', select: function() {
-							self.Data.option = new OptionSelector('Seriously bro? You want coffee.', [
-								{ text: 'OK', select: RemoveOption } ]);
-					} }
-				]);
 
 				this.Data.optionSelector2 = new OptionSelector('Ready for bed?', [
 					{ text: 'Yes', select: RemoveOption },
@@ -59,7 +51,7 @@ SceneCreator.prototype = {
 				this.Data.scene = new SceneLoader(this.Data.physXScene, this.Data.file);
 
 				// Create the Player
-				this.Data.player = new Player(this.Data.physXScene, this.Data.physXmaterial);
+				this.Data.player = new Player(this.Data.scene.scale, this.Data.physXScene, this.Data.physXmaterial);
 
 				// The basic effect to use for all rendering (for now)
 				this.Data.effect = OP.effect.Gen('Colored3D.vert', 'Colored.frag', OP.ATTR.POSITION | OP.ATTR.NORMAL | OP.ATTR.COLOR, 'Voxel Shader', this.Data.player.mesh.VertexSize);
@@ -68,17 +60,12 @@ SceneCreator.prototype = {
 				this.Data.material = OP.material.Create(this.Data.effect);
 
 				// The free flight camera
-				this.Data.camera = new Camera();
+				this.Data.camera = new Camera(this.Data.scene.limits);
 
 				return 1;
 		},
 
 		update: function(timer) {
-				if(OP.keyboard.WasPressed(OP.KEY.R)) {
-					var SceneCreator = require('./SceneCreator.js');
-					OPgameState.Change(new SceneCreator('Scenes/Cafe.json'));
-					return 0;
-				}
 				if(this.Data.option) {
 						// Getting a selection
 						this.Data.option.Update(this.Data.gamePad0);
@@ -102,21 +89,26 @@ SceneCreator.prototype = {
 				this.Data.camera.LookAt(this.Data.player);
 
 				// Activation Key was pressed: check for collisions
+				var collisions = this.Data.scene.Collisions(this.Data.player);
+				this.Data.Name = null;
+				for(var i = 0; i < collisions.length; i++) {
+						if(collisions[i].name) {
+								this.Data.Name = collisions[i].name;
+								break;
+						}
+				}
+
 				if(OP.keyboard.WasPressed(OP.KEY.E) || this.Data.gamePad0.WasPressed(OP.gamePad.Y)) {
-						var collisions = this.Data.scene.Collisions(this.Data.player);
 						for(var i = 0; i < collisions.length; i++) {
+								if(collisions[i].type == 'door') {
+										var SceneCreator = require('./SceneCreator.js');
+										OPgameState.Change(new SceneCreator(collisions[i].data.file));
+										return 0;
+								}
+
 								if(collisions[i].id == 1) {
 										this.Data.opened = !this.Data.opened;
 										this.Data.option = this.Data.optionSelector2;
-										MixPanel.Track("Activated", {
-											entity: 1
-										});
-								} else {
-										this.Data.option = this.Data.optionSelector;
-										this.Data.opened2 = !this.Data.opened2;
-										MixPanel.Track("Activated", {
-											entity: 2
-										});
 								}
 						}
 				}
@@ -139,6 +131,14 @@ SceneCreator.prototype = {
 				this.Data.player.Draw(this.Data.material, this.Data.camera.Camera());
 
 				this.Data.option && this.Data.option.Render(this.Data.fontManager);
+
+				if(this.Data.Name) {
+						this.Data.fontManager.SetAlign(OP.FONTALIGN.CENTER);
+			    	OP.fontRender.Begin(this.Data.fontManager);
+	      		OP.fontRender.Color(0.9, 0.9, 0.9);
+			    	OP.fontRender(this.Data.Name, 1280 / 2.0, 50);
+			    	OP.fontRender.End();
+				}
 
 				OP.render.Present();
 		},

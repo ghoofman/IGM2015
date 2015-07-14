@@ -1,0 +1,61 @@
+{
+  "name" : "Cafe",
+  "scale" : 1,
+  "planes": {
+    "xNegative" : -90,
+    "xPositive" : 85,
+    "zNegative" : -45,
+    "zPositive" : 50,
+    "yNegative" : 0
+  },
+  "camera": {
+    "xNegative" : -50,
+    "xPositive" : 50
+  },
+  "models" : [
+    {
+      "file" : "Bedroom.qb",
+      "offset" : [ 0, 0, 0 ],
+      "collision" : {
+        "default": false,
+        "custom" : [
+          {
+            "id" : 2,
+            "type" : "door",
+            "name" : "Street",
+            "data" : {
+              "file":  "Scenes/Street.json"
+            },
+            "collide" : false,
+            "offset" : [ -70, 0, -45 ],
+            "size" : [ 30, 55, 10 ]
+          }
+        ]
+      }
+    },
+    {
+      "file" : "Bed.qb",
+      "offset" : [ 40, 0, 20 ],
+      "collision": {
+        "default" : true,
+        "custom" : [
+          {
+            "id" : 1,
+            "type" : "bed",
+            "name" : "Bedtime",
+            "collide" : false,
+            "size" : [ 50, 30, 30 ],
+            "offset" : [ 0, 0, 0 ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "Poster.qb",
+      "offset" : [ 30, 35, -40 ],
+      "collision" : {
+        "default" : false
+      }
+    }
+  ]
+}

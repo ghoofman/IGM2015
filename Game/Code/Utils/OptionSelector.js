@@ -25,17 +25,18 @@ OptionSelector.prototype = {
   },
 
   Render: function(fontManager) {
-    	OP.font.Render.Begin(fontManager);
-    	OP.font.Render.Text(this.text, 50, 50);
+      fontManager.SetAlign(OP.FONTALIGN.LEFT);
+    	OP.fontRender.Begin(fontManager);
+    	OP.fontRender(this.text, 50, 50);
       for(var i = 0; i < this.options.length; i++) {
         if(this.selected == i) {
-      		OP.font.Render.Color(0.5,1.0,0.5);
+      		OP.fontRender.Color(0.5,1.0,0.5);
         } else {
-      		OP.font.Render.Color(1,1,1);
+      		OP.fontRender.Color(1,1,1);
         }
-    		OP.font.Render.Text(this.options[i].text, 100, 100 + i * 50);
+    		OP.fontRender(this.options[i].text, 100, 100 + i * 50);
       }
-    	OP.font.Render.End();
+    	OP.fontRender.End();
   }
 };
 

@@ -1,11 +1,16 @@
 {
   "name" : "Street",
+  "scale" : 0.5,
   "planes": {
     "xNegative" : -70,
     "xPositive" : 360,
     "zNegative" : -150,
     "zPositive" : 120,
     "yNegative" : 0
+  },
+  "camera" : {
+    "xNegative" : 30,
+    "xPositive" : 230
   },
   "models" : [
     {
@@ -24,6 +29,10 @@
           {
             "id" : 1,
             "type" : "door",
+            "name" : "Apartment",
+            "data" : {
+              "file" : "Scenes/Bedroom.json"
+            },
             "collide" : false,
             "offset" : [ -14, -42, 45 ],
             "size" : [ 13, 23, 4 ]
@@ -58,6 +67,10 @@
           {
             "id" : 2,
             "type" : "door",
+            "name" : "Cafe",
+            "data" : {
+              "file":  "Scenes/Cafe.json"
+            },
             "collide" : false,
             "offset" : [ 0, -20, 20 ],
             "size" : [ 13, 23, 4 ]

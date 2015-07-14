@@ -1,12 +1,12 @@
 var OP = require('OPengine').OP;
 
-function Camera() {
+function Camera(limits) {
 
     this.vec3_0 = OP.vec3.Create(0,0,0);
     this.vec3_1 = OP.vec3.Create(0,0,0);
     this.vec3_0.Set(0, 20, 350);
   	this.camera = OP.camFreeFlight.Create(100.0, 3.0, this.vec3_0, 1.0, 2000.0);
-
+    this.limits = limits;
 }
 
 Camera.prototype = {
@@ -14,6 +14,7 @@ Camera.prototype = {
     vec3_1: null,
     camera: null,
     freeForm: false,
+    limits: [ 0, 0 ],
 
     ToggleControl: function() {
       this.freeForm = !this.freeForm;
@@ -35,8 +36,9 @@ Camera.prototype = {
         player.FootPos.z
       ];
 
-      if(target[0] < 30) target[0] = 30;
-      if(target[0] > 250) target[0] = 250;
+      if(target[0] < this.limits[0]) target[0] = this.limits[0];
+      if(target[0] > this.limits[1]) target[0] = this.limits[1];
+
       this.vec3_1.Set(target[0], target[1], target[2]);
       this.vec3_0.Set(target[0], target[1] + 150, 350);
       this.camera.Camera.SetPos(this.vec3_0);

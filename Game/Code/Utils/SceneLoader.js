@@ -23,9 +23,18 @@ SceneLoader.prototype = {
     mat4: null,
     data: null,
     objects: [],
+    scale: 1,
+    limits: [ 0, 0 ],
 
     Load: function(name) {
         var scene = JSON.parse(fs.readFileSync(__dirname + '/../' + name, 'utf8'));
+
+        this.scale = scene.scale || 1;
+
+        this.limits = [
+          (scene.camera && scene.camera.xNegative) || 0,
+          (scene.camera && scene.camera.xPositive) || 0
+        ];
 
         var objects = [];
         for(var i = 0; i < scene.models.length; i++) {
@@ -112,10 +121,11 @@ SceneLoader.prototype = {
         var actors = [];
         var colliders = [];
 
+      	this.vec3_0.Set(x, mesh.voxelData.size.y + y, z);
+      	var actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0);
+
         if(!json.collision || json.collision.default) {
 
-        	this.vec3_0.Set(x, mesh.voxelData.size.y + y, z);
-        	var actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0);
         	this.vec3_0.Set(mesh.voxelData.size.x, mesh.voxelData.size.y, mesh.voxelData.size.z);
         	var shape = OP.physX.AddBoxShape(actor, this.material, this.vec3_0);
 
@@ -125,48 +135,45 @@ SceneLoader.prototype = {
       				OP.physX.ShapeSetPose(shape, this.mat4);
       		}
 
-        	OP.physXScene.AddActor(this.scene, actor);
-          actors.push(actor);
-
-        } else {
-
-          this.vec3_0.Set(x, mesh.voxelData.size.y + y, z);
-          var actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0);
-
-          if(json.collision && json.collision.custom) {
-              for(var i = 0; i < json.collision.custom.length; i++) {
-                  var coll = json.collision.custom[i];
-
-                  if(coll.size) {
-                      this.vec3_0.Set(coll.size[0], coll.size[1], coll.size[2]);
-                  } else {
-                      this.vec3_0.Set(mesh.voxelData.size.x, mesh.voxelData.size.y, mesh.voxelData.size.z);
-                  }
-
-                  var shape = OP.physX.AddBoxShape(actor, this.material, this.vec3_0);
-
-                  if(coll.offset) {
-                    this.mat4.SetTranslate(coll.offset[0], coll.offset[1], coll.offset[2]);
-                    OP.physX.ShapeSetPose(shape, this.mat4);
-                  }
-
-                  if(!coll.collide) {
-                  	OP.physX.SetSimulation(shape, false);
-                  	OP.physX.SetTrigger(shape, true);
-                  	OP.physX.SetSceneQuery(shape, true);
-                    colliders.push({
-                        actor: actor,
-                        shape: shape,
-                        type: coll.type || '',
-          							id: coll.id || 0
-                    });
-                  }
-                }
-            }
-
-            OP.physXScene.AddActor(this.scene, actor);
-            actors.push(actor);
         }
+
+
+        if(json.collision && json.collision.custom) {
+            for(var i = 0; i < json.collision.custom.length; i++) {
+                var coll = json.collision.custom[i];
+
+                if(coll.size) {
+                    this.vec3_0.Set(coll.size[0], coll.size[1], coll.size[2]);
+                } else {
+                    this.vec3_0.Set(mesh.voxelData.size.x, mesh.voxelData.size.y, mesh.voxelData.size.z);
+                }
+
+                var shape = OP.physX.AddBoxShape(actor, this.material, this.vec3_0);
+
+                if(coll.offset) {
+                  this.mat4.SetTranslate(coll.offset[0], coll.offset[1], coll.offset[2]);
+                  OP.physX.ShapeSetPose(shape, this.mat4);
+                }
+
+                if(!coll.collide) {
+                	OP.physX.SetSimulation(shape, false);
+                	OP.physX.SetTrigger(shape, true);
+                	OP.physX.SetSceneQuery(shape, true);
+                  colliders.push({
+                      actor: actor,
+                      shape: shape,
+                      type: coll.type || '',
+        							id: coll.id || 0,
+                      data: coll.data || null,
+                      name: coll.name || null
+                  });
+                }
+              }
+          }
+
+        OP.physXScene.AddActor(this.scene, actor);
+        actors.push(actor);
+
 
       	return {
         		model: model,
@@ -189,7 +196,7 @@ SceneLoader.prototype = {
         var collisions = [];
     		for(var o = 0; o < this.objects.length; o++) {
       		  for(var i = 0; i < this.objects[o].colliders.length; i++) {
-      			    if(this.objects[o].colliders[i].type == 'door' && OP.physX.ShapeBoxColliding(this.objects[o].colliders[i].actor, this.objects[o].colliders[i].shape, this.vec3_0, this.vec3_1)) {
+      			    if(OP.physX.ShapeBoxColliding(this.objects[o].colliders[i].actor, this.objects[o].colliders[i].shape, this.vec3_0, this.vec3_1)) {
       				      collisions.push(this.objects[o].colliders[i]);
       			    }
       		  }

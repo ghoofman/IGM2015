@@ -1,43 +1,45 @@
 {
-  "name" : "Street",
+  "name" : "Cafe",
+  "scale" : 1,
   "planes": {
-    "xNegative" : -70,
+    "xNegative" : -200,
     "xPositive" : 360,
     "zNegative" : -150,
-    "zPositive" : 120,
+    "zPositive" : 150,
     "yNegative" : 0
   },
   "models" : [
     {
-      "file" : "BuildingTest2.qb",
-      "offset" : [ 0, 0, 0 ],
-      "scale" : [ 1, 1, 1 ],
+      "file" : "Cooler.qb",
+      "offset" : [ 12, 0, 11 ],
       "collision": {
         "default" : false,
         "custom" : [
           {
             "collide" : true,
             "type" : "",
-            "offset" : [ 0, 0, 0 ],
-            "size" : [ 62, 65, 45 ]
+            "offset" : [ 0, 0, 23 ],
+            "size" : [ 105, 25, 25 ]
           },
           {
-            "id" : 1,
+            "collide" : true,
+            "type" : "",
+            "offset" : [ -90, 0, -20 ],
+            "size" : [ 40, 25, 30 ]
+          },
+          {
+            "id" : 2,
             "type" : "door",
+            "name" : "Street",
+            "data" : {
+              "file": "Scenes/Street.json"
+            },
             "collide" : false,
-            "offset" : [ -14, -42, 45 ],
-            "size" : [ 13, 23, 4 ]
+            "offset" : [ 0, 0, 0 ],
+            "size" : [ 100, 100, 100]
           }
         ]
       }
-    },
-    {
-      "file" : "BuildingTest2_sidewalk.qb",
-      "offset" : [ 12, 0, 11 ]
-    },
-    {
-      "file" : "BuildingTest2_road.qb",
-      "offset" : [ 41, -4, 26 ]
     }
   ]
 }
