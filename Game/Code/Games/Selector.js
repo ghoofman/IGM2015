@@ -1,4 +1,5 @@
 var OP = require('OPengine').OP;
+var MixPanel = require('../Utils/MixPanel.js');
 
 function Selector() {
   this.background = OP.texture2D.Create(OP.cman.LoadGet('FadedBackground.png'));
@@ -82,7 +83,8 @@ Selector.prototype = {
     selections: [],
 
     Update: function(timer, gamepad) {
-        if(OP.keyboard.WasPressed(OP.KEY.Q)) {
+
+        if(OP.keyboard.WasPressed(OP.KEY.Q) || gamepad.WasPressed(OP.gamePad.BACK) || gamepad.WasPressed(OP.gamePad.B)) {
             if(!this.selectedSprite) return 1;
 
             if(!global.inventory) global.inventory = {};
@@ -90,7 +92,7 @@ Selector.prototype = {
             return 1;
         }
 
-        if(OP.keyboard.WasPressed(OP.KEY.A)) {
+        if(OP.keyboard.WasPressed(OP.KEY.A) || OP.keyboard.WasPressed(OP.KEY.LEFT) || gamepad.WasPressed(OP.gamePad.DPAD_LEFT) || gamepad.LeftThumbNowLeft()) {
             OP.spriteSystem.SetSprite(this.options[this.selected].selector, 1);
             this.selected--;
             if(this.selected < 0) this.selected = this.options.length - 1;
@@ -98,21 +100,21 @@ Selector.prototype = {
             OP.spriteSystem.SetSprite(this.options[this.selected].selector, 0);
         }
 
-        if(OP.keyboard.WasPressed(OP.KEY.D)) {
+        if(OP.keyboard.WasPressed(OP.KEY.D) || OP.keyboard.WasPressed(OP.KEY.RIGHT) || gamepad.WasPressed(OP.gamePad.DPAD_RIGHT) || gamepad.LeftThumbNowRight()) {
             OP.spriteSystem.SetSprite(this.options[this.selected].selector, 1);
             this.selected++;
             this.selected = this.selected % this.options.length;
             OP.spriteSystem.SetSprite(this.options[this.selected].selector, 0);
         }
 
-        if(OP.keyboard.IsDown(OP.KEY.E)) {
+        if(OP.keyboard.IsDown(OP.KEY.E) || gamepad.IsDown(OP.gamePad.Y)) {
             OP.spriteSystem.SetSprite(this.options[this.selected].selector, 2);
         }
-        if(OP.keyboard.WasReleased(OP.KEY.E)) {
+        if(OP.keyboard.WasReleased(OP.KEY.E) || gamepad.WasReleased(OP.gamePad.Y)) {
             OP.spriteSystem.SetSprite(this.options[this.selected].selector, 0);
         }
 
-        if(OP.keyboard.WasPressed(OP.KEY.E)) {
+        if(OP.keyboard.WasPressed(OP.KEY.E) || gamepad.WasPressed(OP.gamePad.Y)) {
             if(this.selectedSprite) {
               OP.spriteSystem.Remove(this.spriteSystem2, this.selectedSprite);
             }
@@ -121,6 +123,7 @@ Selector.prototype = {
             this.selectedSprite.Scale.Set(0.75, 0.75);
             this.selectedSprite.id = this.selected;
             OP.spriteSystem.SetSprite(this.selectedSprite, this.selected);
+            MixPanel.Track('Selected Cup', { size: this.selected });
         }
 
         OP.spriteSystem.Update(this.spriteSystem, timer);

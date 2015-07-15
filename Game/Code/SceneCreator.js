@@ -122,7 +122,7 @@ SceneCreator.prototype = {
 				if(OP.keyboard.WasPressed(OP.KEY.E) || this.Data.gamePad0.WasPressed(OP.gamePad.Y)) {
 						for(var i = 0; i < collisions.length; i++) {
 								if(collisions[i].type == 'door') {
-										MixPanel.Track("Opened Door", { state: this.Data.scene.data.name, id: collisions[i].id });
+										MixPanel.Track("Opened Door in " + this.Data.scene.data.name, { state: this.Data.scene.data.name, id: collisions[i].id });
 										var SceneCreator = require('./SceneCreator.js');
 										OPgameState.Change(new SceneCreator(collisions[i].data.file, collisions[i].id));
 										return 0;

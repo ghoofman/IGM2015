@@ -34,10 +34,10 @@ Player.prototype = {
         x += left.x;
         z -= left.y;
 
-        x += OP.keyboard.IsDown(OP.KEY.D) || OP.keyboard.IsDown(OP.KEY.RIGHT);
-        x -= OP.keyboard.IsDown(OP.KEY.A) || OP.keyboard.IsDown(OP.KEY.LEFT);
-        z += OP.keyboard.IsDown(OP.KEY.S) || OP.keyboard.IsDown(OP.KEY.DOWN);
-        z -= OP.keyboard.IsDown(OP.KEY.W) || OP.keyboard.IsDown(OP.KEY.UP);
+        x += OP.keyboard.IsDown(OP.KEY.D) || OP.keyboard.IsDown(OP.KEY.RIGHT) || gamepad.IsDown(OP.gamePad.DPAD_RIGHT);
+        x -= OP.keyboard.IsDown(OP.KEY.A) || OP.keyboard.IsDown(OP.KEY.LEFT) || gamepad.IsDown(OP.gamePad.DPAD_LEFT);
+        z += OP.keyboard.IsDown(OP.KEY.S) || OP.keyboard.IsDown(OP.KEY.DOWN) || gamepad.IsDown(OP.gamePad.DPAD_DOWN);
+        z -= OP.keyboard.IsDown(OP.KEY.W) || OP.keyboard.IsDown(OP.KEY.UP) || gamepad.IsDown(OP.gamePad.DPAD_UP);
 
         x *= this.scale * 3.0; z *= this.scale * 3.0;
 

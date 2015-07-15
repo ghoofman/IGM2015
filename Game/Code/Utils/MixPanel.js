@@ -7,8 +7,8 @@ var GUID = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 });
 
 mixpanel.people.set(GUID, {
-  $first_name: 'Billy',
-  $last_name: 'Bob',
+  $first_name: 'Joe',
+  $last_name: 'Smoe',
   $created: (new Date('jan 1 2013')).toISOString()
 });
 

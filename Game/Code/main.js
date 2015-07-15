@@ -14,7 +14,7 @@ try {
 		os: 'OSX'
 	});
 
-	var scene = new SceneCreator('/Scenes/Cafe.json', 1);
+	var scene = new SceneCreator('/Scenes/Bedroom.json', 1);
 
 	if(!process.env.WAYWARD_REPO) {
 		process.env.WAYWARD_REPO = '..';
