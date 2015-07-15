@@ -2,7 +2,7 @@ varying vec3 vColor;
 varying vec3 vNormal;
 
 void main() {
-	vec3 LightDirection = normalize(vec3(2, -1, -1));
+	vec3 LightDirection = normalize(vec3(2, -1, -0.5));
 
 	vec3 LightColor = vec3(1,1,1);
 	float LightPower = 0.6;

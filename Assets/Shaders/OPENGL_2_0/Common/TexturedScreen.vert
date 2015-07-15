@@ -9,6 +9,6 @@ uniform mat4 uProj;
 void main() {
 	vec4 screenPos = uProj * uWorld * vec4(aPosition,1);
 	gl_Position = screenPos;
-
-	vUV = aUV;
+	
+	vUV = aUV; 
 }

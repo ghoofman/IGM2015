@@ -38,5 +38,5 @@ void main() {
 
 	vColor = aColor;
 	//vNormal = normalize(m3(modelView) * aNormal);
-	vNormal = aNormal;
+	vNormal = m3(uWorld) * aNormal;
 }
