@@ -5,7 +5,7 @@ var SceneCreator = require('./SceneCreator.js');
 
 global.game = {
 	money: 100000,
-	cash: 0
+	cash: 100
 };
 
 try {
@@ -14,7 +14,7 @@ try {
 		os: 'OSX'
 	});
 
-	var scene = new SceneCreator('/Scenes/Street.json');
+	var scene = new SceneCreator('/Scenes/Cafe.json', 1);
 
 	if(!process.env.WAYWARD_REPO) {
 		process.env.WAYWARD_REPO = '..';

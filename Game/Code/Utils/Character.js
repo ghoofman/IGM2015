@@ -1,10 +1,10 @@
 var OP = require('OPengine').OP;
 var BuildVoxelMesh = require('./BuildVoxelMesh.js');
 
-function Player(scale, scene, material, start) {
+function Character(model, scale, scene, material, start) {
   this.scale = scale || 1.0;
   this.manager = OP.physXController.CreateManager(scene);
-  this.mesh = BuildVoxelMesh('Person.qb');
+  this.mesh = BuildVoxelMesh(model);
   this.model = OP.model.Create(this.mesh);
   this.controller = OP.physXController.Create(this.manager, material, this.mesh.voxelData.size.y * scale * 2.0, this.mesh.voxelData.size.x * scale * 0.75);
 
@@ -15,41 +15,20 @@ function Player(scale, scene, material, start) {
   this.vec3 = OP.vec3.Create(0,0,0);
 }
 
-Player.prototype = {
+Character.prototype = {
     manager: null,
     mesh: null,
     model: null,
     controller: null,
     vec3: null,
     move: [ 0, 0, 0 ],
-    rotate: 0,
+    rotate: 3.0,
     FootPos: {
       x: 0, y: 0, z: 0
     },
 
-    Update: function(timer, gamepad) {
-    		var x = 0, y = -0.98 * 4, z = 0;
-
-        var left = gamepad.LeftThumb();
-        x += left.x;
-        z -= left.y;
-
-        x += OP.keyboard.IsDown(OP.KEY.D) || OP.keyboard.IsDown(OP.KEY.RIGHT);
-        x -= OP.keyboard.IsDown(OP.KEY.A) || OP.keyboard.IsDown(OP.KEY.LEFT);
-        z += OP.keyboard.IsDown(OP.KEY.S) || OP.keyboard.IsDown(OP.KEY.DOWN);
-        z -= OP.keyboard.IsDown(OP.KEY.W) || OP.keyboard.IsDown(OP.KEY.UP);
-
-        x *= this.scale * 3.0; z *= this.scale * 3.0;
-
-        if(OP.keyboard.IsDown(OP.KEY.SPACE) || gamepad.IsDown(OP.gamePad.A)) {
-          y = 2.0;
-        }
-
-        if(x != 0 || z != 0) {
-          this.rotate = Math.atan2(x, z);
-        }
-
-        this.move = [ x, y, z ];
+    Update: function(timer) {
+      // TODO: fill with AI
     },
 
     Move: function(timer) {
@@ -67,4 +46,4 @@ Player.prototype = {
     }
 };
 
-module.exports = Player;
+module.exports = Character;

@@ -27,14 +27,14 @@ OptionSelector.prototype = {
   Render: function(fontManager) {
       fontManager.SetAlign(OP.FONTALIGN.LEFT);
     	OP.fontRender.Begin(fontManager);
-    	OP.fontRender(this.text, 50, 50);
+    	OP.fontRender(this.text, 50, 150);
       for(var i = 0; i < this.options.length; i++) {
         if(this.selected == i) {
       		OP.fontRender.Color(0.5,1.0,0.5);
         } else {
       		OP.fontRender.Color(1,1,1);
         }
-    		OP.fontRender(this.options[i].text, 100, 100 + i * 50);
+    		OP.fontRender(this.options[i].text, 100, 200 + i * 50);
       }
     	OP.fontRender.End();
   }

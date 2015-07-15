@@ -6,6 +6,12 @@ var GUID = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     return v.toString(16);
 });
 
+mixpanel.people.set(GUID, {
+  $first_name: 'Billy',
+  $last_name: 'Bob',
+  $created: (new Date('jan 1 2013')).toISOString()
+});
+
 module.exports = {
   Track: function(event, data) {
     var send = data || {};

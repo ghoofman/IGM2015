@@ -3,15 +3,37 @@
   "scale" : 1,
   "planes": {
     "xNegative" : -200,
-    "xPositive" : 360,
-    "zNegative" : -150,
-    "zPositive" : 150,
+    "xPositive" : 200,
+    "zNegative" : -100,
+    "zPositive" : 100,
     "yNegative" : 0
   },
+  "camera": {
+    "zNegative" : -50,
+    "zPositive" : 50,
+    "yDistance" : 250
+  },
+  "positions": [
+    {
+      "id": 2,
+      "position": [ -180, 0, 0 ]
+    },
+    {
+      "id": 3,
+      "position": [ 180, 0, -80 ]
+    }
+  ],
+  "characters" : [
+    {
+      "id": "Joe",
+      "file" : "PersonStreet.qb",
+      "offset" : [ 45, 0, 50 ]
+    }
+  ],
   "models" : [
     {
       "file" : "Cooler.qb",
-      "offset" : [ 12, 0, 11 ],
+      "offset" : [ -10, 0, -15 ],
       "collision": {
         "default" : false,
         "custom" : [
@@ -25,8 +47,31 @@
             "collide" : true,
             "type" : "",
             "offset" : [ -90, 0, -20 ],
-            "size" : [ 40, 25, 30 ]
-          },
+            "size" : [ 15, 25, 30 ]
+          }
+        ]
+      }
+    },
+    {
+      "file" : "CafeFloor.qb",
+      "offset" : [ -100, -2, 0 ],
+      "collision": {
+        "default": false
+      }
+    },
+    {
+      "file" : "CafeFloor.qb",
+      "offset" : [ 100, -2, 0 ],
+      "collision": {
+        "default": false
+      }
+    },
+    {
+      "file" : "CafeLeftWall.qb",
+      "offset" : [ -200, 0, 0 ],
+      "collision": {
+        "default": false,
+        "custom" : [
           {
             "id" : 2,
             "type" : "door",
@@ -36,9 +81,93 @@
             },
             "collide" : false,
             "offset" : [ 0, 0, 0 ],
-            "size" : [ 100, 100, 100]
+            "size" : [ 10, 50, 30]
           }
         ]
+      }
+    },
+    {
+      "file" : "CafeRightWall.qb",
+      "offset" : [ 200, 0, 0 ],
+      "collision": {
+        "default": false
+      }
+    },
+    {
+      "file" : "CafeBackWall.qb",
+      "offset" : [ 100, 0, -100 ],
+      "collision": {
+        "default": false,
+        "custom" : [
+          {
+            "id" : 3,
+            "type" : "door",
+            "name" : "Street",
+            "data" : {
+              "file": "Scenes/Street.json"
+            },
+            "collide" : false,
+            "offset" : [ 60, 0, 0 ],
+            "size" : [ 30, 50, 10]
+          }
+        ]
+      }
+    },
+    {
+      "file" : "CafeBackWall2.qb",
+      "offset" : [ -100, 0, -100 ],
+      "collision": {
+        "default": false
+      }
+    },
+    {
+      "file" : "menu.qb",
+      "offset" : [ 60, 38, -98 ],
+      "collision": {
+        "default": false
+      }
+    },
+    {
+      "file" : "Backshelf.qb",
+      "offset" : [ 0, 0, -80 ],
+      "collision": {
+        "default": true
+      }
+    },
+    {
+      "file" : "CupTall.qb",
+      "offset" : [ -90, 30, -15 ],
+      "scale" : [ 0.25, 0.25, 0.25 ],
+      "collision": {
+        "default": false
+      }
+    },
+      {
+        "file" : "CupGrande.qb",
+        "offset" : [ -90, 24, -30 ],
+        "scale" : [ 0.25, 0.25, 0.25 ],
+        "collision": {
+          "default": false,
+          "custom" : [
+            {
+              "id" : 4,
+              "type" : "game",
+              "name" : "Cups",
+              "data" : {
+                  "game": "selector"
+              },
+              "collide" : false,
+              "size" : [ 20, 50, 30 ]
+            }
+          ]
+      }
+    },
+    {
+      "file" : "CupVenti.qb",
+      "offset" : [ -90, 22, -45 ],
+      "scale" : [ 0.25, 0.25, 0.25 ],
+      "collision": {
+        "default": false
       }
     }
   ]

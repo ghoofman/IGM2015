@@ -1,6 +1,7 @@
 var OP = require('OPengine').OP;
 var fs = require('fs');
 var BuildVoxelMesh = require('./BuildVoxelMesh.js');
+var Character = require('./Character.js');
 
 function SceneLoader(scene, name) {
 
@@ -23,8 +24,9 @@ SceneLoader.prototype = {
     mat4: null,
     data: null,
     objects: [],
+    characters: [],
     scale: 1,
-    limits: [ 0, 0 ],
+    limits: [ 0, 0, 150, 350, 0, 0 ],
 
     Load: function(name) {
         var scene = JSON.parse(fs.readFileSync(__dirname + '/../' + name, 'utf8'));
@@ -33,12 +35,25 @@ SceneLoader.prototype = {
 
         this.limits = [
           (scene.camera && scene.camera.xNegative) || 0,
-          (scene.camera && scene.camera.xPositive) || 0
+          (scene.camera && scene.camera.xPositive) || 0,
+          (scene.camera && scene.camera.yDistance) || 150,
+          (scene.camera && scene.camera.zDistance) || 350,
+          (scene.camera && scene.camera.zNegative) || 0,
+          (scene.camera && scene.camera.zPositive) || 0
         ];
 
         var objects = [];
         for(var i = 0; i < scene.models.length; i++) {
             objects.push(this.AddObject(scene.models[i]));
+        }
+
+        var characters = [];
+        if(scene.characters) {
+          for(var i = 0; i < scene.characters.length; i++) {
+            console.log('CHARACTER', i);
+            var chr = scene.characters[i];
+            characters.push(new Character(chr.file, this.scale, this.scene, this.material, chr.offset));
+          }
         }
 
         // Add bounding Planes
@@ -93,6 +108,7 @@ SceneLoader.prototype = {
 
         this.data = scene;
         this.objects = objects;
+        this.characters = characters;
     },
 
     AddObject: function(json) {
@@ -134,6 +150,7 @@ SceneLoader.prototype = {
       				this.mat4.RotY((json.rotate[1] || 0) * 3.14 / 180.0);
       				OP.physX.ShapeSetPose(shape, this.mat4);
       		}
+  				OP.physX.ShapeSetPose(shape, this.mat4);
 
         }
 
@@ -203,6 +220,17 @@ SceneLoader.prototype = {
     		}
 
         return collisions;
+    },
+
+    FindPosition: function(id) {
+        if(this.data.positions) {
+          for(var i = 0; i < this.data.positions.length; i++) {
+            if(this.data.positions[i].id == id) {
+              return this.data.positions[i].position;
+            }
+          }
+        }
+        return null;
     },
 
     Destroy: function() {

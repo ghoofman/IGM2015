@@ -10,8 +10,18 @@
   },
   "camera": {
     "xNegative" : -50,
-    "xPositive" : 50
+    "xPositive" : 50,
+    "yDistance" : 150,
+    "zDistance" : 250,
+    "zNegative" : -50,
+    "zPositive" : -50
   },
+  "positions": [
+    {
+      "id": 1,
+      "position": [ -60, 0, -30 ]
+    }
+  ],
   "models" : [
     {
       "file" : "Bedroom.qb",
@@ -20,7 +30,7 @@
         "default": false,
         "custom" : [
           {
-            "id" : 2,
+            "id" : 1,
             "type" : "door",
             "name" : "Street",
             "data" : {
@@ -35,14 +45,14 @@
     },
     {
       "file" : "Bed.qb",
-      "offset" : [ 40, 0, 20 ],
+      "offset" : [ 44, 0, 7 ],
       "collision": {
         "default" : true,
         "custom" : [
           {
             "id" : 1,
             "type" : "bed",
-            "name" : "Bedtime",
+            "name" : "My Bed",
             "collide" : false,
             "size" : [ 50, 30, 30 ],
             "offset" : [ 0, 0, 0 ]

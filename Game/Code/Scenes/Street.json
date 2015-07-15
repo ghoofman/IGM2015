@@ -5,13 +5,36 @@
     "xNegative" : -70,
     "xPositive" : 360,
     "zNegative" : -150,
-    "zPositive" : 120,
+    "zPositive" : 150,
     "yNegative" : 0
   },
   "camera" : {
     "xNegative" : 30,
-    "xPositive" : 230
+    "xPositive" : 230,
+    "zNegative" : -150,
+    "zPositive" : 50
   },
+  "positions": [
+    {
+      "id": 1,
+      "position": [ -20, 0, 40 ]
+    },
+    {
+      "id": 2,
+      "position": [ 280, 0, 40 ]
+    },
+    {
+      "id": 3,
+      "position": [ 230, 0, -40 ]
+    }
+  ],
+  "characters" : [
+    {
+      "id": "Joe",
+      "file" : "PersonStreet.qb",
+      "offset" : [ 280, 0, 70 ]
+    }
+  ],
   "models" : [
     {
       "file" : "BuildingTest2.qb",
@@ -241,7 +264,7 @@
     },
     {
       "file" : "StopSign.qb",
-      "offset" : [ 210, 0, 71 ],
+      "offset" : [ 214, 0, 71 ],
       "rotation" : [ 0, 90, 0 ]
     },
     {
