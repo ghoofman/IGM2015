@@ -6,8 +6,7 @@ var OP = require('OPengine').OP,
  		SceneLoader = require('./Utils/SceneLoader.js'),
 	 	Camera = require('./Utils/Camera.js'),
  		MixPanel = require('./Utils/MixPanel.js'),
-		Coffee = require('./Games/Coffee.js'),
-		Selector = require('./Games/Selector.js');
+		Coffee = require('./Games/Coffee.js');
 
 function SceneCreator(file, callingId) {
 		this.Data.file = file;
@@ -127,14 +126,18 @@ SceneCreator.prototype = {
 										OPgameState.Change(new SceneCreator(collisions[i].data.file, collisions[i].id));
 										return 0;
 								} else if(collisions[i].type == 'game') {
-										switch(collisions[i].data.game) {
-												case 'coffee': {
-													this.Data.game = new Coffee();
-												}
-												case 'selector': {
-													this.Data.game = new Selector(this.Data.player);
-												}
-										}
+										var game = require('./Games/' + collisions[i].data.game);
+										this.Data.game = game(collisions[i].data);
+								} else if(collisions[i].type == 'character') {
+									  if(global.inventory) {
+										  if(!global.inventory.cup) continue;
+										  if(!global.inventory.cup.coffee) continue;
+										  if(global.inventory.cup.type != 'Tall') continue;
+										  if(global.inventory.cup.coffee.type != 'Bold') continue;
+
+									    global.inventory.cup = null;
+										global.game.cash += 100;
+									}
 								}
 
 								if(collisions[i].id == 1) {

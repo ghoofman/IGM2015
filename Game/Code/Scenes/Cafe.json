@@ -25,8 +25,7 @@
   ],
   "characters" : [
     {
-      "id": "Joe",
-      "file" : "PersonStreet.qb",
+      "file": "People/Joe.json",
       "offset" : [ 45, 0, 50 ]
     }
   ],
@@ -136,8 +135,8 @@
     },
     {
       "file" : "CupTall.qb",
-      "offset" : [ -90, 30, -15 ],
-      "scale" : [ 0.25, 0.25, 0.25 ],
+      "offset" : [ -90, 30, -20 ],
+      "scale" : [ 0.15, 0.15, 0.15 ],
       "collision": {
         "default": false
       }
@@ -145,7 +144,7 @@
       {
         "file" : "CupGrande.qb",
         "offset" : [ -90, 24, -30 ],
-        "scale" : [ 0.25, 0.25, 0.25 ],
+        "scale" : [ 0.15, 0.15, 0.15 ],
         "collision": {
           "default": false,
           "custom" : [
@@ -154,7 +153,41 @@
               "type" : "game",
               "name" : "Cups",
               "data" : {
-                  "game": "selector"
+                  "game": "CupSelector",
+                  "sheet" : "CoffeeSelector",
+                  "name" : "Cup",
+                  "item" : "Cup",
+                  "options" : [{
+                      "id": 1,
+                      "name" : "Short",
+                      "sprite": "CupTall-iso",
+                      "scale" : [ 0.5, 0.5 ],
+                      "result" : [
+                        {
+                          "sprite": "CupTall-iso"
+                        }
+                      ]
+                  },{
+                      "id": 2,
+                      "name" : "Tall",
+                      "sprite": "CupGrande-iso",
+                      "scale" : [ 0.5, 0.5 ],
+                      "result" : [
+                        {
+                          "sprite": "CupGrande-iso"
+                        }
+                      ]
+                  },{
+                      "id": 3,
+                      "name" : "Grande",
+                      "sprite": "CupVenti-iso",
+                      "scale" : [ 0.5, 0.5 ],
+                      "result" : [
+                        {
+                          "sprite": "CupVenti-iso"
+                        }
+                      ]
+                  }]
               },
               "collide" : false,
               "size" : [ 20, 50, 30 ]
@@ -164,10 +197,29 @@
     },
     {
       "file" : "CupVenti.qb",
-      "offset" : [ -90, 22, -45 ],
-      "scale" : [ 0.25, 0.25, 0.25 ],
+      "offset" : [ -90, 22, -40 ],
+      "scale" : [ 0.15, 0.15, 0.15 ],
       "collision": {
         "default": false
+      }
+    },
+    {
+      "file" : "CoffeePot.qb",
+      "offset" : [ -20, 36, -76 ],
+      "collision": {
+        "default": false,
+        "custom": [
+          {
+            "id" : 4,
+            "type" : "game",
+            "name" : "Coffee Pot",
+            "data" : {
+                "game": "CoffeePotSelector"
+            },
+            "collide" : false,
+            "size" : [ 20, 30, 40 ]
+          }
+        ]
       }
     }
   ]

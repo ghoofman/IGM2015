@@ -30,8 +30,7 @@
   ],
   "characters" : [
     {
-      "id": "Joe",
-      "file" : "PersonStreet.qb",
+      "file": "People/Joe.json",
       "offset" : [ 280, 0, 70 ]
     }
   ],

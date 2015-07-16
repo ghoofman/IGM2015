@@ -219,6 +219,15 @@ SceneLoader.prototype = {
       		  }
     		}
 
+    		for(var o = 0; o < this.characters.length; o++) {
+            var colls = this.characters[o].Collisions(player);
+            for(var i = 0; i < colls.length; i++) {
+                collisions.push(colls[i]);
+            }
+    		}
+
+
+
         return collisions;
     },
 
