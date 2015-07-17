@@ -129,21 +129,46 @@ SceneCreator.prototype = {
 										var game = require('./Games/' + collisions[i].data.game);
 										this.Data.game = game(collisions[i].data);
 								} else if(collisions[i].type == 'character') {
-									  if(global.inventory) {
-										  if(!global.inventory.cup) continue;
-										  if(!global.inventory.cup.coffee) continue;
-										  if(global.inventory.cup.type != 'Tall') continue;
-										  if(global.inventory.cup.coffee.type != 'Bold') continue;
-
-									    global.inventory.cup = null;
-										global.game.cash += 100;
+									if(collisions[i].character) {
+										this.Data.game = collisions[i].character.Interact();
+										continue;
 									}
+								} else if(collisions[i].type == 'register') {
+									if(this.Data.scene.characters && this.Data.scene.characters[0]) {
+										this.Data.game = this.Data.scene.characters[0].Interact();
+										continue;
+									}
+								} else if(collisions[i].type == 'trashcan') {
+									if(!global.inventory || !global.inventory.cup) continue;
+									var self = this;
+									var options = [
+										{
+											text: collisions[i].data.options[0],
+											select: function() {
+												if(global.inventory && global.inventory.cup) {
+													global.game.cash -= 0.25;
+													if(global.inventory.cup.coffee) {
+														global.game.cash -= 0.25;
+													}
+													global.inventory.cup = null;
+												}
+												self.Data.option = null;
+											}
+										},
+										{
+											text: collisions[i].data.options[1],
+											select: function() {
+												self.Data.option = null;
+											}
+										}
+									];
+									this.Data.option = new OptionSelector(collisions[i].data.text, options);
 								}
 
-								if(collisions[i].id == 1) {
-										this.Data.opened = !this.Data.opened;
-										this.Data.option = this.Data.optionSelector2;
-								}
+								// if(collisions[i].id == 1) {
+								// 		this.Data.opened = !this.Data.opened;
+								// 		this.Data.option = this.Data.optionSelector2;
+								// }
 						}
 				}
 
@@ -180,7 +205,7 @@ SceneCreator.prototype = {
 						OP.fontRender.Begin(this.Data.fontManager);
 						this.Data.fontManager.SetAlign(OP.FONTALIGN.LEFT);
 		    		OP.fontRender.Color(50.0 / 255.0, 165.0 / 255.0, 84.0 / 255.0);
-						OP.fontRender('$' + global.game.cash, 50, 50);
+						OP.fontRender('$' + global.game.cash.toFixed(2), 50, 50);
 						if(this.Data.Name) {
 								this.Data.fontManager.SetAlign(OP.FONTALIGN.CENTER);
 			      		OP.fontRender.Color(0.9, 0.9, 0.9);

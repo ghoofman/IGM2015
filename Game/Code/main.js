@@ -5,7 +5,7 @@ var SceneCreator = require('./SceneCreator.js');
 
 global.game = {
 	money: 100000,
-	cash: 100
+	cash: 10
 };
 
 try {

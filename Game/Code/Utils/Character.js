@@ -1,5 +1,6 @@
 var OP = require('OPengine').OP;
 var BuildVoxelMesh = require('./BuildVoxelMesh.js');
+var Talk = require('./Talk.js');
 var fs = require('fs');
 
 function Character(file, scale, scene, material, start) {
@@ -36,7 +37,8 @@ function Character(file, scale, scene, material, start) {
         type: 'character',
         id: coll.id || 0,
         data: coll.data || null,
-        name: coll.name || 'Joe'
+        name: coll.name || 'Frank',
+        character: this
       }
   ];
 }
@@ -90,6 +92,61 @@ Character.prototype = {
       	this.model.world.RotY(this.rotate);
       	this.model.world.Translate(this.FootPos.x, this.FootPos.y + Math.floor(this.mesh.voxelData.size.y * this.scale), this.FootPos.z);
       	OP.model.Draw(this.model, material, camera);
+    },
+
+    DrawPos: function(pos, rot, scl, material, camera) {
+      	this.model.world.SetScl(scl);
+      	this.model.world.RotX(rot[0]);
+      	this.model.world.RotY(rot[1]);
+      	this.model.world.Translate(pos[0], pos[1], pos[2]);
+      	OP.model.Draw(this.model, material, camera);
+    },
+
+    Interact: function() {
+
+
+        if(this.receivedCoffee) {
+            return new Talk(this, "I'm all set for now. Thanks.");
+        }
+
+        if(global.inventory
+            && global.inventory.cup
+              && global.inventory.cup.coffee
+              && global.inventory.cup.type == 'Tall'
+              && global.inventory.cup.coffee.type == 'Bold') {
+            global.inventory.cup = null;
+        	global.game.cash += 2;
+            this.receivedCoffee = true;
+            if(!this.talked) {
+        	       global.game.cash += 2;
+                   return new Talk(this, 'Dude! How did you know? You psychic?', [ {
+                       text: "Shhh don't tell anyone"
+                   }, { text: "I just know these things" } ]);
+            }
+            return new Talk(this, 'Thanks bro-ski');
+        }
+
+        if(global.inventory
+            && global.inventory.cup
+              && global.inventory.cup.coffee
+              && (global.inventory.cup.type != 'Tall'
+                || global.inventory.cup.coffee.type != 'Bold')) {
+
+                if(this.talked) {
+                    return new Talk(this, 'Not what I asked for... I want a Tall Bold Coffee.');
+                } else {
+                    this.talked = true;
+                    return new Talk(this, 'I want a Tall Bold Coffee... Not this...');
+                }
+        }
+
+        this.talked = true;
+
+        return new Talk(this, 'I want a Tall Bold Coffee. Right Now', [ {
+            text: 'You got it'
+        }, { text: "Can't do that right now" } ]);
+
+        return null;
     }
 };
 

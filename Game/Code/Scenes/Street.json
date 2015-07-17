@@ -28,12 +28,6 @@
       "position": [ 230, 0, -40 ]
     }
   ],
-  "characters" : [
-    {
-      "file": "People/Joe.json",
-      "offset" : [ 280, 0, 70 ]
-    }
-  ],
   "models" : [
     {
       "file" : "BuildingTest2.qb",
@@ -72,14 +66,14 @@
     },
     {
       "file" : "Cafe.qb",
-      "offset" : [ 281, 0, 21 ],
+      "offset" : [ 270, 0, -10 ],
       "collision" : {
         "default" : false,
         "custom" : [
           {
             "collide" : true,
-            "offset" : [ 0, 0, -12 ],
-            "size" : [ 45, 45, 28 ]
+            "offset" : [ 6, 0, -12 ],
+            "size" : [ 45, 45, 54 ]
           },
           {
             "collide" : true,
@@ -94,8 +88,19 @@
               "file":  "Scenes/Cafe.json"
             },
             "collide" : false,
-            "offset" : [ 0, -20, 20 ],
+            "offset" : [ 0, -20, 40 ],
             "size" : [ 13, 23, 4 ]
+          },
+          {
+            "id" : 3,
+            "type" : "door",
+            "name" : "Cafe",
+            "data" : {
+              "file":  "Scenes/Cafe.json"
+            },
+            "collide" : false,
+            "offset" : [ -40, -20, -50 ],
+            "size" : [ 4, 23, 13 ]
           }
         ]
       }
@@ -110,99 +115,99 @@
     },
     {
       "file" : "Highway_postL.qb",
-      "offset" : [ 65, 0, -70 ]
+      "offset" : [ 65, 0, -90 ]
     },
     {
       "file" : "Highway_postL.qb",
-      "offset" : [ -165, 0, -70 ]
+      "offset" : [ -165, 0, -90 ]
     },
     {
       "file" : "Highway_postL.qb",
-      "offset" : [ -365, 0, -70 ]
+      "offset" : [ -365, 0, -90 ]
     },
     {
       "file" : "Highway_postL.qb",
-      "offset" : [ -165, 0, -130 ]
+      "offset" : [ -165, 0, -150 ]
     },
     {
       "file" : "Highway_postL.qb",
-      "offset" : [ -365, 0, -130 ]
+      "offset" : [ -365, 0, -150 ]
     },
     {
       "file" : "Highway_wallL.qb",
-      "offset" : [ 65, 0, -130 ]
+      "offset" : [ 65, 0, -150 ]
     },
     {
       "file" : "Highway_postR.qb",
-      "offset" : [ 226, 0, -70 ]
+      "offset" : [ 226, 0, -90 ]
     },
     {
       "file" : "Highway_postR.qb",
-      "offset" : [ 426, 0, -70 ]
+      "offset" : [ 426, 0, -90 ]
     },
     {
       "file" : "Highway_postR.qb",
-      "offset" : [ 626, 0, -70 ]
+      "offset" : [ 626, 0, -90 ]
     },
     {
       "file" : "Highway_postR.qb",
-      "offset" : [ 426, 0, -130 ]
+      "offset" : [ 426, 0, -150 ]
     },
     {
       "file" : "Highway_postR.qb",
-      "offset" : [ 626, 0, -130 ]
+      "offset" : [ 626, 0, -150 ]
     },
     {
       "file" : "Highway_wallR.qb",
-      "offset" : [ 226, 0, -130 ]
+      "offset" : [ 226, 0, -150 ]
     },
     {
       "file" : "HighwayOverpass.qb",
-      "offset" : [ -400, 114, -120 ]
+      "offset" : [ -400, 114, -140 ]
     },
     {
       "file" : "HighwayOverpass.qb",
-      "offset" : [ -300, 114, -120 ]
+      "offset" : [ -300, 114, -140 ]
     },
     {
       "file" : "HighwayOverpass.qb",
-      "offset" : [ -200, 114, -120 ]
+      "offset" : [ -200, 114, -140 ]
     },
     {
       "file" : "HighwayOverpass.qb",
-      "offset" : [ -100, 114, -120 ]
+      "offset" : [ -100, 114, -140 ]
     },
     {
       "file" : "HighwayOverpass.qb",
-      "offset" : [ 0, 114, -120 ]
+      "offset" : [ 0, 114, -140 ]
     },
     {
       "file" : "HighwayOverpass.qb",
-      "offset" : [ 100, 114, -120 ]
+      "offset" : [ 100, 114, -140 ]
     },
     {
       "file" : "HighwayOverpass.qb",
-      "offset" : [ 200, 114, -120 ]
+      "offset" : [ 200, 114, -140 ]
     },
     {
       "file" : "HighwayOverpass.qb",
-      "offset" : [ 300, 114, -120 ]
+      "offset" : [ 300, 114, -140 ]
     },
     {
       "file" : "HighwayOverpass.qb",
-      "offset" : [ 400, 114, -120 ]
+      "offset" : [ 400, 114, -140 ]
     },
     {
       "file" : "HighwayOverpass.qb",
-      "offset" : [ 500, 114, -120 ]
+      "offset" : [ 500, 114, -140 ]
     },
     {
       "file" : "HighwayOverpass.qb",
-      "offset" : [ 600, 114, -120 ]
+      "offset" : [ 600, 114, -140 ]
     },
     {
       "file" : "HighwayOverpass.qb",
-      "offset" : [ 700, 114, -120 ]
+      "offset" : [ 700, 114, -140 ]
     },
     {
       "file" : "fullroad.qb",

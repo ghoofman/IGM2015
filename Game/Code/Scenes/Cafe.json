@@ -11,7 +11,7 @@
   "camera": {
     "zNegative" : -50,
     "zPositive" : 50,
-    "yDistance" : 250
+    "yDistance" : 275
   },
   "positions": [
     {
@@ -25,7 +25,7 @@
   ],
   "characters" : [
     {
-      "file": "People/Joe.json",
+      "file": "People/Frank.json",
       "offset" : [ 45, 0, 50 ]
     }
   ],
@@ -153,41 +153,7 @@
               "type" : "game",
               "name" : "Cups",
               "data" : {
-                  "game": "CupSelector",
-                  "sheet" : "CoffeeSelector",
-                  "name" : "Cup",
-                  "item" : "Cup",
-                  "options" : [{
-                      "id": 1,
-                      "name" : "Short",
-                      "sprite": "CupTall-iso",
-                      "scale" : [ 0.5, 0.5 ],
-                      "result" : [
-                        {
-                          "sprite": "CupTall-iso"
-                        }
-                      ]
-                  },{
-                      "id": 2,
-                      "name" : "Tall",
-                      "sprite": "CupGrande-iso",
-                      "scale" : [ 0.5, 0.5 ],
-                      "result" : [
-                        {
-                          "sprite": "CupGrande-iso"
-                        }
-                      ]
-                  },{
-                      "id": 3,
-                      "name" : "Grande",
-                      "sprite": "CupVenti-iso",
-                      "scale" : [ 0.5, 0.5 ],
-                      "result" : [
-                        {
-                          "sprite": "CupVenti-iso"
-                        }
-                      ]
-                  }]
+                  "game": "CupSelector"
               },
               "collide" : false,
               "size" : [ 20, 50, 30 ]
@@ -221,6 +187,47 @@
           }
         ]
       }
+    },
+    {
+      "file" : "TrashCan.qb",
+      "offset" : [ 114, 0, 0 ],
+      "collision" : {
+        "default" : true,
+        "custom" : [
+          {
+            "id" : 5,
+            "type" : "trashcan",
+            "name" : "Trash Can",
+            "collide" : false,
+            "size" : [ 18, 15, 25 ],
+            "data": {
+              "text": "Want to throw your cup away?",
+              "options": [ "Toss it", "Nope"]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "file" : "Register.qb",
+      "offset" : [ 70, 36, 0 ],
+      "collision" : {
+        "default" : true,
+        "custom" : [
+          {
+            "id" : 6,
+            "type" : "register",
+            "name" : "Register",
+            "collide" : false,
+            "size" : [ 20, 40, 20 ],
+            "offset": [ 0, 0, -10 ]
+          }
+        ]
+      }
+    },
+    {
+      "file" : "CounterSmall.qb",
+      "offset" : [ 164, 0, 4 ]
     }
   ]
 }

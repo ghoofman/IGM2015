@@ -4,7 +4,6 @@ var BaseSelector = require('./BaseSelector.js');
 
 
 module.exports = function(data) {
-
     if(!global.inventory || global.inventory.cup == undefined || global.inventory.cup == null) return null;
 
     // Cup has already been filled
@@ -34,10 +33,20 @@ module.exports = function(data) {
     var sprites = [
         OP.cman.Get('CoffeeSelector/CupTallBlack-iso'),
         OP.cman.Get('CoffeeSelector/CupGrandeBlack-iso'),
-        OP.cman.Get('CoffeeSelector/CupVentiBlack-iso')
+        OP.cman.Get('CoffeeSelector/CupVentiBlack-iso'),
+        OP.cman.Get('CoffeeSelector/CupTallEmpty-iso'),
+        OP.cman.Get('CoffeeSelector/CupGrandeEmpty-iso'),
+        OP.cman.Get('CoffeeSelector/CupVentiEmpty-iso')
     ];
 
     var spriteSystem = OP.spriteSystem.Create(sprites, 6, OP.SPRITESYSTEMALIGN.BOTTOM_CENTER);
+
+    CoffeePotSelector.selectedSprite = OP.spriteSystem.Add(spriteSystem);
+    CoffeePotSelector.selectedSprite.Position.Set(200 + 3 * 300, 300);
+    CoffeePotSelector.selectedSprite.Scale.Set(0.75, 0.75);
+    CoffeePotSelector.selectedSprite.id = -1;
+    CoffeePotSelector.selectedName = global.inventory.cup.type;
+    OP.spriteSystem.SetSprite(CoffeePotSelector.selectedSprite, global.inventory.cup.id + 3);
 
     CoffeePotSelector.onExit = function() {
       if(!this.selectedSprite) return 1;
@@ -50,17 +59,10 @@ module.exports = function(data) {
     };
 
     CoffeePotSelector.onSelected = function(id) {
-      if(this.selectedSprite) {
-        OP.spriteSystem.Remove(spriteSystem, this.selectedSprite);
-      }
-      this.selectedSprite = OP.spriteSystem.Add(spriteSystem);
-      this.selectedSprite.Position.Set(200 + 3 * 300, 300);
-      this.selectedSprite.Scale.Set(0.75, 0.75);
       this.selectedSprite.id = id;
-      console.log('CUP SEL', global.inventory.cup.id);
-      this.selectedName = this.options[id].name + ' ' + global.inventory.cup.type + ' Coffee';
+      this.selectedName = global.inventory.cup.type + ' ' + this.options[id].name + ' Coffee';
+      OP.spriteSystem.SetSprite(this.selectedSprite, global.inventory.cup.id);
 
-      OP.spriteSystem.SetSprite(this.selectedSprite, global.inventory.cup);
       MixPanel.Track('Selected Cup', { size: id });
 
       OP.spriteSystem.SetSprite(this.selectors[this.selected], 1);
@@ -70,18 +72,6 @@ module.exports = function(data) {
     CoffeePotSelector.onDraw = function() {
         OP.spriteSystem.Render(spriteSystem, this.camera);
     }
-
-    // if(global.inventory && global.inventory.cup && global.inventory.cup.coffee) {
-    //     var id = global.inventory.cup.coffee.id;
-    //     CoffeePotSelector.selectedSprite = OP.spriteSystem.Add(spriteSystem);
-    //     CoffeePotSelector.selectedSprite.Position.Set(200 + 3 * 300, 300);
-    //     CoffeePotSelector.selectedSprite.Scale.Set(0.75, 0.75);
-    //     CoffeePotSelector.selectedSprite.id = id;
-    //     CoffeePotSelector.selectedName = CoffeePotSelector.options[id].name + ' ' + global.inventory.cup.type + ' Coffee';
-    //
-    //     OP.spriteSystem.SetSprite(CoffeePotSelector.selectedSprite, global.inventory.cup);
-    //     MixPanel.Track('Selected Cup', { size: id });
-    // }
 
     return CoffeePotSelector;
 }
