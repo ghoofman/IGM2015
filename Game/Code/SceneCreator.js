@@ -5,8 +5,7 @@ var OP = require('OPengine').OP,
  		Player = require('./Utils/Player.js'),
  		SceneLoader = require('./Utils/SceneLoader.js'),
 	 	Camera = require('./Utils/Camera.js'),
- 		MixPanel = require('./Utils/MixPanel.js'),
-		Coffee = require('./Games/Coffee.js');
+ 		MixPanel = require('./Utils/MixPanel.js');
 
 function SceneCreator(file, callingId) {
 		this.Data.file = file;
@@ -27,6 +26,8 @@ SceneCreator.prototype = {
 
 				// Setup the font manager
 				this.Data.fontManager = OP.fontManager.Setup('pixel.opf');
+				this.Data.fontManager24 = OP.fontManager.Setup('pixel24.opf');
+				this.Data.fontManager36 = OP.fontManager.Setup('pixel36.opf');
 
 
 				// TODO: move to the scene loader
@@ -72,10 +73,43 @@ SceneCreator.prototype = {
 				// The free flight camera
 				this.Data.camera = new Camera(this.Data.scene.limits);
 
+				var sheet = 'BaseSelector';
+				OP.cman.Load(sheet + '.opss');
+
+				var sprites = [];
+				sprites.push(OP.cman.Get(sheet + '/Black50'));
+				sprites.push(OP.cman.Get(sheet + '/Dollar'));
+
+			  	this.Data.size = OP.render.Size();
+				this.spriteSystem = OP.spriteSystem.Create(sprites, 6, OP.SPRITESYSTEMALIGN.CENTER);
+				this.screenCamera = OP.cam.Ortho(0, 0, 10, 0, 0, 0, 0, 1, 0, 0.1, 20.0, 0, this.Data.size.ScaledWidth, 0, this.Data.size.ScaledHeight);
+
+				this.Data.bgSprite = null;
+
+				this.Data.dollar = OP.spriteSystem.Add(this.spriteSystem);
+				this.Data.dollar.Position.Set(100, 50);
+				OP.spriteSystem.SetSprite(this.Data.dollar, 1);
+
+
 				return 1;
 		},
 
 		update: function(timer) {
+
+			if(global.game.target != global.game.cash) {
+				var diff = global.game.target - global.game.cash;
+				diff *= timer.elapsed / 500.0;
+				if(Math.abs(diff) < 0.001) {
+					global.game.cash = global.game.target;
+				} else {
+					global.game.cash += diff;
+				}
+			}
+
+			for(var i = 0; i < this.Data.scene.characters.length; i++) {
+				this.Data.scene.characters[i].Update(timer);
+			}
+
 				if(this.Data.game) {
 					if(this.Data.game.Update(timer, this.Data.gamePad0)) {
 						this.Data.game.Exit();
@@ -108,26 +142,66 @@ SceneCreator.prototype = {
 				this.Data.camera.Update(timer);
 				this.Data.camera.LookAt(this.Data.player);
 
-				// Activation Key was pressed: check for collisions
 				var collisions = this.Data.scene.Collisions(this.Data.player);
+				var name = this.Data.Name;
 				this.Data.Name = null;
 				for(var i = 0; i < collisions.length; i++) {
-						if(collisions[i].name) {
-								this.Data.Name = collisions[i].name;
-								break;
+					if(collisions[i].name) {
+						this.Data.Name = collisions[i].name;
+						this.Data.Required = '';
+
+						if(collisions[i].type == 'game' && collisions[i].data && collisions[i].data.game) {
+							var game = require('./Games/' + collisions[i].data.game);
+							if(game.requires) {
+								this.Data.Required = game.requires();
+							}
+						} else if(collisions[i].type == 'door' && collisions[i].data && collisions[i].data.require) {
+							if(collisions[i].data.require.job) {
+								if(global.job != collisions[i].data.require.job) {
+									this.Data.Required = {
+										text: collisions[i].data.require.text
+									};
+								}
+							}
 						}
+						break;
+					}
+				}
+
+				// if(this.Data.Name && this.Data.Name != name) {
+				// 	// Different name
+				// }
+
+				if(this.Data.Name && !this.Data.bgSprite) {
+					this.Data.bgSprite = OP.spriteSystem.Add(this.spriteSystem);
+					this.Data.bgSprite.Position.Set(this.Data.size.ScaledWidth / 2.0, this.Data.size.ScaledHeight - 80);
+					this.Data.bgSprite.Scale.Set(200, 1);
+				}
+
+				if(!this.Data.Name && this.Data.bgSprite) {
+					OP.spriteSystem.Remove(this.spriteSystem, this.Data.bgSprite);
+					this.Data.bgSprite = null;
+				}
+
+				if(!this.Data.Name) {
+					this.Data.Required = '';
 				}
 
 				if(OP.keyboard.WasPressed(OP.KEY.E) || this.Data.gamePad0.WasPressed(OP.gamePad.Y)) {
 						for(var i = 0; i < collisions.length; i++) {
 								if(collisions[i].type == 'door') {
-										MixPanel.Track("Opened Door in " + this.Data.scene.data.name, { state: this.Data.scene.data.name, id: collisions[i].id });
-										var SceneCreator = require('./SceneCreator.js');
-										OPgameState.Change(new SceneCreator(collisions[i].data.file, collisions[i].id));
-										return 0;
+									if(collisions[i].data && collisions[i].data.require && collisions[i].data.require.job) {
+										if(global.job != collisions[i].data.require.job) {
+											continue;
+										}
+									}
+									MixPanel.Track("Opened Door in " + this.Data.scene.data.name, { state: this.Data.scene.data.name, id: collisions[i].id });
+									var SceneCreator = require('./SceneCreator.js');
+									OPgameState.Change(new SceneCreator(collisions[i].data.file, collisions[i].id));
+									return 0;
 								} else if(collisions[i].type == 'game') {
 										var game = require('./Games/' + collisions[i].data.game);
-										this.Data.game = game(collisions[i].data);
+										this.Data.game = game();
 								} else if(collisions[i].type == 'character') {
 									if(collisions[i].character) {
 										this.Data.game = collisions[i].character.Interact();
@@ -138,6 +212,11 @@ SceneCreator.prototype = {
 										this.Data.game = this.Data.scene.characters[0].Interact();
 										continue;
 									}
+								}  else if(collisions[i].type == 'registerCustomer') {
+									if(this.Data.scene.characters && this.Data.scene.characters[1]) {
+										this.Data.game = this.Data.scene.characters[1].Interact();
+										continue;
+									}
 								} else if(collisions[i].type == 'trashcan') {
 									if(!global.inventory || !global.inventory.cup) continue;
 									var self = this;
@@ -146,10 +225,12 @@ SceneCreator.prototype = {
 											text: collisions[i].data.options[0],
 											select: function() {
 												if(global.inventory && global.inventory.cup) {
-													global.game.cash -= 0.25;
+													global.game.target = global.game.cash - 0.25;
 													if(global.inventory.cup.coffee) {
-														global.game.cash -= 0.25;
+														global.game.target = global.game.cash - 0.50;
 													}
+													global.inventory.Remove(global.inventory.cup.sheet, global.inventory.cup.item);
+
 													global.inventory.cup = null;
 												}
 												self.Data.option = null;
@@ -199,19 +280,39 @@ SceneCreator.prototype = {
 
 
 
+
 				if(this.Data.game) {
 					this.Data.game.Draw();
 				} else {
+					OP.spriteSystem.Render(this.spriteSystem, this.screenCamera);
+
+					if(this.Data.Name) {
 						OP.fontRender.Begin(this.Data.fontManager);
-						this.Data.fontManager.SetAlign(OP.FONTALIGN.LEFT);
-		    		OP.fontRender.Color(50.0 / 255.0, 165.0 / 255.0, 84.0 / 255.0);
-						OP.fontRender('$' + global.game.cash.toFixed(2), 50, 50);
-						if(this.Data.Name) {
-								this.Data.fontManager.SetAlign(OP.FONTALIGN.CENTER);
-			      		OP.fontRender.Color(0.9, 0.9, 0.9);
-					    	OP.fontRender(this.Data.Name, 1280 / 2.0, 50);
-						}
+						this.Data.fontManager.SetAlign(OP.FONTALIGN.CENTER);
+		      			OP.fontRender.Color(0.9, 0.9, 0.9);
+				    	OP.fontRender(this.Data.Name, 1280 / 2.0, 50);
 						OP.fontRender.End();
+					}
+
+					OP.fontRender.Begin(this.Data.fontManager36);
+					this.Data.fontManager36.SetAlign(OP.FONTALIGN.CENTER);
+					OP.fontRender.Color(0.9, 0.9, 0.9);
+					OP.fontRender('$' + global.game.cash.toFixed(2), 100, this.Data.size.ScaledHeight - 75);
+					OP.fontRender.End();
+
+					if(this.Data.Required) {
+						OP.fontRender.Begin(this.Data.fontManager24);
+						this.Data.fontManager24.SetAlign(OP.FONTALIGN.CENTER);
+						OP.fontRender.Color(0.9, 0, 0);
+						OP.fontRender('[ ' + this.Data.Required.text + ' ]', 1280 / 2.0, 100);
+						OP.fontRender.End();
+
+					}
+
+					if(global.inventory) {
+						global.inventory.Draw();
+					}
+
 				}
 
 

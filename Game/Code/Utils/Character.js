@@ -3,9 +3,9 @@ var BuildVoxelMesh = require('./BuildVoxelMesh.js');
 var Talk = require('./Talk.js');
 var fs = require('fs');
 
-function Character(file, scale, scene, material, start) {
+function Character(json, scale, scene, material) {
 
-  var data = JSON.parse(fs.readFileSync(__dirname + '/../Scenes/' + file, 'utf8'));
+  var data = JSON.parse(fs.readFileSync(__dirname + '/../Scenes/' + json.file, 'utf8'));
 
   this.scale = scale || 1.0;
   this.manager = OP.physXController.CreateManager(scene);
@@ -13,7 +13,7 @@ function Character(file, scale, scene, material, start) {
   this.model = OP.model.Create(this.mesh);
   this.controller = OP.physXController.Create(this.manager, material, this.mesh.voxelData.size.y * scale * 2.0, this.mesh.voxelData.size.x * scale * 0.75);
 
-  start = start || [ -20, 0, 40 ];
+  start = json.offset || [ -20, 0, 40 ];
 
   OP.physXController.SetFootPos(this.controller, start[0], start[1], start[2]);
 
@@ -37,10 +37,16 @@ function Character(file, scale, scene, material, start) {
         type: 'character',
         id: coll.id || 0,
         data: coll.data || null,
-        name: coll.name || 'Frank',
+        name: coll.name || data.name,
         character: this
       }
   ];
+
+  if(data.AI) {
+      var ai = require('../' + data.AI);
+      this.AI = new ai(this);
+      console.log(json);
+  }
 }
 
 Character.prototype = {
@@ -51,14 +57,14 @@ Character.prototype = {
     vec3: null,
     vec3_1: null,
     move: [ 0, 0, 0 ],
-    rotate: 3.0,
+    rotate: 0.0,
     FootPos: {
       x: 0, y: 0, z: 0
     },
 
     Update: function(timer) {
         // TODO: fill with AI
-
+        this.AI && this.AI.Update(timer);
     },
 
     Move: function(timer) {
@@ -80,9 +86,9 @@ Character.prototype = {
         this.mat4.SetTranslate(this.FootPos.x, this.FootPos.y, this.FootPos.z);
 
         var collisions = [];
-		    if(OP.physX.TransformBoxColliding(this.mat4, this.colliders[0].shape, this.vec3, this.vec3_1)) {
+	    if(OP.physX.TransformBoxColliding(this.mat4, this.colliders[0].shape, this.vec3, this.vec3_1)) {
             collisions.push(this.colliders[0]);
-		    }
+	    }
 
         return collisions;
     },
@@ -103,48 +109,9 @@ Character.prototype = {
     },
 
     Interact: function() {
-
-
-        if(this.receivedCoffee) {
-            return new Talk(this, "I'm all set for now. Thanks.");
+        if(this.AI) {
+            return this.AI.Interact();
         }
-
-        if(global.inventory
-            && global.inventory.cup
-              && global.inventory.cup.coffee
-              && global.inventory.cup.type == 'Tall'
-              && global.inventory.cup.coffee.type == 'Bold') {
-            global.inventory.cup = null;
-        	global.game.cash += 2;
-            this.receivedCoffee = true;
-            if(!this.talked) {
-        	       global.game.cash += 2;
-                   return new Talk(this, 'Dude! How did you know? You psychic?', [ {
-                       text: "Shhh don't tell anyone"
-                   }, { text: "I just know these things" } ]);
-            }
-            return new Talk(this, 'Thanks bro-ski');
-        }
-
-        if(global.inventory
-            && global.inventory.cup
-              && global.inventory.cup.coffee
-              && (global.inventory.cup.type != 'Tall'
-                || global.inventory.cup.coffee.type != 'Bold')) {
-
-                if(this.talked) {
-                    return new Talk(this, 'Not what I asked for... I want a Tall Bold Coffee.');
-                } else {
-                    this.talked = true;
-                    return new Talk(this, 'I want a Tall Bold Coffee... Not this...');
-                }
-        }
-
-        this.talked = true;
-
-        return new Talk(this, 'I want a Tall Bold Coffee. Right Now', [ {
-            text: 'You got it'
-        }, { text: "Can't do that right now" } ]);
 
         return null;
     }

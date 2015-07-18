@@ -2,12 +2,35 @@ var OP = require('OPengine').OP;
 var MixPanel = require('../Utils/MixPanel.js');
 var BaseSelector = require('./BaseSelector.js');
 
+function requires() {
 
-module.exports = function(data) {
-    if(!global.inventory || global.inventory.cup == undefined || global.inventory.cup == null) return null;
+    if(!global.inventory ||
+        global.inventory.cup == undefined ||
+        global.inventory.cup == null) {
+        return {
+            text: 'Need a cup'
+        };
+    }
 
     // Cup has already been filled
-    if(global.inventory && global.inventory.cup && global.inventory.cup.coffee) return null;
+    if(global.inventory &&
+        global.inventory.cup &&
+        global.inventory.cup.coffee) {
+
+        return {
+            text: 'Need an empty cup'
+        };
+    }
+
+    return null;
+
+}
+
+module.exports = function(data) {
+
+    var req = requires();
+
+    if(req != null) return;
 
     var CoffeePotSelector = new BaseSelector('Coffee', 'CoffeeSelector', [
         {
@@ -30,6 +53,12 @@ module.exports = function(data) {
         }
     ]);
 
+    var filled = [
+        'CupTallBlack-iso',
+        'CupGrandeBlack-iso',
+        'CupVentiBlack-iso'
+    ]
+
     var sprites = [
         OP.cman.Get('CoffeeSelector/CupTallBlack-iso'),
         OP.cman.Get('CoffeeSelector/CupGrandeBlack-iso'),
@@ -50,11 +79,19 @@ module.exports = function(data) {
 
     CoffeePotSelector.onExit = function() {
       if(!this.selectedSprite) return 1;
-      if(!global.inventory) global.inventory = {};
-      global.inventory.cup.coffee = {
-          id: this.selectedSprite.id,
-          type: this.options[this.selectedSprite.id].name
-      }
+      //if(!global.inventory) global.inventory = {};
+      if(this.selectedSprite.id > -1){
+          global.inventory.Remove(global.inventory.cup.sheet, global.inventory.cup.item);
+
+          global.inventory.Add('CoffeeSelector', filled[global.inventory.cup.id]);
+          global.inventory.cup.sheet = 'CoffeeSelector';
+          global.inventory.cup.item = filled[global.inventory.cup.id];
+
+          global.inventory.cup.coffee = {
+              id: this.selectedSprite.id,
+              type: this.options[this.selectedSprite.id].name
+          }
+        }
       return 1;
     };
 
@@ -75,3 +112,5 @@ module.exports = function(data) {
 
     return CoffeePotSelector;
 }
+
+module.exports.requires = requires;

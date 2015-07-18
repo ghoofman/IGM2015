@@ -1,5 +1,6 @@
 {
   "name" : "Frank",
   "file" : "PersonStreet.qb",
+  "AI" : "People/Frank.js",
   "offset" : [ 45, 0, 50 ]
 }

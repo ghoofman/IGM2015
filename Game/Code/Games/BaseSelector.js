@@ -16,13 +16,19 @@ function BaseSelector(name, optionSheet, options) {
   selectorSprites.push(OP.cman.Get(sheet + '/SelectorOff'));
   selectorSprites.push(OP.cman.Get(sheet + '/SelectorPush'));
   selectorSprites.push(OP.cman.Get(sheet + '/SelectorTitleBackground'));
+  selectorSprites.push(OP.cman.Get(sheet + '/BackButtonOff'));
 
   this.spriteSystem = OP.spriteSystem.Create(selectorSprites, 6, OP.SPRITESYSTEMALIGN.CENTER);
 
-  var titleBg = OP.spriteSystem.Add(this.spriteSystem);
-  titleBg.Position.Set(size.ScaledWidth / 2.0, size.ScaledHeight - 90);
-  titleBg.Scale.Set(1000, 0.25);
-  OP.spriteSystem.SetSprite(titleBg, 3);
+    var titleBg = OP.spriteSystem.Add(this.spriteSystem);
+    titleBg.Position.Set(size.ScaledWidth / 2.0, size.ScaledHeight - 90);
+    titleBg.Scale.Set(1000, 0.25);
+    OP.spriteSystem.SetSprite(titleBg, 3);
+
+
+      var backBtn = OP.spriteSystem.Add(this.spriteSystem);
+      backBtn.Position.Set(75, size.ScaledHeight - 90);
+      OP.spriteSystem.SetSprite(backBtn, 4);
 
   this.selectors = [];
   for(var i  = 0 ; i < 3; i++) {
@@ -134,13 +140,17 @@ BaseSelector.prototype = {
 
             if(this.selectedName) {
                 OP.fontRender.Color(1.0, 1.0, 1.0);
+
+                // OP.fontRender('Result', 200 + 3 * 300, 200);
+
+                // TODO: Move to utility
                 var words = this.selectedName.split(' ');
                 var text = '';
                 var line = 0;
                 for(var i = 0; i < words.length; i++) {
                     var s = text + words[i];
                     if(s.length > 15) {
-                        OP.fontRender(text, 200 + 3 * 300, 450 + line * 50);
+                        OP.fontRender(text, 200 + 3 * 300, 500 + line * 50);
                         line++;
                         text = '';
                     }
@@ -148,7 +158,7 @@ BaseSelector.prototype = {
                     text += words[i] + ' ';
 
                     if(i == words.length - 1) {
-                        OP.fontRender(text, 200 + 3 * 300, 450 + line * 50);
+                        OP.fontRender(text, 200 + 3 * 300, 500 + line * 50);
                     }
                 }
             }
@@ -157,7 +167,7 @@ BaseSelector.prototype = {
     },
 
     Exit: function() {
-
+        OP.spriteSystem.Destroy(this.spriteSystem);
     }
 };
 

@@ -2,10 +2,12 @@ var OP = require('OPengine').OP;
 var OPgameState = require('OPgameState');
 var MixPanel = require('./Utils/MixPanel.js');
 var SceneCreator = require('./SceneCreator.js');
+var Inventory = require('./Utils/Inventory.js');
 
 global.game = {
 	money: 100000,
-	cash: 10
+	cash: 10,
+	target: 10
 };
 
 try {
@@ -35,6 +37,8 @@ try {
 		OP.physX.Debugger();
 
 		MixPanel.Track("Application Initialized");
+
+		global.inventory = new Inventory();
 
 		OPgameState.Change(scene);
 	}

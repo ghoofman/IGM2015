@@ -1,9 +1,11 @@
 var OP = require('OPengine').OP;
 
-function Talk(character, text, options) {
+function Talk(character, text, options, complete) {
 	this.character = character;
 	this.text = text;
 	this.options = options;
+	this.complete = complete;
+
     this.fontManager = OP.fontManager.Setup('pixel.opf');
 	this.background = OP.texture2D.Create(OP.cman.LoadGet('FadedBackground.png'));
 	this.background.Scale.Set(2, 2);
@@ -52,13 +54,14 @@ Talk.prototype = {
 	        }
 	        this.selected = this.selected % this.options.length;
 		}
-		// 
+		//
 	    // if(OP.keyboard.IsDown(OP.KEY.E) || gamepad.IsDown(OP.gamePad.Y)) {
 	    //     OP.spriteSystem.SetSprite(this.btn, 2);
 	    // }
 
         if(OP.keyboard.WasPressed(OP.KEY.ENTER) || OP.keyboard.WasPressed(OP.KEY.E) || gamepad.WasPressed(OP.gamePad.Y)) {
             this.options && this.options[this.selected].select && this.options[this.selected].select();
+			this.complete && this.complete();
         	return 1;
 		}
 

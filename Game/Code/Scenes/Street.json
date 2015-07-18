@@ -96,7 +96,11 @@
             "type" : "door",
             "name" : "Cafe",
             "data" : {
-              "file":  "Scenes/Cafe.json"
+              "file":  "Scenes/Cafe.json",
+              "require" : {
+                  "job" : "barista",
+                  "text" : "Employee key needed"
+              }
             },
             "collide" : false,
             "offset" : [ -40, -20, -50 ],
@@ -107,7 +111,7 @@
     },
     {
       "file" : "Cafe_sidewalk.qb",
-      "offset" : [ 282, 0, 11 ]
+      "offset" : [ 282, 0, -4 ]
     },
     {
       "file" : "Cafe_road.qb",

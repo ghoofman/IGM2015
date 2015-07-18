@@ -52,7 +52,7 @@ SceneLoader.prototype = {
           for(var i = 0; i < scene.characters.length; i++) {
             console.log('CHARACTER', i);
             var chr = scene.characters[i];
-            characters.push(new Character(chr.file, this.scale, this.scene, this.material, chr.offset));
+            characters.push(new Character(chr, this.scale, this.scene, this.material));
           }
         }
 
