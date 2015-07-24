@@ -20,7 +20,10 @@ module.exports = function(data) {
 
     var req = requires();
 
-    if(req != null) return;
+    if(req != null) {
+        global.AudioPlayer.PlayEffect('Audio/Denied.wav');
+        return;
+    }
 
     var CupSelector = new BaseSelector('Cup', 'CoffeeSelector', [
         {
@@ -45,15 +48,14 @@ module.exports = function(data) {
 
     CupSelector.onExit = function() {
       if(!this.selectedSprite) return 1;
-      if(!global.inventory) global.inventory = {};
 
-      global.inventory.Add('CoffeeSelector', this.options[this.selectedSprite.id].sprite);
-      global.inventory.cup = {
+      global.inventory.Set('cup', {
           id: this.selectedSprite.id,
           type: this.options[this.selectedSprite.id].name,
           sheet: 'CoffeeSelector',
           item: this.options[this.selectedSprite.id].sprite
-      }
+      });
+
       return 1;
     };
 

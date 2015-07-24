@@ -45,11 +45,11 @@ Talk.prototype = {
 
 	Update: function(timer, gamepad) {
 		if(this.options) {
-	        if(OP.keyboard.WasPressed(OP.KEY.W) || gamepad.WasPressed(OP.gamePad.DPAD_UP)) {
+	        if(OP.keyboard.WasPressed(OP.KEY.W) || gamepad.WasPressed(OP.gamePad.DPAD_UP) || gamepad.LeftThumbNowUp()) {
 	            this.selected--;
 	            if(this.selected < 0) this.selected = this.options.length - 1;
 	        }
-	        if(OP.keyboard.WasPressed(OP.KEY.S) || gamepad.WasPressed(OP.gamePad.DPAD_DOWN)) {
+	        if(OP.keyboard.WasPressed(OP.KEY.S) || gamepad.WasPressed(OP.gamePad.DPAD_DOWN) || gamepad.LeftThumbNowDown()) {
 	            this.selected++;
 	        }
 	        this.selected = this.selected % this.options.length;
@@ -60,14 +60,27 @@ Talk.prototype = {
 	    // }
 
         if(OP.keyboard.WasPressed(OP.KEY.ENTER) || OP.keyboard.WasPressed(OP.KEY.E) || gamepad.WasPressed(OP.gamePad.Y)) {
-            this.options && this.options[this.selected].select && this.options[this.selected].select();
-			this.complete && this.complete();
-        	return 1;
+
+			if(this.options && this.options[this.selected].select) {
+				var result = this.options[this.selected].select();
+				this.complete && this.complete();
+				return {
+					result: 1,
+					next: result
+				};
+			} else {
+				this.complete && this.complete();
+				return {
+					result: 1
+				};
+			}
 		}
 
         OP.spriteSystem.Update(this.spriteSystem, timer);
 
-		return 0;
+		return {
+			result: 0
+		};
 	},
 
 	Draw: function() {
@@ -78,16 +91,18 @@ Talk.prototype = {
 
         this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
       	OP.fontRender.Begin(this.fontManager);
-      	OP.fontRender(this.text, 250, 475);
+		var offset = 0;
+		if(this.options && this.options.length == 3) offset = 25;
+      	OP.fontRender(this.text, 250, 475 - offset);
 		if(this.options) {
 	        for(var i = 0; i < this.options.length; i++) {
 	          if(this.selected == i) {
 	    		OP.fontRender.Color(0.5,1.0,0.5);
-	  		  	OP.fontRender('<', 265, 525 + i * 50);
+	  		  	OP.fontRender('<', 265, 525 + i * 50 - offset);
 	          } else {
 	    		OP.fontRender.Color(1,1,1);
 	          }
-			  OP.fontRender(this.options[i].text, 300, 525 + i * 50);
+			  OP.fontRender(this.options[i].text, 300, 525 + i * 50 - offset);
 	        }
 		}
       	OP.fontRender.End();

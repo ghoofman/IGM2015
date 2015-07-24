@@ -71,11 +71,18 @@ BaseSelector.prototype = {
     Update: function(timer, gamepad) {
 
         if(OP.keyboard.WasPressed(OP.KEY.Q) || gamepad.WasPressed(OP.gamePad.BACK) || gamepad.WasPressed(OP.gamePad.B)) {
-            if(!this.selectedSprite) return 1;
+            global.AudioPlayer.PlayEffect('Audio/Close.wav');
+            if(!this.selectedSprite) {
+                return {
+                    result: 1
+                };
+            }
 
             this.onExit && this.onExit();
 
-            return 1;
+            return  {
+                result: 1
+            };
         }
 
         if(this.canSelect && OP.keyboard.WasPressed(OP.KEY.A) || OP.keyboard.WasPressed(OP.KEY.LEFT) || gamepad.WasPressed(OP.gamePad.DPAD_LEFT) || gamepad.LeftThumbNowLeft()) {
@@ -102,13 +109,18 @@ BaseSelector.prototype = {
 
         if(this.canSelect && OP.keyboard.WasPressed(OP.KEY.E) || gamepad.WasPressed(OP.gamePad.Y)) {
             this.onSelected && this.onSelected(this.selected);
+            global.AudioPlayer.PlayEffect('Audio/Selection.wav');
+        } else if(!this.canSelect && OP.keyboard.WasPressed(OP.KEY.E) || gamepad.WasPressed(OP.gamePad.Y)) {
+            global.AudioPlayer.PlayEffect('Audio/Denied.wav');
         }
 
 
         OP.spriteSystem.Update(this.optionsSpriteSystem, timer);
         OP.spriteSystem.Update(this.spriteSystem, timer);
 
-        return 0;
+        return {
+            result: 0
+        };
     },
 
     Draw: function() {

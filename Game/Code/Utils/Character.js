@@ -3,50 +3,28 @@ var BuildVoxelMesh = require('./BuildVoxelMesh.js');
 var Talk = require('./Talk.js');
 var fs = require('fs');
 
-function Character(json, scale, scene, material) {
+function Character(json, scale, physXScene, material, scene) {
 
-  var data = JSON.parse(fs.readFileSync(__dirname + '/../Scenes/' + json.file, 'utf8'));
+    this.json = json;
+    this.data = JSON.parse(fs.readFileSync(__dirname + '/../Scenes/' + json.file, 'utf8'));
 
-  this.scale = scale || 1.0;
-  this.manager = OP.physXController.CreateManager(scene);
-  this.mesh = BuildVoxelMesh(data.file);
-  this.model = OP.model.Create(this.mesh);
-  this.controller = OP.physXController.Create(this.manager, material, this.mesh.voxelData.size.y * scale * 2.0, this.mesh.voxelData.size.x * scale * 0.75);
+    this.scale = scale || 1.0;
+    this.physXScene = physXScene;
+    this.scene = scene;
+    this.mesh = BuildVoxelMesh(this.data.file);
+    this.model = OP.model.Create(this.mesh);
+    this.material = material;
 
-  start = json.offset || [ -20, 0, 40 ];
+    this.vec3 = OP.vec3.Create(0,0,0);
+    this.vec3_1 = OP.vec3.Create(0,0,0);
+    this.mat4 = new OP.mat4();
 
-  OP.physXController.SetFootPos(this.controller, start[0], start[1], start[2]);
+    if(this.data.AI) {
+        var ai = require('../' + this.data.AI);
+        this.AI = new ai(this);
+        console.log(this.json);
+    }
 
-  this.vec3 = OP.vec3.Create(0,0,0);
-  this.vec3_1 = OP.vec3.Create(0,0,0);
-  this.mat4 = new OP.mat4();
-
-  this.material = OP.physX.CreateMaterial(0.8, 0.8, 0.6);
-
-  this.vec3.Set(20 * scale, 20 * scale, 20 * scale);
-  var shape = OP.physX.AddBoxShape(this.controller.actor, this.material, this.vec3);
-  OP.physX.SetSimulation(shape, false);
-  OP.physX.SetTrigger(shape, true);
-  OP.physX.SetSceneQuery(shape, true);
-
-  var coll = {};
-  this.colliders = [
-      {
-        actor: this.controller.actor,
-        shape: shape,
-        type: 'character',
-        id: coll.id || 0,
-        data: coll.data || null,
-        name: coll.name || data.name,
-        character: this
-      }
-  ];
-
-  if(data.AI) {
-      var ai = require('../' + data.AI);
-      this.AI = new ai(this);
-      console.log(json);
-  }
 }
 
 Character.prototype = {
@@ -62,12 +40,49 @@ Character.prototype = {
       x: 0, y: 0, z: 0
     },
 
-    Update: function(timer) {
+    Setup: function(start) {
+        console.log('------------');
+        console.log('------------');
+        console.log('CHARACTER SETUP');
+        console.log('------------');
+        console.log('------------');
+        this.alive = true;
+        this.dead = false;
+
+        this.manager = OP.physXController.CreateManager(this.physXScene);
+        this.controller = OP.physXController.Create(this.manager, this.material, this.mesh.voxelData.size.y * this.scale * 2.0, this.mesh.voxelData.size.x * this.scale * 0.75);
+
+        var start = start || this.json.offset || [ -20, 0, 40 ];
+
+        OP.physXController.SetFootPos(this.controller, start[0], start[1], start[2]);
+
+        this.vec3.Set(20 * this.scale, 20 * this.scale, 20 * this.scale);
+        var shape = OP.physX.AddBoxShape(this.controller.actor, this.material, this.vec3);
+        OP.physX.SetSimulation(shape, false);
+        OP.physX.SetTrigger(shape, true);
+        OP.physX.SetSceneQuery(shape, true);
+
+        var coll = {};
+        this.colliders = [
+            {
+              actor: this.controller.actor,
+              shape: shape,
+              type: 'character',
+              id: coll.id || 0,
+              data: coll.data || null,
+              name: coll.name || this.data.name,
+              character: this
+            }
+        ];
+    },
+
+    Update: function(timer, scene) {
         // TODO: fill with AI
-        this.AI && this.AI.Update(timer);
+        this.AI && this.AI.Update(timer, scene);
     },
 
     Move: function(timer) {
+        if(!this.alive) return;
         this.vec3.Set(this.move[0], this.move[1], this.move[2]);
     		OP.physXController.Move(this.controller, this.vec3, timer);
         this.move = [ 0, -0.98 * 4, 0 ];
@@ -75,6 +90,7 @@ Character.prototype = {
     },
 
     Collisions: function(player) {
+        if(!this.alive) return [];
         var target = [
     			player.FootPos.x,
     			player.FootPos.y + player.mesh.voxelData.size.y / 2.0,
@@ -94,6 +110,7 @@ Character.prototype = {
     },
 
     Draw: function(material, camera) {
+        if(this.dead || !this.alive) return;
       	this.model.world.SetScl(this.scale);
       	this.model.world.RotY(this.rotate);
       	this.model.world.Translate(this.FootPos.x, this.FootPos.y + Math.floor(this.mesh.voxelData.size.y * this.scale), this.FootPos.z);
@@ -101,6 +118,7 @@ Character.prototype = {
     },
 
     DrawPos: function(pos, rot, scl, material, camera) {
+        if(this.dead || !this.alive) return;
       	this.model.world.SetScl(scl);
       	this.model.world.RotX(rot[0]);
       	this.model.world.RotY(rot[1]);
@@ -109,6 +127,8 @@ Character.prototype = {
     },
 
     Interact: function() {
+        if(this.dead || !this.alive) return;
+
         if(this.AI) {
             return this.AI.Interact();
         }

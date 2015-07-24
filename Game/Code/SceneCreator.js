@@ -5,7 +5,8 @@ var OP = require('OPengine').OP,
  		Player = require('./Utils/Player.js'),
  		SceneLoader = require('./Utils/SceneLoader.js'),
 	 	Camera = require('./Utils/Camera.js'),
- 		MixPanel = require('./Utils/MixPanel.js');
+ 		MixPanel = require('./Utils/MixPanel.js'),
+		DateAndTime = require('date-and-time');
 
 function SceneCreator(file, callingId) {
 		this.Data.file = file;
@@ -28,6 +29,7 @@ SceneCreator.prototype = {
 				this.Data.fontManager = OP.fontManager.Setup('pixel.opf');
 				this.Data.fontManager24 = OP.fontManager.Setup('pixel24.opf');
 				this.Data.fontManager36 = OP.fontManager.Setup('pixel36.opf');
+				this.Data.fontManagerUI = OP.fontManager.Setup('ui.opf');
 
 
 				// TODO: move to the scene loader
@@ -64,6 +66,8 @@ SceneCreator.prototype = {
 				// Create the Player
 				this.Data.player = new Player(this.Data.scene.scale, this.Data.physXScene, this.Data.physXmaterial, start);
 
+				global.player = this.Data.player;
+
 				// The basic effect to use for all rendering (for now)
 				this.Data.effect = OP.effect.Gen('Colored3D.vert', 'Colored.frag', OP.ATTR.POSITION | OP.ATTR.NORMAL | OP.ATTR.COLOR, 'Voxel Shader', this.Data.player.mesh.VertexSize);
 
@@ -90,11 +94,24 @@ SceneCreator.prototype = {
 				this.Data.dollar.Position.Set(100, 50);
 				OP.spriteSystem.SetSprite(this.Data.dollar, 1);
 
+				global.inventory.Add('diploma', {
+					sheet: 'CoffeeSelector',
+					item: 'Diploma-iso'
+				});
 
 				return 1;
 		},
 
 		update: function(timer) {
+
+			var beforeAddingHour = global.time.getHours();
+			global.time = DateAndTime.addMilliseconds(global.time, timer.elapsed * global.timeScale);
+			var afterAddingHour = global.time.getHours();
+
+			if(beforeAddingHour == 23 && afterAddingHour == 0) {
+				var game = require('./Games/EndOfDay.js');
+				this.Data.game = game();
+			}
 
 			if(global.game.target != global.game.cash) {
 				var diff = global.game.target - global.game.cash;
@@ -107,20 +124,27 @@ SceneCreator.prototype = {
 			}
 
 			for(var i = 0; i < this.Data.scene.characters.length; i++) {
-				this.Data.scene.characters[i].Update(timer);
+				this.Data.scene.characters[i].Update(timer, this.Data.scene);
 			}
 
 				if(this.Data.game) {
-					if(this.Data.game.Update(timer, this.Data.gamePad0)) {
+					var result = this.Data.game.Update(timer, this.Data.gamePad0);
+					if(result.result) {
 						this.Data.game.Exit();
-						this.Data.game = null;
+						this.Data.game = result.next;
 					}
 					return;
 				}
+
 				if(this.Data.option) {
 						// Getting a selection
 						this.Data.option.Update(this.Data.gamePad0);
 						return;
+				}
+
+				if (this.Data.gamePad0.WasPressed(OP.gamePad.BACK) || OP.keyboard.WasPressed(OP.KEY.Q))  {
+					var game = require('./Games/InventoryViewer.js');
+					this.Data.game = game();
 				}
 
 				// Toggle between driving the character and driving the camera
@@ -157,20 +181,32 @@ SceneCreator.prototype = {
 							}
 						} else if(collisions[i].type == 'door' && collisions[i].data && collisions[i].data.require) {
 							if(collisions[i].data.require.job) {
-								if(global.job != collisions[i].data.require.job) {
+								if(!global.job || global.job.title != collisions[i].data.require.job) {
 									this.Data.Required = {
 										text: collisions[i].data.require.text
 									};
 								}
+							} else if(collisions[i].data.require.item) {
+								if(!global.inventory.Has(collisions[i].data.require.item)) {
+									this.Data.Required = {
+										text: collisions[i].data.require.text
+									};
+								}
+							} else if(collisions[i].data.require && collisions[i].data.require.text) {
+								this.Data.Required = {
+									text: collisions[i].data.require.text
+								};
 							}
+						} else if(collisions[i].type == 'auto') {
+							var SceneCreator = require('./SceneCreator.js');
+							OPgameState.Change(new SceneCreator(collisions[i].data.file, collisions[i].id));
+							return 1;
+						} else if(collisions[i].Entity && collisions[i].Entity.CanInteract) {
+							this.Data.Required = collisions[i].Entity.CanInteract();
 						}
 						break;
 					}
 				}
-
-				// if(this.Data.Name && this.Data.Name != name) {
-				// 	// Different name
-				// }
 
 				if(this.Data.Name && !this.Data.bgSprite) {
 					this.Data.bgSprite = OP.spriteSystem.Add(this.spriteSystem);
@@ -189,49 +225,74 @@ SceneCreator.prototype = {
 
 				if(OP.keyboard.WasPressed(OP.KEY.E) || this.Data.gamePad0.WasPressed(OP.gamePad.Y)) {
 						for(var i = 0; i < collisions.length; i++) {
-								if(collisions[i].type == 'door') {
+
+							switch(collisions[i].type) {
+								case 'door' : {
 									if(collisions[i].data && collisions[i].data.require && collisions[i].data.require.job) {
 										if(global.job != collisions[i].data.require.job) {
+											global.AudioPlayer.PlayEffect('Audio/Denied.wav');
+											continue;
+										}
+									} else if(collisions[i].data && collisions[i].data.require && collisions[i].data.require.item) {
+										if(!global.inventory.Has(collisions[i].data.require.item)) {
+											global.AudioPlayer.PlayEffect('Audio/Denied.wav');
 											continue;
 										}
 									}
-									MixPanel.Track("Opened Door in " + this.Data.scene.data.name, { state: this.Data.scene.data.name, id: collisions[i].id });
-									var SceneCreator = require('./SceneCreator.js');
-									OPgameState.Change(new SceneCreator(collisions[i].data.file, collisions[i].id));
-									return 0;
-								} else if(collisions[i].type == 'game') {
-										var game = require('./Games/' + collisions[i].data.game);
-										this.Data.game = game();
-								} else if(collisions[i].type == 'character') {
+									if(collisions[i].data.file) {
+										global.AudioPlayer.PlayEffect('Audio/Door.wav');
+										MixPanel.Track("Opened Door in " + this.Data.scene.data.name, { state: this.Data.scene.data.name, id: collisions[i].id });
+										var SceneCreator = require('./SceneCreator.js');
+										OPgameState.Change(new SceneCreator(collisions[i].data.file, collisions[i].id));
+										return 1;
+									} else {
+										global.AudioPlayer.PlayEffect('Audio/Denied.wav');
+										continue;
+									}
+								}
+								case 'game' : {
+									if(this.Data.game) continue;
+									console.log('LOADING GAME: ', collisions[i].data.game);
+									var game = require('./Games/' + collisions[i].data.game);
+									this.Data.game = game();
+									continue;
+								}
+								case 'character' : {
+									if(this.Data.game) continue;
 									if(collisions[i].character) {
 										this.Data.game = collisions[i].character.Interact();
 										continue;
 									}
-								} else if(collisions[i].type == 'register') {
+									continue;
+								}
+								case 'register' : {
+									if(this.Data.game) continue;
 									if(this.Data.scene.characters && this.Data.scene.characters[0]) {
-										this.Data.game = this.Data.scene.characters[0].Interact();
+										if(collisions[i].Entity && collisions[i].Entity.Interact) {
+											this.Data.game = collisions[i].Entity.Interact();
+											if(!this.Data.game) {
+												global.AudioPlayer.PlayEffect('Audio/Denied.wav');
+											}
+										}
 										continue;
 									}
-								}  else if(collisions[i].type == 'registerCustomer') {
-									if(this.Data.scene.characters && this.Data.scene.characters[1]) {
-										this.Data.game = this.Data.scene.characters[1].Interact();
-										continue;
-									}
-								} else if(collisions[i].type == 'trashcan') {
-									if(!global.inventory || !global.inventory.cup) continue;
+									continue;
+								}
+								case 'trashcan': {
+									var cup = global.inventory.Get('cup');
+									if(!cup) continue;
+
 									var self = this;
 									var options = [
 										{
 											text: collisions[i].data.options[0],
 											select: function() {
-												if(global.inventory && global.inventory.cup) {
+												if(cup) {
 													global.game.target = global.game.cash - 0.25;
-													if(global.inventory.cup.coffee) {
+													if(cup.coffee) {
 														global.game.target = global.game.cash - 0.50;
 													}
-													global.inventory.Remove(global.inventory.cup.sheet, global.inventory.cup.item);
-
-													global.inventory.cup = null;
+													global.inventory.Remove('cup');
 												}
 												self.Data.option = null;
 											}
@@ -244,21 +305,50 @@ SceneCreator.prototype = {
 										}
 									];
 									this.Data.option = new OptionSelector(collisions[i].data.text, options);
+
+									continue;
 								}
 
-								// if(collisions[i].id == 1) {
-								// 		this.Data.opened = !this.Data.opened;
-								// 		this.Data.option = this.Data.optionSelector2;
-								// }
+								default: {
+									global.AudioPlayer.PlayEffect('Audio/Denied.wav');
+								}
+
+							}
+
 						}
+				}
+
+				if(OP.keyboard.WasPressed(OP.KEY.P)) {
+					global.tasks.push({
+						text: 'Test',
+						complete: function() { return global.inventory.Has('apartment-key'); },
+						time: -1000
+					});
+				}
+
+				if(timer.elapsed < 250) {
+					for(var i = 0; i < global.tasks.length; i++) {
+						if(global.tasks[i].complete()) {
+							global.tasks[i].time += timer.elapsed;
+							if(global.tasks[i].time > 3000) {
+								global.tasks.splice(i, 1);
+							}
+						} else if(global.tasks[i].time < 0) {
+							global.tasks[i].time += timer.elapsed;
+						}
+					}
 				}
 
 				return 0;
 		},
 
 		Update: function(timer) {
-				this.update(timer);
-				this.Render();
+				if(this.update(timer)) {
+					/// Ummm, I'm gonna need you to go ahead come in tomorrow
+					//return 1;
+				} else {
+					this.Render();
+				}
 		},
 
 		Render: function() {
@@ -298,6 +388,8 @@ SceneCreator.prototype = {
 					this.Data.fontManager36.SetAlign(OP.FONTALIGN.CENTER);
 					OP.fontRender.Color(0.9, 0.9, 0.9);
 					OP.fontRender('$' + global.game.cash.toFixed(2), 100, this.Data.size.ScaledHeight - 75);
+					this.Data.fontManager36.SetAlign(OP.FONTALIGN.RIGHT);
+					OP.fontRender(DateAndTime.format(global.time,'h:mm A'), this.Data.size.ScaledWidth - 75, 50);
 					OP.fontRender.End();
 
 					if(this.Data.Required) {
@@ -313,6 +405,36 @@ SceneCreator.prototype = {
 						global.inventory.Draw();
 					}
 
+					OP.fontRender.Begin(this.Data.fontManagerUI);
+					this.Data.fontManagerUI.SetAlign(OP.FONTALIGN.LEFT);
+					OP.fontRender.Color(0.9, 0.9, 0.9);
+					for(var i = 0; i < global.tasks.length; i++) {
+						var pos = 20;
+						if(global.tasks[i].time < 0) {
+							pos += global.tasks[i].time * 0.5;
+						}
+						if(global.tasks[i].complete()) {
+							OP.fontRender.Color(0.0, 0.7, 0.0);
+							OP.fontRender('E', pos, 20 + i * 50);
+						} else {
+							OP.fontRender.Color(0.9, 0.9, 0.9);
+							OP.fontRender('D', pos, 20 + i * 50);
+						}
+					}
+					OP.fontRender.End();
+
+
+					OP.fontRender.Begin(this.Data.fontManager36);
+					this.Data.fontManager36.SetAlign(OP.FONTALIGN.LEFT);
+					for(var i = 0; i < global.tasks.length; i++) {
+						var pos = 20;
+						if(global.tasks[i].time < 0) {
+							pos += global.tasks[i].time * 0.5;
+						}
+						OP.fontRender(global.tasks[i].text, pos + 50, 20 + i * 50);
+					}
+					OP.fontRender.End();
+
 				}
 
 
@@ -320,9 +442,10 @@ SceneCreator.prototype = {
 		},
 
 		Exit: function() {
-				OP.fontManager.Destroy(this.Data.fontManager);
-				OP.physXScene.Destroy(this.Data.physXScene);
-				this.Data.scene.Destroy();
+				//OP.spriteSystem.Destroy(this.spriteSystem);
+				// OP.fontManager.Destroy(this.Data.fontManager);
+				// OP.physXScene.Destroy(this.Data.physXScene);
+				// this.Data.scene.Destroy();
 				return 1;
 		}
 

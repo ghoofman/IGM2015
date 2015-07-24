@@ -1,0 +1,242 @@
+{
+  "name" : "Hallway",
+  "scale" : 1,
+  "planes": {
+    "xNegative" : -300,
+    "xPositive" : 400,
+    "zNegative" : -100,
+    "zPositive" : 50,
+    "yNegative" : 0
+  },
+  "camera": {
+    "zNegative" : -50,
+    "zPositive" : -50,
+	"xNegative" : -150,
+	"xPositive" : 150,
+    "yDistance" : 150
+  },
+  "positions": [
+    {
+      "id": 1,
+      "position": [ -180, 32, -10 ]
+    },
+    {
+      "id": 2,
+      "position": [ 370, 0, -42 ]
+    }
+  ],
+  "characters" : [ ],
+  "models" : [
+    {
+      "file" : "HallwayBackWall.qb",
+      "offset" : [ 0, 32, -15 ],
+      "collision": {
+        "default" : true,
+        "custom" : [
+          {
+            "id" : 1,
+            "type" : "door",
+            "name" : "Apartment 2",
+            "collide" : false,
+            "offset" : [ 5, 0, 0 ],
+            "size" : [ 30, 60, 10],
+            "data": {
+                "require" : {
+                    "Apt1" : "key",
+                    "text" : "Key needed"
+                }
+            }
+          }
+        ]
+      }
+  	},
+    {
+      "file" : "HallwayBackWall.qb",
+      "offset" : [ -198, 32, -15 ],
+      "collision": {
+        "default" : true,
+        "custom" : [
+          {
+            "id" : 1,
+            "name" : "Apartment 3",
+            "type" : "door",
+            "collide" : false,
+            "offset" : [ 5, 0, 0 ],
+            "size" : [ 30, 60, 10],
+            "data" : {
+              "file": "Scenes/Bedroom.json",
+              "require": {
+                  "item": "apartment-key",
+                  "text" : "Key needed"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "file" : "HallwayBackWall.qb",
+      "offset" : [ 198, 32, -15 ],
+      "collision": {
+        "default" : true,
+        "custom" : [
+          {
+            "id" : 1,
+            "type" : "door",
+            "name" : "Apartment 1",
+            "data": {
+                "require" : {
+                    "Apt1" : "key",
+                    "text" : "Key needed"
+                }
+            },
+            "collide" : false,
+            "offset" : [ 5, 0, 0 ],
+            "size" : [ 30, 60, 10]
+          }
+        ]
+      }
+  },
+    {
+      "file" : "HallwayFloor.qb",
+      "offset" : [ 0, 32, 16 ]
+  	},
+      {
+        "file" : "UnderFloor2.qb",
+        "offset" : [ 0, 0, 16 ]
+    	},
+    {
+      "file" : "HallwayFloor.qb",
+      "offset" : [ -198, 32, 16 ]
+    },
+      {
+        "file" : "UnderFloor3.qb",
+        "offset" : [ -198, 0, 16 ]
+    	},
+    {
+      "file" : "HallwayBackStairs.qb",
+      "offset" : [ 320, 0, -18 ]
+    },
+    {
+      "file" : "HallwayBackStairs.qb",
+      "offset" : [ 374, 0, -70 ]
+    },
+    {
+      "file" : "HallwayOtherEnd.qb",
+      "offset" : [ 399, 0, -12 ]
+    },
+    {
+      "file" : "HallwayFloorBlock.qb",
+      "offset" : [ 370, 0, -42 ],
+      "collision" : {
+          "default" : true,
+          "custom" : [
+                {
+                  "id" : 1,
+                  "type" : "auto",
+                  "name" : "Apartment",
+                  "data" : {
+                    "file": "Scenes/Apartment.json"
+                  },
+                  "collide" : false,
+                  "offset" : [ -60, 0, 0 ],
+                  "size" : [ 20, 20, 20]
+                },
+                  {
+                    "id" : 1,
+                    "type" : "door",
+                    "name" : "Apartment",
+                    "data" : {
+                      "file": "Scenes/Apartment.json"
+                    },
+                    "collide" : false,
+                    "offset" : [ 0, 0, 0 ],
+                    "size" : [ 30, 10, 30]
+                  }
+          ]
+      }
+    },
+    {
+      "file" : "HallwayFloorBlock.qb",
+      "offset" : [ 370, 0, 16 ]
+    },
+    {
+      "file" : "HallwayFloor.qb",
+      "offset" : [ 198, 32, 16 ]
+    },
+    {
+      "file" : "HallwayEnd.qb",
+      "offset" : [ -298, 0, 12 ]
+    },
+      {
+        "file" : "UnderFloor.qb",
+        "offset" : [ 198, 0, 16 ]
+    	},
+	{
+		"file" : "Number_2.qb",
+		"offset" : [ 5, 92, -13 ]
+	},
+	{
+		"file" : "Number_3.qb",
+		"offset" : [ -193, 92, -13 ]
+	},
+	{
+		"file" : "Number_1.qb",
+		"offset" : [ 203, 92, -13 ]
+	},
+	{
+		"file" : "Stairs.qb",
+		"offset" : [ 320, 0, 16 ],
+        "collision": {
+          "default" : false,
+          "custom" : [
+            {
+              "collide" : true,
+              "offset" : [ -23, 0, 0 ],
+              "size" : [ 3, 16, 30]
+          },
+            {
+              "collide" : true,
+              "offset" : [ -17, -2, 0 ],
+              "size" : [ 3, 14, 30]
+            },
+              {
+                "collide" : true,
+                "offset" : [ -11, -4, 0 ],
+                "size" : [ 3, 12, 30]
+              },
+                {
+                  "collide" : true,
+                  "offset" : [ -5, -6, 0 ],
+                  "size" : [ 3, 10, 30]
+                },
+                  {
+                    "collide" : true,
+                    "offset" : [ 1, -8, 0 ],
+                    "size" : [ 3, 8, 30]
+                  },
+                    {
+                      "collide" : true,
+                      "offset" : [ 7, -10, 0 ],
+                      "size" : [ 3, 8, 30]
+                    },
+                      {
+                        "collide" : true,
+                        "offset" : [ 11, -12, 0 ],
+                        "size" : [ 3, 6, 30]
+                      },
+                        {
+                          "collide" : true,
+                          "offset" : [ 17, -14, 0 ],
+                          "size" : [ 3, 4, 30]
+                        },
+                          {
+                            "collide" : true,
+                            "offset" : [ 23, -16, 0 ],
+                            "size" : [ 3, 2, 30]
+                        }
+          ]
+        }
+	}
+  ]
+}

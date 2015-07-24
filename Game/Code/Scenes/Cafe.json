@@ -26,11 +26,13 @@
   "characters" : [
     {
       "file": "People/Frank.json",
-      "offset" : [ 15, 0, 50 ]
+      "offset" : [ -15, 0, 50 ],
+      "force" : false
     },
     {
       "file": "People/Charles.json",
-      "offset" : [ 65, 0, -50 ]
+      "offset" : [ 65, 0, -50 ],
+      "force" : true
     }
   ],
   "models" : [
@@ -80,7 +82,8 @@
             "type" : "door",
             "name" : "Street",
             "data" : {
-              "file": "Scenes/Street.json"
+              "file": "Scenes/Street.json",
+              "customer": true
             },
             "collide" : false,
             "offset" : [ 0, 0, 0 ],
@@ -160,7 +163,7 @@
                   "game": "CupSelector"
               },
               "collide" : false,
-              "size" : [ 20, 50, 30 ]
+              "size" : [ 100, 250, 150 ]
             }
           ]
       }
@@ -228,7 +231,10 @@
           },
           {
             "id" : 7,
-            "type" : "registerCustomer",
+            "type" : "register",
+            "data" : {
+                "customer" : true
+            },
             "name" : "Register",
             "collide" : false,
             "size" : [ 20, 40, 20 ],

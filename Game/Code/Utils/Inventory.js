@@ -8,6 +8,7 @@ function Inventory() {
 Inventory.prototype = {
 	systems: [],
 	sheets: {},
+	items: {},
 
 	Update: function(timer) {
 
@@ -30,7 +31,12 @@ Inventory.prototype = {
 		}
 	},
 
-	Add: function(sheet, item) {
+	Add: function(item, data) {
+		if(this.Has(item)) return;
+		
+		this.items[item] = data;
+		var sheet = data.sheet;
+
 		if(this.sheets[sheet]) {
 			OP.spriteSystem.Destroy(this.sheets[sheet].spriteSystem);
 		} else {
@@ -43,21 +49,59 @@ Inventory.prototype = {
 
 		// Ensure it's loaded
 		OP.cman.Load(sheet + '.opss');
-		this.sheets[sheet].sprites.push(OP.cman.Get(sheet + '/' + item));
-		this.sheets[sheet].items.push(item);
+		this.sheets[sheet].sprites.push(OP.cman.Get(sheet + '/' + data.item));
+		this.sheets[sheet].items.push(data.item);
 		this.Rebuild(sheet);
+
+		return this.items[item];
 	},
 
-	Remove: function(sheet, item) {
+	Get: function(item) {
+		return this.items[item];
+	},
+
+	Set: function(item, data) {
+		this.Remove(item);
+		this.Add(item, data);
+	},
+
+	Update: function(item, data) {
+		var r = this.Remove(item);
+		if(r == null || r == undefined) {
+			r = data;
+		} else {
+			for (var key in data) {
+				r[key] = data[key];
+			}
+		}
+		this.Add(item, r);
+	},
+
+	Has: function(item) {
+		return this.items[item] != undefined && this.items[item] != null;
+	},
+
+	Remove: function(item) {
+
+		if(!this.items[item]) return null;
+
+		var data = this.items[item];
+
+		var sheet = this.items[item].sheet;
+
 		if(this.sheets[sheet]) {
 			for(var i = 0; i < this.sheets[sheet].items.length; i++) {
-				if(this.sheets[sheet].items[i] == item) {
+				if(this.sheets[sheet].items[i] == this.items[item].item) {
 					this.sheets[sheet].sprites.splice(i, 1);
 					this.sheets[sheet].items.splice(i, 1);
 				}
 			}
 			this.Rebuild(sheet);
 		}
+
+		this.items[item] = null;
+
+		return data;
 	}
 
 };

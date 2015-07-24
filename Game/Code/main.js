@@ -3,12 +3,35 @@ var OPgameState = require('OPgameState');
 var MixPanel = require('./Utils/MixPanel.js');
 var SceneCreator = require('./SceneCreator.js');
 var Inventory = require('./Utils/Inventory.js');
+var AudioPlayer = require('./Utils/AudioPlayer.js');
 
 global.game = {
 	money: 100000,
 	cash: 10,
-	target: 10
+	target: 10,
+	loans: 10
 };
+
+global.time = new Date();
+global.time.setHours(8);
+global.time.setMinutes(0);
+global.time.setSeconds(0);
+global.time.setMilliseconds(0);
+
+global.timeScale = 10;
+
+global.tasks = [
+	{
+		text: 'Find an Apartment',
+		complete: function() { return global.inventory.Has('apartment-key'); },
+		time: -1000
+	},
+	{
+		text: 'Find a Job',
+		complete: function() { return global.inventory.Has('cafe-key'); },
+		time: -2000
+	}
+];
 
 try {
 
@@ -16,7 +39,11 @@ try {
 		os: 'OSX'
 	});
 
+	global.debug = true;
+	//var scene = new SceneCreator('/Scenes/Bedroom.json', 1);
 	var scene = new SceneCreator('/Scenes/Cafe.json', 1);
+	//var scene = new SceneCreator('/Scenes/Street.json', 1);
+	//var scene = new SceneCreator('/Scenes/Hallway.json', 1);
 
 	if(!process.env.WAYWARD_REPO) {
 		process.env.WAYWARD_REPO = '..';
@@ -36,6 +63,10 @@ try {
 		OP.physX.Init();
 		OP.physX.Debugger();
 
+		OP.fmod.Init();
+		global.AudioPlayer = new AudioPlayer();
+		//global.AudioPlayer.AddBackground('Audio/Background.ogg');
+
 		MixPanel.Track("Application Initialized");
 
 		global.inventory = new Inventory();
@@ -44,6 +75,12 @@ try {
 	}
 
 	function AppUpdate(timer) {
+		global.AudioPlayer.Update(timer);
+
+		if (OP.keyboard.WasReleased(OP.KEY.T)) {
+			global.AudioPlayer.PlayEffect('Audio/pew.wav');
+		}
+
 		OP.keyboard.Update();
 		OP.gamePad.Update();
 

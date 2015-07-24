@@ -52,7 +52,7 @@ SceneLoader.prototype = {
           for(var i = 0; i < scene.characters.length; i++) {
             console.log('CHARACTER', i);
             var chr = scene.characters[i];
-            characters.push(new Character(chr, this.scale, this.scene, this.material));
+            characters.push(new Character(chr, this.scale, this.scene, this.material, this));
           }
         }
 
@@ -124,9 +124,8 @@ SceneLoader.prototype = {
         // Pushes the model up so that the bottom is at 0
       	model.world.SetTranslate(x, mesh.voxelData.size.y + y,z);
 
-      	if(json.scale) {
-      		model.world.Scl(json.scale[0], json.scale[1], json.scale[2]);
-      	}
+        var scale = json.scale || [ 1, 1, 1];
+        model.world.Scl(scale[0], scale[1], scale[2]);
 
       	if(json.rotation) {
       		if(json.rotation[1]) {
@@ -139,10 +138,11 @@ SceneLoader.prototype = {
 
       	this.vec3_0.Set(x, mesh.voxelData.size.y + y, z);
       	var actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0);
+        actor.entities = {};
 
         if(!json.collision || json.collision.default) {
 
-        	this.vec3_0.Set(mesh.voxelData.size.x, mesh.voxelData.size.y, mesh.voxelData.size.z);
+        	this.vec3_0.Set(mesh.voxelData.size.x * scale[0], mesh.voxelData.size.y * scale[1], mesh.voxelData.size.z * scale[2]);
         	var shape = OP.physX.AddBoxShape(actor, this.material, this.vec3_0);
 
       		this.mat4.SetTranslate(0, 0, 0);
@@ -160,9 +160,9 @@ SceneLoader.prototype = {
                 var coll = json.collision.custom[i];
 
                 if(coll.size) {
-                    this.vec3_0.Set(coll.size[0], coll.size[1], coll.size[2]);
+                    this.vec3_0.Set(coll.size[0] * scale[0], coll.size[1] * scale[1], coll.size[2] * scale[2]);
                 } else {
-                    this.vec3_0.Set(mesh.voxelData.size.x, mesh.voxelData.size.y, mesh.voxelData.size.z);
+                    this.vec3_0.Set(mesh.voxelData.size.x * scale[0], mesh.voxelData.size.y * scale[1], mesh.voxelData.size.z * scale[2]);
                 }
 
                 var shape = OP.physX.AddBoxShape(actor, this.material, this.vec3_0);
@@ -170,20 +170,48 @@ SceneLoader.prototype = {
                 if(coll.offset) {
                   this.mat4.SetTranslate(coll.offset[0], coll.offset[1], coll.offset[2]);
                   OP.physX.ShapeSetPose(shape, this.mat4);
-                }
+              } else {
+                  coll.offset = [0,0,0];
+              }
 
                 if(!coll.collide) {
                 	OP.physX.SetSimulation(shape, false);
                 	OP.physX.SetTrigger(shape, true);
                 	OP.physX.SetSceneQuery(shape, true);
-                  colliders.push({
-                      actor: actor,
-                      shape: shape,
-                      type: coll.type || '',
-        							id: coll.id || 0,
-                      data: coll.data || null,
-                      name: coll.name || null
-                  });
+
+                    var collision = {
+                        actor: actor,
+                        shape: shape,
+                        type: coll.type || '',
+          							id: coll.id || 0,
+                        data: coll.data || null,
+                        name: coll.name || null,
+                        position: [x + coll.offset[0], mesh.voxelData.size.y + y + coll.offset[1], z + coll.offset[2]],
+                        Entity: null
+                    };
+
+                    switch(collision.type) {
+                        case 'trashcan': {
+                            console.log('Setup trashcan');
+                            if(!actor.entities['trashcan']) {
+                                var Action = require('../Objects/Trashcan.js');
+                                actor.entities['trashcan'] = new Action();
+                            }
+                            collision.Entity = actor.entities['trashcan'];
+                            break;
+                        }
+                        case 'register': {
+                            console.log('Setup Register');
+                            if(!actor.entities['register']) {
+                                var Action = require('../Objects/Register.js');
+                                actor.entities['register'] = new Action();
+                            }
+                            collision.Entity = actor.entities['register'];
+                            break;
+                        }
+                    }
+
+                    colliders.push(collision);
                 }
               }
           }
@@ -198,6 +226,18 @@ SceneLoader.prototype = {
         		actors: actors,
             colliders: colliders
       	};
+    },
+
+    FindType: function(objType) {
+        var found = [];
+        for(var i = 0; i < this.objects.length; i++) {
+            for(var j = 0; j < this.objects[i].colliders.length; j++) {
+                if(this.objects[i].colliders[j].type == objType) {
+                    found.push(this.objects[i].colliders[j]);
+                }
+            }
+        }
+        return found;
     },
 
     Collisions: function(player) {

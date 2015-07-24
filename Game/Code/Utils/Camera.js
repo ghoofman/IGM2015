@@ -36,11 +36,13 @@ Camera.prototype = {
         player.FootPos.z
       ];
 
+
+
+    // Look At
+    this.vec3_1.Set(target[0], target[1], target[2]);
+
       if(target[0] < this.limits[0]) target[0] = this.limits[0];
       if(target[0] > this.limits[1]) target[0] = this.limits[1];
-
-      // Look At
-      this.vec3_1.Set(target[0], target[1], target[2]);
 
       if(target[2] < this.limits[4]) target[2] = this.limits[4];
       if(target[2] > this.limits[5]) target[2] = this.limits[5];

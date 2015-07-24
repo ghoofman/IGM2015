@@ -1,0 +1,6 @@
+{
+  "name" : "Taxi",
+  "file" : "TaxiCar.qb",
+  "AI" : "People/Taxi.js",
+  "offset" : [ 300, -8, 120 ]
+}

@@ -32,9 +32,9 @@
           {
             "id" : 1,
             "type" : "door",
-            "name" : "Street",
+            "name" : "Hallway",
             "data" : {
-              "file":  "Scenes/Street.json"
+              "file":  "Scenes/Hallway.json"
             },
             "collide" : false,
             "offset" : [ -70, 0, -45 ],
@@ -51,7 +51,10 @@
         "custom" : [
           {
             "id" : 1,
-            "type" : "bed",
+            "type" : "game",
+            "data" : {
+                "game" : "EndOfDay.js"
+            },
             "name" : "My Bed",
             "collide" : false,
             "size" : [ 50, 30, 30 ],

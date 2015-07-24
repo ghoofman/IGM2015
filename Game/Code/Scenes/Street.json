@@ -28,6 +28,14 @@
       "position": [ 230, 0, -40 ]
     }
   ],
+  "characters" : [
+    {
+      "file": "People/Taxi.json",
+      "offset" : [ 300,-8,100 ],
+      "scale" : [0.75, 0.75, 0.75 ],
+      "force" : true
+    }
+  ],
   "models" : [
     {
       "file" : "BuildingTest2.qb",
@@ -43,11 +51,11 @@
             "size" : [ 62, 65, 45 ]
           },
           {
-            "id" : 1,
+            "id" : 2,
             "type" : "door",
-            "name" : "Apartment",
+            "name" : "Hallway",
             "data" : {
-              "file" : "Scenes/Bedroom.json"
+              "file" : "Scenes/Apartment.json"
             },
             "collide" : false,
             "offset" : [ -14, -42, 45 ],
@@ -98,7 +106,7 @@
             "data" : {
               "file":  "Scenes/Cafe.json",
               "require" : {
-                  "job" : "barista",
+                  "item": "cafe-key",
                   "text" : "Employee key needed"
               }
             },
