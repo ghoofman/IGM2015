@@ -1,6 +1,7 @@
 var OP = require('OPengine').OP;
 var Talk = require('../Utils/Talk.js');
 var BaseAI = require('./BaseAI.js');
+var JSON = require('./../Utils/JSON.js');
 
 function Charles(character) {
 	this.character = character;
@@ -31,7 +32,7 @@ Charles.prototype = {
 			console.log('CHARLES IS ALIVE');
 		}
 
-		if(!this.character.alive && !global.frank.receivedCoffee && global.job != 'barista') {
+		if(!this.character.alive && (!global.job || global.job.title != 'barista')) {
 			console.log('SHOULD SPAWN');
 			if((!global.job || global.job.title != 'barista')) {
 				var start = this.character.scene.FindPosition(3);
@@ -41,7 +42,7 @@ Charles.prototype = {
 			}
 			return;
 		} else {
-			console.log('DO NOT SPAWN', this.character.alive, global.frank.receivedCoffee, global.job );
+			console.log('DO NOT SPAWN', this.character.alive, global.job );
 		}
 
 		if(!this.character.alive) {
@@ -167,14 +168,21 @@ Charles.prototype = {
 			{ text: "A cup of coffee", select: CupSelect  },
 			{
 				text: 'A job please', select: function() {
-					global.inventory.Add('cafe-key', {
-						sheet: 'CoffeeSelector',
-						item: 'Key-iso'
-					});
+					var key = JSON('Scenes/Items/CafeKey.json');
+					global.inventory.Add(key.key, key.data);
 					global.job = {
 						title: 'barista',
-						rate: 8
+						rate: 8,
+						time: 0,
+						clocked: false
 					};
+
+                    global.tasks.push( {
+                		text: 'Get to work',
+                		complete: function() { return global.sceneName == 'Cafe' && global.sceneEntered == 3; },
+                		time: -1000
+                	});
+
 					self.done = true;
 					self.state = 'FIND_EXIT';
 					return new Talk(self.character, "You got it! I quit, here's the key to the back door. Enjoy.");

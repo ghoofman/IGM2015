@@ -44,6 +44,12 @@ Talk.prototype = {
 	selected: 0,
 
 	Update: function(timer, gamepad) {
+		if(OP.keyboard.WasPressed(OP.KEY.Q) || gamepad.WasPressed(OP.gamePad.BACK) || gamepad.WasPressed(OP.gamePad.B)) {
+			return {
+				result: 1
+			};
+		}
+
 		if(this.options) {
 	        if(OP.keyboard.WasPressed(OP.KEY.W) || gamepad.WasPressed(OP.gamePad.DPAD_UP) || gamepad.LeftThumbNowUp()) {
 	            this.selected--;

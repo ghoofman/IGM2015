@@ -109,6 +109,7 @@
             "id" : 3,
             "type" : "door",
             "name" : "Street",
+            "logic" : "ClockOut.js",
             "data" : {
               "file": "Scenes/Street.json"
             },

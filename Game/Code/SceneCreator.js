@@ -6,11 +6,15 @@ var OP = require('OPengine').OP,
  		SceneLoader = require('./Utils/SceneLoader.js'),
 	 	Camera = require('./Utils/Camera.js'),
  		MixPanel = require('./Utils/MixPanel.js'),
-		DateAndTime = require('date-and-time');
+		DateAndTime = require('date-and-time'),
+		Input = require('./Utils/Input.js'),
+		JSON = require('./Utils/JSON.js');
 
 function SceneCreator(file, callingId) {
 		this.Data.file = file;
 		this.Data.callingId = callingId;
+		global.sceneEntered = callingId;
+		console.log("LOADING SCENE", file);
 }
 
 SceneCreator.prototype = {
@@ -94,34 +98,47 @@ SceneCreator.prototype = {
 				this.Data.dollar.Position.Set(100, 50);
 				OP.spriteSystem.SetSprite(this.Data.dollar, 1);
 
-				global.inventory.Add('diploma', {
-					sheet: 'CoffeeSelector',
-					item: 'Diploma-iso'
-				});
+				var diploma = JSON('Scenes/Items/Diploma.json');
+				global.inventory.Add(diploma.key, diploma.data);
 
 				return 1;
 		},
 
 		update: function(timer) {
 
+			if(global.tasks.length == 0) {
+				global.timeScale = 1000;
+			} else {
+				global.timeScale = 10;
+			}
+
+
+            if(global.job && global.job.clocked) {
+				console.log('clocked in');
+                global.job.time += timer.elapsed * global.timeScale;
+            }
+
 			var beforeAddingHour = global.time.getHours();
 			global.time = DateAndTime.addMilliseconds(global.time, timer.elapsed * global.timeScale);
 			var afterAddingHour = global.time.getHours();
 
 			if(beforeAddingHour == 23 && afterAddingHour == 0) {
+				global.wallet.AddExpense('Mugged', 'mugged', global.wallet.cash);
 				var game = require('./Games/EndOfDay.js');
-				this.Data.game = game();
+				this.Data.game = game(this.Data.scene);
 			}
 
-			if(global.game.target != global.game.cash) {
-				var diff = global.game.target - global.game.cash;
-				diff *= timer.elapsed / 500.0;
-				if(Math.abs(diff) < 0.001) {
-					global.game.cash = global.game.target;
-				} else {
-					global.game.cash += diff;
-				}
+			if(beforeAddingHour == 22 && afterAddingHour == 23) {
+				global.tasks.push({
+					text: 'Get to bed',
+					complete: function() {
+						return global.time.getHours() >= 8 && global.time.getHours() < 22;
+					},
+					time: -1000
+				});
 			}
+
+			global.wallet.Update(timer);
 
 			for(var i = 0; i < this.Data.scene.characters.length; i++) {
 				this.Data.scene.characters[i].Update(timer, this.Data.scene);
@@ -129,20 +146,23 @@ SceneCreator.prototype = {
 
 				if(this.Data.game) {
 					var result = this.Data.game.Update(timer, this.Data.gamePad0);
+					if(result.result == -1) {
+						return -1;
+					}
 					if(result.result) {
-						this.Data.game.Exit();
+						this.Data.game.Exit && this.Data.game.Exit();
 						this.Data.game = result.next;
 					}
-					return;
+					return 0;
 				}
 
 				if(this.Data.option) {
 						// Getting a selection
 						this.Data.option.Update(this.Data.gamePad0);
-						return;
+						return 0;
 				}
 
-				if (this.Data.gamePad0.WasPressed(OP.gamePad.BACK) || OP.keyboard.WasPressed(OP.KEY.Q))  {
+				if (Input.WasBackPressed(this.Data.gamePad0))  {
 					var game = require('./Games/InventoryViewer.js');
 					this.Data.game = game();
 				}
@@ -239,6 +259,12 @@ SceneCreator.prototype = {
 											continue;
 										}
 									}
+
+									                    console.log(collisions[i].logic);
+									if(collisions[i].logic) {
+										collisions[i].logic();
+									}
+
 									if(collisions[i].data.file) {
 										global.AudioPlayer.PlayEffect('Audio/Door.wav');
 										MixPanel.Track("Opened Door in " + this.Data.scene.data.name, { state: this.Data.scene.data.name, id: collisions[i].id });
@@ -254,7 +280,7 @@ SceneCreator.prototype = {
 									if(this.Data.game) continue;
 									console.log('LOADING GAME: ', collisions[i].data.game);
 									var game = require('./Games/' + collisions[i].data.game);
-									this.Data.game = game();
+									this.Data.game = game(this.Data.scene);
 									continue;
 								}
 								case 'character' : {
@@ -343,12 +369,15 @@ SceneCreator.prototype = {
 		},
 
 		Update: function(timer) {
-				if(this.update(timer)) {
-					/// Ummm, I'm gonna need you to go ahead come in tomorrow
-					//return 1;
-				} else {
-					this.Render();
-				}
+			var result = this.update(timer);
+			if(result == -1) {
+				/// Ummm, I'm gonna need you to go ahead come in tomorrow
+				console.log('KILLED SCENE');
+				return 1;
+			} else {
+				this.Render();
+			}
+			return 0;
 		},
 
 		Render: function() {
@@ -387,9 +416,9 @@ SceneCreator.prototype = {
 					OP.fontRender.Begin(this.Data.fontManager36);
 					this.Data.fontManager36.SetAlign(OP.FONTALIGN.CENTER);
 					OP.fontRender.Color(0.9, 0.9, 0.9);
-					OP.fontRender('$' + global.game.cash.toFixed(2), 100, this.Data.size.ScaledHeight - 75);
+					OP.fontRender('$' + global.wallet.TotalMoney.toFixed(2), 100, this.Data.size.ScaledHeight - 75);
 					this.Data.fontManager36.SetAlign(OP.FONTALIGN.RIGHT);
-					OP.fontRender(DateAndTime.format(global.time,'h:mm A'), this.Data.size.ScaledWidth - 75, 50);
+					OP.fontRender(DateAndTime.format(global.time,'h:mm A'), this.Data.size.ScaledWidth - 20, 10);
 					OP.fontRender.End();
 
 					if(this.Data.Required) {

@@ -134,6 +134,12 @@ Character.prototype = {
         }
 
         return null;
+    },
+
+    EndOfDay: function() {
+        if(this.AI) {
+            this.AI.EndOfDay && this.AI.EndOfDay();
+        }
     }
 };
 

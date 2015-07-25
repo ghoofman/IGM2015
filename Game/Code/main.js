@@ -4,6 +4,7 @@ var MixPanel = require('./Utils/MixPanel.js');
 var SceneCreator = require('./SceneCreator.js');
 var Inventory = require('./Utils/Inventory.js');
 var AudioPlayer = require('./Utils/AudioPlayer.js');
+var Wallet = require('./Utils/Wallet.js');
 
 global.game = {
 	money: 100000,
@@ -12,13 +13,19 @@ global.game = {
 	loans: 10
 };
 
+global.ai = {
+
+};
+
+global.wallet = new Wallet();
+
 global.time = new Date();
 global.time.setHours(8);
 global.time.setMinutes(0);
 global.time.setSeconds(0);
 global.time.setMilliseconds(0);
 
-global.timeScale = 10;
+global.timeScale = 1000;
 
 global.tasks = [
 	{
@@ -40,9 +47,10 @@ try {
 	});
 
 	global.debug = true;
-	//var scene = new SceneCreator('/Scenes/Bedroom.json', 1);
-	var scene = new SceneCreator('/Scenes/Cafe.json', 1);
+	var scene = new SceneCreator('/Scenes/Bedroom.json', 1);
+	//var scene = new SceneCreator('/Scenes/Cafe.json', 1);
 	//var scene = new SceneCreator('/Scenes/Street.json', 1);
+	//var scene = new SceneCreator('/Scenes/Apartment.json', 1);
 	//var scene = new SceneCreator('/Scenes/Hallway.json', 1);
 
 	if(!process.env.WAYWARD_REPO) {

@@ -1,8 +1,12 @@
 var OP = require('OPengine').OP;
+var Input = require('../Utils/Input.js');
 
-function EndOfDay(character) {
+function EndOfDay(scene) {
+
+    this.scene = scene;
 
     this.fontManager = OP.fontManager.Setup('pixel.opf');
+    this.fontManager24 = OP.fontManager.Setup('pixel24.opf');
     this.fontManager72 = OP.fontManager.Setup('pixel72.opf');
 	this.background = OP.texture2D.Create(OP.cman.LoadGet('FadedBackground.png'));
 	this.background.Scale.Set(2, 2);
@@ -37,105 +41,267 @@ function EndOfDay(character) {
 	this.btn.Position.Set(this.size.ScaledWidth - 100, 10);
 
 
+    this.state = 0;
 
-	this.pocket = global.game.cash || 0;
+    var interest = global.wallet.loans * (0.04 / 365.0);
 
-	this.tips = global.tips || 0;
+    global.wallet.AddExpense('Loan Payment', 'loan', 10);
+    global.wallet.AddExpenseInfo('Principal', 'loan', 10 - interest);
+    global.wallet.AddExpenseInfo('Interest', 'loan', interest);
+    global.wallet.loans -= 10 - interest;
+        global.wallet.AddExpense('Rent', 'rent', 10);
 
-	if(global.job && global.job.rate) {
-		this.payRate = global.job.rate;
-		this.pay = this.payRate * 8; // TODO: change to actual time worked
-	} else {
-		this.pay = 0;
-		this.payRate = 0;
-	}
-	this.taxes = (this.tips + this.pay) * 0.33;
-
-	this.rent = (global.apartment && global.apartment.rent) || 0;
-	this.rentRate = this.rent * 30;
-
-	this.loans = global.game.loans || 0;
-	this.loansRate = this.loans * 30;
-
-	this.food = 10;
-
-	this.net = this.pocket + this.pay + this.tips - this.taxes - this.rent - this.loans - this.food;
+    if(global.job) {
+        var rate = global.job.rate || 8;
+        var totalTime = global.job.time || 0;
+        var seconds = totalTime / 1000;
+        var minutes = seconds / 60;
+        var hours = minutes / 60;
+        global.wallet.AddIncome('Cafe Pay Check', 'pay', hours * rate, rate);
+        global.wallet.AddExpense('Federal Taxes', 'tax', (hours * rate) * 0.20, rate);
+        global.wallet.AddExpense('State Taxes', 'tax', (hours * rate) * 0.13, rate);
+    }
 }
 
 EndOfDay.prototype = {
+    state: 0,
 
 	Update: function(timer, gamepad) {
-		if(OP.keyboard.WasPressed(OP.KEY.ENTER) || OP.keyboard.WasPressed(OP.KEY.E) || gamepad.WasPressed(OP.gamePad.Y)) {
-			return {
-				result: 1
-			}
+        if(Input.WasActionPressed(gamepad) || Input.WasBackPressed(gamepad)) {
+
+            if(this.state == 2) {
+                if(this.scene) {
+                    this.scene.EndOfDay();
+                }
+                global.ai = {};
+                var self = this;
+                if(global.job) {
+                    global.tasks.push( {
+                		text: 'Get to work',
+                		complete: function() { return global.sceneName == 'Cafe'; },
+                		time: -1000
+                	});
+                }
+
+                global.wallet.CompleteDay();
+
+                global.time = new Date();
+                global.time.setHours(8);
+                global.time.setMinutes(0);
+                global.time.setSeconds(0);
+                global.time.setMilliseconds(0);
+
+                if(global.job) {
+                    global.job.time = 0;
+                }
+
+                if(global.wallet.cash < 0) {
+                    var game = require('./GameOver.js');
+        			return {
+        				result: 1,
+                        next: game(this.scene)
+        			};
+                }
+    			return {
+    				result: 1
+    			}
+            } else {
+                this.state++;
+            }
 		}
+
 		return {
 			result: 0
 		};
 	},
 
+    _DrawIncome: function() {
+
+        OP.fontRender.Begin(this.fontManager72);
+        this.fontManager72.SetAlign(OP.FONTALIGN.CENTER);
+        OP.fontRender.Color(0.0, 0.8, 0.0);
+        OP.fontRender('Income', this.size.ScaledWidth / 2.0, 50);
+        OP.fontRender.End();
+
+        OP.fontRender.Begin(this.fontManager);
+
+        this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
+        OP.fontRender.Color(50.0 / 255.0, 165.0 / 255.0, 84.0 / 255.0);
+
+        // this.fontManager.SetAlign(OP.FONTALIGN.RIGHT);
+        // OP.fontRender('Started With', 550, 150);
+        // this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
+        // OP.fontRender('$' + global.wallet.cash.toFixed(2), 600, 150);
+
+        var total = 0;
+        for(var i = 0; i < global.wallet.lines.length; i++) {
+                    this.fontManager.SetAlign(OP.FONTALIGN.RIGHT);
+            OP.fontRender(global.wallet.lines[i].name, 550, 150 + i * 50);
+                        this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
+            OP.fontRender('$' + global.wallet.lines[i].amount.toFixed(2), 600, 150 + i * 50);
+            total += global.wallet.lines[i].amount;
+            if(global.wallet.lines[i].rate) {
+                OP.fontRender('$' + global.wallet.lines[i].rate.toFixed(2) + ' / hr', 800, 150 + i * 50);
+            }
+        }
+
+        this.fontManager.SetAlign(OP.FONTALIGN.RIGHT);
+        OP.fontRender('Total', 550, 600);
+        this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
+        OP.fontRender('$' + total.toFixed(2), 600, 600);
+
+        OP.fontRender.End();
+    },
+
+    _DrawExpenses: function() {
+
+        OP.fontRender.Begin(this.fontManager72);
+        this.fontManager72.SetAlign(OP.FONTALIGN.CENTER);
+        OP.fontRender.Color(1.0, 0.0, 0.0);
+        OP.fontRender('Expenses', this.size.ScaledWidth / 2.0, 50);
+        OP.fontRender.End();
+
+
+        OP.fontRender.Begin(this.fontManager);
+
+        this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
+        OP.fontRender.Color(1.0, 0, 0);
+
+        var posY = 150;
+        var total = 0;
+        for(var i = 0; i < global.wallet.expenses.length; i++) {
+            total += global.wallet.expenses[i].amount;
+            this.fontManager.SetAlign(OP.FONTALIGN.RIGHT);
+            var offset = 0;
+            if(global.wallet.expenses[i].info) {
+                posY += 35;
+                continue;
+                OP.fontRender.Color(1.0, 1.0, 1.0);
+            } else {
+                OP.fontRender.Color(1.0, 0, 0);
+            }
+
+            OP.fontRender(global.wallet.expenses[i].name, 550 + offset, posY);
+
+            this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
+            OP.fontRender('$' + global.wallet.expenses[i].amount.toFixed(2), 600 + offset, posY);
+
+            if(global.wallet.expenses[i].rate) {
+                OP.fontRender('$' + global.wallet.expenses[i].rate.toFixed(2) + ' / hr', 800 + offset, posY);
+            }
+
+            posY += 50;
+        }
+
+        this.fontManager.SetAlign(OP.FONTALIGN.RIGHT);
+        OP.fontRender('Total', 550, 600);
+        this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
+        OP.fontRender('$' + total.toFixed(2), 600, 600);
+
+        OP.fontRender.End();
+
+
+        OP.fontRender.Begin(this.fontManager24);
+        var posY = 160;
+        for(var i = 0; i < global.wallet.expenses.length; i++) {
+
+            this.fontManager24.SetAlign(OP.FONTALIGN.LEFT);
+            var offset = 50;
+            if(!global.wallet.expenses[i].info) {
+                posY += 50;
+                continue;
+            } else {
+                OP.fontRender.Color(1.0, 1.0, 1.0);
+            }
+
+            OP.fontRender('$' + global.wallet.expenses[i].amount.toFixed(2) + ' ' + global.wallet.expenses[i].name, 600, posY);
+
+            // this.fontManager24.SetAlign(OP.FONTALIGN.LEFT);
+            // OP.fontRender('$' + global.wallet.expenses[i].amount.toFixed(2) + ' )', 600, posY);
+            //
+            // if(global.wallet.expenses[i].rate) {
+            //     OP.fontRender('$' + global.wallet.expenses[i].rate.toFixed(2) + ' / hr', 800, posY);
+            // }
+
+            posY += 35;
+        }
+
+        OP.fontRender.End();
+
+    },
+
+    _DrawNet: function() {
+
+        OP.fontRender.Begin(this.fontManager72);
+        this.fontManager72.SetAlign(OP.FONTALIGN.CENTER);
+        OP.fontRender.Color(1.0, 0.0, 0.0);
+        OP.fontRender('End of Day Result', this.size.ScaledWidth / 2.0, 50);
+        OP.fontRender.End();
+
+        OP.fontRender.Begin(this.fontManager);
+
+        this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
+
+        this.fontManager.SetAlign(OP.FONTALIGN.RIGHT);
+        OP.fontRender.Color(0.0, 0.8, 0.0);
+        OP.fontRender("Cash", 550, 150);
+        OP.fontRender("Income", 550, 200);
+        OP.fontRender.Color(1.0, 0.0, 0.0);
+        OP.fontRender("Expenses", 550, 250);
+
+        OP.fontRender("Loans", 550, 350);
+
+        this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
+        OP.fontRender.Color(0.0, 0.8, 0.0);
+        OP.fontRender('$' + global.wallet.cash.toFixed(2), 600, 150);
+        OP.fontRender('$' + global.wallet.Income().toFixed(2), 600, 200);
+        OP.fontRender.Color(1.0, 0.0, 0.0);
+        OP.fontRender('-$' + global.wallet.Expenses().toFixed(2), 600, 250);
+
+        OP.fontRender('-$' + global.wallet.loans.toFixed(2), 600, 350);
+
+
+        var result = global.wallet.Total();
+
+        if(result < 0) {
+            OP.fontRender.Color(1.0, 0.0, 0.0);
+        } else {
+            OP.fontRender.Color(0.0, 0.8, 0.0);
+        }
+        this.fontManager.SetAlign(OP.FONTALIGN.RIGHT);
+        OP.fontRender('Cash', 550, 600);
+        this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
+        OP.fontRender('$' + result.toFixed(2), 600, 600);
+
+        OP.fontRender.End();
+    },
+
 	Draw: function() {
-		// Draw background fade
+
+        // Draw background fade
         OP.texture2D.Render(this.background);
 
-		// Draw edges
-		OP.spriteSystem.Render(this.spriteSystem, this.camera);
+        // Draw edges
+        OP.spriteSystem.Render(this.spriteSystem, this.camera);
 
-		// Display finances
+        switch(this.state) {
+            case 0: {
+                this._DrawIncome();
+                break;
+            }
+            case 1: {
+                this._DrawExpenses();
+                break;
+            }
+            case 2: {
+                this._DrawNet();
+                break;
+            }
+        }
 
-		OP.fontRender.Begin(this.fontManager72);
-		this.fontManager72.SetAlign(OP.FONTALIGN.CENTER);
-		OP.fontRender.Color(1.0, 1.0, 1.0);
-	    OP.fontRender('End of Day', this.size.ScaledWidth / 2.0, 50);
-		OP.fontRender.End();
-
-		OP.fontRender.Begin(this.fontManager);
-		this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
-		OP.fontRender.Color(50.0 / 255.0, 165.0 / 255.0, 84.0 / 255.0);
-
-
-	    OP.fontRender('Cash', 400, 150);
-	    OP.fontRender('$' + this.pocket.toFixed(2), 600, 150);
-
-	    OP.fontRender('Tips', 400, 200);
-	    OP.fontRender('$' + this.tips.toFixed(2), 600, 200);
-
-	    OP.fontRender('Pay', 400, 250);
-	    OP.fontRender('$' + this.pay.toFixed(2), 600, 250);
-	    OP.fontRender('$' + this.payRate.toFixed(2) + ' / hr', 800, 250);
-
-		if(this.net >= 0) {
-		    OP.fontRender('Net', 400, 600);
-		    OP.fontRender('$' + this.net.toFixed(2), 600, 600);
-		}
-
-		OP.fontRender.Color(1.0, 0, 0);
-
-	    OP.fontRender('Rent', 400, 300);
-	    OP.fontRender('-$' + this.rent.toFixed(2), 600, 300);
-	    OP.fontRender('$' + this.rentRate.toFixed(2) + ' / mo', 800, 300);
-
-	    OP.fontRender('Loans', 400, 350);
-	    OP.fontRender('-$' + this.loans.toFixed(2), 600, 350);
-	    OP.fontRender('$' + this.loansRate.toFixed(2) + ' / mo', 800, 350);
-
-	    OP.fontRender('Taxes', 400, 400);
-	    OP.fontRender('-$' + this.taxes.toFixed(2), 600, 400);
-
-	    OP.fontRender('Food', 400, 450);
-	    OP.fontRender('-$' + this.food.toFixed(2), 600, 450);
-
-		if(this.net < 0) {
-		    OP.fontRender('Net', 400, 600);
-		    OP.fontRender('-$' + Math.abs(this.net).toFixed(2), 600, 600);
-		}
-
-		OP.fontRender.End();
-
-		OP.render.Depth(1);
-		OP.render.DepthWrite(1);
-		global.player.DrawPos([-100,140,-40], [0.3, -0.7], 6, this.material, this.camera);
+        OP.render.Depth(1);
+        OP.render.DepthWrite(1);
+        global.player.DrawPos([-100,140,-40], [0.3, -0.7], 6, this.material, this.camera);
 
 	},
 

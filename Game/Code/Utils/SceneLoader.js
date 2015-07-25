@@ -30,6 +30,8 @@ SceneLoader.prototype = {
 
     Load: function(name) {
         var scene = JSON.parse(fs.readFileSync(__dirname + '/../' + name, 'utf8'));
+        this.name = scene.name;
+        global.sceneName = scene.name;
 
         this.scale = scene.scale || 1;
 
@@ -190,6 +192,12 @@ SceneLoader.prototype = {
                         Entity: null
                     };
 
+
+                    console.log('LOGIC', coll.logic);
+                    if(coll.logic) {
+                        collision.logic = require('../Logic/' + coll.logic);
+                    }
+
                     switch(collision.type) {
                         case 'trashcan': {
                             console.log('Setup trashcan');
@@ -286,6 +294,12 @@ SceneLoader.prototype = {
         OP.free(this.vec3_0);
         OP.free(this.vec3_1);
         OP.free(this.mat4);
+    },
+
+    EndOfDay: function() {
+        for(var i = 0; i < this.characters.length; i++) {
+            this.characters[i].EndOfDay();
+        }
     }
 
 };

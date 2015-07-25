@@ -89,7 +89,9 @@ module.exports = function(data) {
               coffee: {
                   id: this.selectedSprite.id,
                   type: this.options[this.selectedSprite.id].name
-              }
+              },
+              text: cup.type + ' ' + this.options[this.selectedSprite.id].name + ' Coffee',
+              desc: [ "I better hurry up, it's getting cold." ]
           });
         //
         //   global.inventory.Remove(global.inventory.cup.sheet, global.inventory.cup.item);

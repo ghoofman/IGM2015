@@ -51,6 +51,26 @@
 		"offset": [ 320, 0, -16 ]
 	  },
 	  {
+		"file": "Apartment_Floor.qb",
+		"offset": [ 60, 0, 46 ]
+	  },
+	  {
+		"file": "Apartment_Floor.qb",
+		"offset": [ 60, 0, -86 ]
+	  },
+	  {
+		"file": "Apartment_Floor.qb",
+		"offset": [ 220, 0, -86 ]
+	  },
+	  {
+		"file": "Apartment_Floor.qb",
+		"offset": [ 220, 0, 46 ]
+	  },
+	  {
+		"file": "Apartment_Floor.qb",
+		"offset": [ 380, 0, 46 ]
+	  },
+	  {
 		"file": "HallwayBackStairs.qb",
 		"offset": [ 320, 0, 48 ]
 	  },
@@ -60,7 +80,7 @@
 	  },
 	  {
 		"file": "ApartmentEntrance.qb",
-		"offset": [ -20, 0, 48 ],
+		"offset": [ -20, 0, 38 ],
 		"collision": {
 			"default" : true,
 			"custom" : [

@@ -53,7 +53,9 @@ module.exports = function(data) {
           id: this.selectedSprite.id,
           type: this.options[this.selectedSprite.id].name,
           sheet: 'CoffeeSelector',
-          item: this.options[this.selectedSprite.id].sprite
+          item: this.options[this.selectedSprite.id].sprite,
+          text: this.options[this.selectedSprite.id].name + " cup",
+          desc: [ ]
       });
 
       return 1;

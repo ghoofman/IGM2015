@@ -1,0 +1,9 @@
+{
+	"key": "diploma",
+	"data": {
+		"sheet": "CoffeeSelector",
+		"item": "Diploma-iso",
+		"text": "Diploma",
+		"desc": [ "It's my diploma from University de la Artiste.", "In other words: A super expensive piece of paper."]
+	}
+}

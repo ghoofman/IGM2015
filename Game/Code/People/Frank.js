@@ -7,8 +7,8 @@ function Frank(character) {
 	this.vec3 = OP.vec3.Create(0,0,0);
 
 
-	if(!global.frank) {
-		global.frank = { };
+	if(!global.ai.frank) {
+		global.ai.frank = { };
 	}
 
 	this.base = new BaseAI(this);
@@ -22,7 +22,7 @@ Frank.prototype = {
 
 		if(this.character.dead) return;
 
-		if(!this.character.alive && !global.frank.receivedCoffee) {
+		if(!this.character.alive && !global.ai.frank.receivedCoffee) {
 			if(global.job && global.job.title == 'barista' && Math.random() < 0.01) {
 				var start = this.character.scene.FindPosition(2);
 				this.character.Setup(start);
@@ -76,7 +76,7 @@ Frank.prototype = {
 				break;
 			}
 			case 'GETTING COFEE': {
-				if(global.frank.receivedCoffee) {
+				if(global.ai.frank.receivedCoffee) {
 					var registers = scene.FindType('door');
 					if(registers.length > 0) {
 						this.target = registers[0].position;
@@ -114,7 +114,7 @@ Frank.prototype = {
             return new Talk(this.character, "Sup' dude.");
 		}
 
-        if(global.frank.receivedCoffee) {
+        if(global.ai.frank.receivedCoffee) {
             return new Talk(this.character, "I'm all set for now. Thanks.");
         }
 
@@ -127,14 +127,14 @@ Frank.prototype = {
 
           	var self = this;
 
-            if(!global.frank.talked) {
+            if(!global.ai.frank.talked) {
                    return new Talk(this.character, 'Dude! How did you know? You psychic?', [ {
                        text: "Shhh don't tell anyone"
                    }, { text: "I just know these things" } ], function() {
 					   	global.inventory.Remove('cup');
-           	           	global.game.target = global.game.cash + 4;
+						global.wallet.AddIncome('Tip from Frank', 'tip', 4);
 	            		global.AudioPlayer.PlayEffect('Audio/Money.wav');
-                       	global.frank.receivedCoffee = true;
+                       	global.ai.frank.receivedCoffee = true;
 
 						for(var i = 0; i < self.interactions.length; i++){
 							self.interactions[i].Leave && self.interactions[i].Leave(self.character);
@@ -147,9 +147,9 @@ Frank.prototype = {
 
             return new Talk(this.character, 'Thanks bro-ski', null, function() {
 				global.inventory.Remove('cup');
-    	        global.game.target = global.game.cash + 2;
+				global.wallet.AddIncome('Tip from Frank', 'tip', 2);
 	            global.AudioPlayer.PlayEffect('Audio/Money.wav');
-                global.frank.receivedCoffee = true;
+                global.ai.frank.receivedCoffee = true;
 				self.character.atRegister = false;
 
 				for(var i = 0; i < self.interactions.length; i++){
@@ -161,25 +161,37 @@ Frank.prototype = {
         }
 
         if(cup && cup.coffee && (cup.type != 'Tall' || cup.coffee.type != 'Bold')) {
-                if(global.frank.talked) {
+                if(global.ai.frank.talked) {
                     return new Talk(this.character, 'Not what I asked for... I want a Tall Bold Coffee.');
                 } else {
-                    global.frank.talked = true;
+                    global.ai.frank.talked = true;
                     return new Talk(this.character, 'I want a Tall Bold Coffee... Not this...');
                 }
         }
 
-		if(global.frank.talked) {
+		if(global.ai.frank.talked) {
 			return new Talk(this.character, "How's that Tall Bold Coffee coming?");
 		}
 
-        global.frank.talked = true;
+        global.ai.frank.talked = true;
 
         return new Talk(this.character, 'I want a Tall Bold Coffee. Right Now', [ {
-            text: 'You got it'
+        	text: 'You got it', select: function() {
+
+                global.tasks.push( {
+            		text: 'Get Frank a Tall Bold Coffee',
+            		complete: function() { return global.ai.frank.receivedCoffee; },
+            		time: -1000
+            	});
+			}
         }, { text: "Can't do that right now" } ]);
 
         return null;
+	},
+
+	EndOfDay: function() {
+		global.ai.frank.receivedCoffee = false;
+		global.ai.frank.talked = false;
 	}
 };
 

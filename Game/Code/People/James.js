@@ -1,6 +1,7 @@
 var OP = require('OPengine').OP;
 var Talk = require('../Utils/Talk.js');
 var BaseAI = require('./BaseAI.js');
+var JSON = require('../Utils/JSON.js');
 
 function James(character) {
 	this.character = character;
@@ -32,7 +33,7 @@ James.prototype = {
 
 		this.base.Move(timer);
 
-		console.log(this.state);
+		//console.log(this.state);
 		switch(this.state) {
 			case 'EXIT': {
 				var collisions = scene.Collisions(this.character);
@@ -114,12 +115,14 @@ James.prototype = {
         return new Talk(this.character, 'What would you like?', [
 			{ text: 'Nothing', select: function() {  } },
 			{ text: "A room please.", select: function() {
-					return new Talk(self.character, "It'll cost $10 / day. Does that work?", [
+					return new Talk(self.character, "It requires a $50 deposit and costs $10 / day. Does that work?", [
 						{ text: "I'll take it.", select: function() {
-								global.inventory.Add('apartment-key', {
-									sheet: 'CoffeeSelector',
-									item: 'Key-iso'
-								});
+
+							global.wallet.AddExpense('Down Payment', 'rent', 50);
+
+								var key = JSON('Scenes/Items/Apartment3Key.json');
+								global.inventory.Add(key.key, key.data);
+
 								global.apartment = {
 									rent: 10,
 									room: 3
