@@ -2,17 +2,19 @@
   "name" : "Street",
   "scale" : 0.5,
   "planes": {
-    "xNegative" : -70,
+    "xNegative" : -250,
     "xPositive" : 360,
     "zNegative" : -150,
     "zPositive" : 150,
     "yNegative" : 0
   },
   "camera" : {
-    "xNegative" : 30,
-    "xPositive" : 230,
+    "xNegative" : -250,
+    "xPositive" : 360,
     "zNegative" : -150,
-    "zPositive" : 50
+    "zPositive" : 50,
+    "zDistance" : 450,
+    "yDistance" : 250
   },
   "positions": [
     {
@@ -26,19 +28,50 @@
     {
       "id": 3,
       "position": [ 230, 0, -40 ]
+    },
+    {
+      "id": 4,
+      "position": [ -210, 0, 40 ]
     }
   ],
   "characters" : [
     {
       "file": "People/Taxi.json",
-      "offset" : [ 300,-8,100 ],
+      "offset" : [ 300,0,120 ],
       "scale" : [0.75, 0.75, 0.75 ],
       "force" : true
     }
   ],
   "models" : [
     {
-      "file" : "BuildingTest2.qb",
+      "file" : "Building.2.qb",
+      "offset" : [ -200, 0, -10 ],
+      "scale" : [ 1, 1, 1 ],
+      "collision": {
+        "default" : false,
+        "custom" : [
+          {
+            "collide" : true,
+            "type" : "",
+            "offset" : [ 0, 0, 0 ],
+            "size" : [ 93, 117, 44 ]
+          },
+          {
+            "id" : 1,
+            "type" : "door",
+            "name" : "GLOBAL Apartments",
+            "data" : {
+              "file" : "Scenes/GLOBAL.json"
+            },
+            "collide" : false,
+            "offset" : [ 0, 0, 45 ],
+            "size" : [ 13, 117, 4 ]
+          }
+        ]
+      }
+    },
+    {
+      "file" : "BuildingTest3.qb",
       "offset" : [ 0, 0, 0 ],
       "scale" : [ 1, 1, 1 ],
       "collision": {
@@ -260,6 +293,14 @@
     },
     {
       "file" : "fullroad.qb",
+      "offset" : [ -294, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ -344, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
       "offset" : [ 386, -4, 100 ]
     },
     {
@@ -273,6 +314,14 @@
     {
       "file" : "fullroad.qb",
       "offset" : [ 536, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 586, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 636, -4, 100 ]
     },
     {
       "file" : "StopSign.qb",
@@ -299,6 +348,10 @@
       "collision" : {
         "default" : false
       }
+    },
+    {
+      "file" : "LampPost.qb",
+      "offset" : [ -350, 0, 75 ]
     },
     {
       "file" : "LampPost.qb",
@@ -333,6 +386,10 @@
       "offset" : [ 535, 0, 75 ]
     },
     {
+      "file" : "LampPost.qb",
+      "offset" : [ 635, 0, 75 ]
+    },
+    {
       "file" : "Flower.qb",
       "offset" : [ 330, 0, 30 ]
     },
@@ -358,11 +415,19 @@
     },
     {
       "file" : "sidewalk_4x1.qb",
+      "offset" : [ 658, 0, 56 ]
+    },
+    {
+      "file" : "sidewalk_4x1.qb",
       "offset" : [ -122, 0, 56 ]
     },
     {
       "file" : "sidewalk_4x1.qb",
       "offset" : [ -242, 0, 56 ]
+    },
+    {
+      "file" : "sidewalk_4x1.qb",
+      "offset" : [ -362, 0, 56 ]
     }
   ]
 }

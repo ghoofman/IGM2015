@@ -6,7 +6,13 @@ function Frank(character) {
 	this.character = character;
 	this.vec3 = OP.vec3.Create(0,0,0);
 
+	if(global.currentScene.name != 'Cafe' ) {
+		this.character.dead = true;
+		this.character.alive = false;
+		return;
+	}
 
+	this.character.alive = 0;
 	if(!global.ai.frank) {
 		global.ai.frank = { };
 	}
@@ -22,8 +28,9 @@ Frank.prototype = {
 
 		if(this.character.dead) return;
 
+		// Frank comes into the cafe at 8
 		if(!this.character.alive && !global.ai.frank.receivedCoffee) {
-			if(global.job && global.job.title == 'barista' && Math.random() < 0.01) {
+			if(global.job && global.job.title == 'barista' && global.job.clocked && global.time.getHours() == 8 && Math.random() < 0.01) {
 				var start = this.character.scene.FindPosition(2);
 				this.character.Setup(start);
 			}
@@ -32,7 +39,6 @@ Frank.prototype = {
 
 		this.base.Move(timer);
 
-		console.log(this.state);
 		switch(this.state) {
 			case 'EXIT': {
 				var collisions = scene.Collisions(this.character);
@@ -40,6 +46,7 @@ Frank.prototype = {
 					if(collisions[i].type == 'door') {
 						this.target = null;
 						this.character.dead = 1;
+						this.character.alive = 0;
 
 						for(var i = 0; i < this.interactions.length; i++){
 							this.interactions[i].Leave && this.interactions[i].Leave(this.character);
@@ -56,7 +63,6 @@ Frank.prototype = {
 				var collisions = scene.Collisions(this.character);
 				for(var i = 0; i < collisions.length; i++) {
 					if(collisions[i].type == 'register' && collisions[i].data && collisions[i].data.customer) {
-						console.log('GETTING COFFEE', collisions[i]);
 
 						if(collisions[i].Entity) {
 							collisions[i].Entity.CharacterInteract &&
@@ -94,7 +100,6 @@ Frank.prototype = {
 				if(!this.target && !this.character.atRegister) {
 					var registers = scene.FindType('register');
 					this.state = 'FIND';
-					console.log('Finding registers');
 					// choose the customer side
 					for(var i = 0; i < registers.length; i++) {
 						if(registers[i].data && registers[i].data.customer) {
@@ -119,7 +124,6 @@ Frank.prototype = {
         }
 
 		var cup = global.inventory.Get('cup');
-		console.log('CUP', cup);
 
         if(cup && cup.coffee
               && cup.type == 'Tall'

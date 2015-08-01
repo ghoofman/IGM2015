@@ -2,7 +2,7 @@
 	"key": "cafe-key",
 	"data": {
 		"sheet": "CoffeeSelector",
-		"item": "Key-iso",
+		"item": "CafeKey-iso",
 		"text": "Cup of Joe - Employee Key",
 		"desc": [ "I can use this to get into the back of the Cafe"]
 	}

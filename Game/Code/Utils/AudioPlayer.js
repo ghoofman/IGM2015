@@ -22,7 +22,7 @@ AudioPlayer.prototype = {
 				this.currentBackground = this.currentBackground % this.background.length;
 
 				this.backgroundChannels[this.currentBackground] = OP.fmod.Play(this.background[this.currentBackground]);
-				OP.fmod.SetVolume(this.backgroundChannels[this.currentBackground], 0.2);
+				OP.fmod.SetVolume(this.backgroundChannels[this.currentBackground], 0.5);
 			}
 		}
 
@@ -42,7 +42,7 @@ AudioPlayer.prototype = {
 		if(this.currentBackground == -1) {
 			this.currentBackground = 0;
 			this.backgroundChannels[this.currentBackground] = OP.fmod.Play(this.background[this.currentBackground]);
-			OP.fmod.SetVolume(this.backgroundChannels[this.currentBackground], 0.15);
+			OP.fmod.SetVolume(this.backgroundChannels[this.currentBackground], 0.5);
 		}
 	},
 

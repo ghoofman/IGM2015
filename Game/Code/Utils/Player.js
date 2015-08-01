@@ -1,17 +1,21 @@
 var OP = require('OPengine').OP;
 var BuildVoxelMesh = require('./BuildVoxelMesh.js');
+var Input = require('./Input.js');
 
-function Player(scale, scene, material, start) {
+function Player(scale, scene, material, start, worldScene) {
   this.scale = scale || 1.0;
   this.scene = scene;
+  this.worldScene = worldScene;
   this.material = material;
   this.start = start;
   this.mesh = BuildVoxelMesh('Person.qb');
   this.model = OP.model.Create(this.mesh);
 
+
   if(global.spawned || global.debug) {
       this.Setup();
   }
+
 }
 
 Player.prototype = {
@@ -26,11 +30,11 @@ Player.prototype = {
       x: 0, y: 0, z: 0
     },
 
-    Setup: function() {
+    Setup: function(start) {
         this.manager = OP.physXController.CreateManager(this.scene);
         this.controller = OP.physXController.Create(this.manager, this.material, this.mesh.voxelData.size.y * this.scale * 2.0, this.mesh.voxelData.size.x * this.scale * 0.75);
 
-        this.start = this.start || [ -20, 0, 40 ];
+        this.start = start || this.start || [ -20, 0, 40 ];
 
         OP.physXController.SetFootPos(this.controller, this.start[0], this.start[1], this.start[2]);
 
@@ -55,7 +59,7 @@ Player.prototype = {
 
         x *= this.scale * 3.0; z *= this.scale * 3.0;
 
-        if(OP.keyboard.IsDown(OP.KEY.SPACE) || gamepad.IsDown(OP.gamePad.A)) {
+        if(Input.IsJumpDown(gamepad)) {
           y = 2.0;
         }
 
@@ -64,14 +68,42 @@ Player.prototype = {
         }
 
         this.move = [ x, y, z ];
+
+        if(this.move[0] + this.FootPos.x < this.worldScene.xNegative || this.move[0] + this.FootPos.x > this.worldScene.xPositive) {
+            this.move[0] = 0;
+        }
+        
+        if(this.move[2] + this.FootPos.z < this.worldScene.zNegative || this.move[2] + this.FootPos.z > this.worldScene.zPositive) {
+            this.move[2] = 0;
+        }
     },
 
     Move: function(timer) {
         if(!this.alive) return;
-      this.vec3.Set(this.move[0], this.move[1], this.move[2]);
+        this.vec3.Set(this.move[0], this.move[1], this.move[2]);
   		OP.physXController.Move(this.controller, this.vec3, timer);
-      this.move = [ 0, -0.98 * 4, 0 ];
-      this.FootPos = OP.physXController.GetFootPos(this.controller);
+        this.move = [ 0, -0.98 * 4, 0 ];
+        this.FootPos = OP.physXController.GetFootPos(this.controller);
+
+        var changed = false;
+        if(this.FootPos.x < this.worldScene.xNegative) {
+            this.FootPos.x = this.worldScene.xNegative;
+            changed = true;
+        } else if(this.FootPos.x > this.worldScene.xPositive) {
+            this.FootPos.x = this.worldScene.xPositive;
+            changed = true;
+        }
+        if(this.FootPos.z < this.worldScene.zNegative) {
+            this.FootPos.z = this.worldScene.zNegative;
+            changed = true;
+        } else if(this.FootPos.z > this.worldScene.zPositive) {
+            this.FootPos.z = this.worldScene.zPositive;
+            changed = true;
+        }
+
+        if(changed) {
+            OP.physXController.SetFootPos(this.controller, this.FootPos.x, this.FootPos.y, this.FootPos.z);
+        }
     },
 
     Draw: function(material, camera) {

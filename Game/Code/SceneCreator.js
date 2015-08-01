@@ -14,7 +14,7 @@ function SceneCreator(file, callingId) {
 		this.Data.file = file;
 		this.Data.callingId = callingId;
 		global.sceneEntered = callingId;
-		console.log("LOADING SCENE", file);
+		global.currentScene = this;
 }
 
 SceneCreator.prototype = {
@@ -36,19 +36,6 @@ SceneCreator.prototype = {
 				this.Data.fontManagerUI = OP.fontManager.Setup('ui.opf');
 
 
-				// TODO: move to the scene loader
-				var self = this;
-				function RemoveOption() {
-					self.Data.option = null;
-				};
-				RemoveOption();
-
-				this.Data.optionSelector2 = new OptionSelector('Ready to call it a day?', [
-					{ text: 'Yes', select: RemoveOption },
-					{ text: 'No', select: RemoveOption }
-				]);
-
-
 				// Create the initial scene with a default gravity of -9.8
 				var vec3 = OP.vec3.Create(0,0,0);
 				vec3.Set(0,-9.8,0);
@@ -60,6 +47,8 @@ SceneCreator.prototype = {
 
 				// Load up the scene from the json file
 				this.Data.scene = new SceneLoader(this.Data.physXScene, this.Data.file);
+				this.name = this.Data.scene.name;
+				this.Data.scene.LoadCharacters('Scenes/Characters.json');
 
 				// Get the location to spawn the player at based on an id in the positions of the json data
 				var start = null;
@@ -68,7 +57,7 @@ SceneCreator.prototype = {
 				}
 
 				// Create the Player
-				this.Data.player = new Player(this.Data.scene.scale, this.Data.physXScene, this.Data.physXmaterial, start);
+				this.Data.player = new Player(this.Data.scene.scale, this.Data.physXScene, this.Data.physXmaterial, start, this.Data.scene);
 
 				global.player = this.Data.player;
 
@@ -98,32 +87,70 @@ SceneCreator.prototype = {
 				this.Data.dollar.Position.Set(100, 50);
 				OP.spriteSystem.SetSprite(this.Data.dollar, 1);
 
-				var diploma = JSON('Scenes/Items/Diploma.json');
-				global.inventory.Add(diploma.key, diploma.data);
+				if(!global.inventory.Has('diploma')) {
+					var diploma = JSON('Scenes/Items/Diploma.json');
+					global.inventory.Add(diploma.key, diploma.data);
+				}
+
+
+				if(!global.inventory.Has('phone')) {
+					var cell = JSON('Scenes/Items/CellPhone.json');
+					var phone = global.inventory.Add(cell.key, cell.data);
+					phone.Entity = new (require('./Objects/CellPhone.js'));
+				}
+
+
+				// TODO: move to the scene loader
+				var self = this;
+				function RemoveOption() {
+					self.Data.option = null;
+				};
+				RemoveOption();
+
+				this.Data.optionSelector2 = new OptionSelector('Ready to call it a day?', [
+					{ text: 'Yes', select: RemoveOption },
+					{ text: 'No', select: RemoveOption }
+				]);
 
 				return 1;
 		},
 
 		update: function(timer) {
+			if(timer.elapsed > 500) return;
 
-			if(global.tasks.length == 0) {
-				global.timeScale = 1000;
-			} else {
-				global.timeScale = 10;
+			var aliveCharacters = 0;
+			for(var i = 0; i < this.Data.scene.characters.length; i++) {
+				aliveCharacters += this.Data.scene.characters[i].alive;
 			}
 
+			if(Input.IsSpeedDown(this.Data.gamePad0) || (global.job && global.job.clocked && aliveCharacters == 0)) { //
+				global.timeScale = 100;
+			} else {
+				global.timeScale = 8;
+			}
+
+			if(this.Data.scene.Logic(this, timer)){
+				return 1;
+			}
 
             if(global.job && global.job.clocked) {
-				console.log('clocked in');
-                global.job.time += timer.elapsed * global.timeScale;
+                global.job.time += timer.elapsed * global.timeScale * 10;
             }
 
+			if(global.job && global.time.getHours() >= global.job.activeSchedule.end) {
+				global.job.clocked = false;
+			}
+
 			var beforeAddingHour = global.time.getHours();
-			global.time = DateAndTime.addMilliseconds(global.time, timer.elapsed * global.timeScale);
+			global.time = DateAndTime.addMilliseconds(global.time, timer.elapsed * global.timeScale * 10);
 			var afterAddingHour = global.time.getHours();
 
 			if(beforeAddingHour == 23 && afterAddingHour == 0) {
-				global.wallet.AddExpense('Mugged', 'mugged', global.wallet.cash);
+				global.wallet.AddExpense('Mugged', 'mugged', 20);
+				global.journal.unshift({
+					text: 'I was mugged and lost $20',
+					dt: global.time
+				});
 				var game = require('./Games/EndOfDay.js');
 				this.Data.game = game(this.Data.scene);
 			}
@@ -140,9 +167,9 @@ SceneCreator.prototype = {
 
 			global.wallet.Update(timer);
 
-			for(var i = 0; i < this.Data.scene.characters.length; i++) {
-				this.Data.scene.characters[i].Update(timer, this.Data.scene);
-			}
+			timer.elapsed *= global.timeScale;
+			OP.timer.SetElapsed(timer, timer.elapsed);
+
 
 				if(this.Data.game) {
 					var result = this.Data.game.Update(timer, this.Data.gamePad0);
@@ -157,9 +184,9 @@ SceneCreator.prototype = {
 				}
 
 				if(this.Data.option) {
-						// Getting a selection
-						this.Data.option.Update(this.Data.gamePad0);
-						return 0;
+					// Getting a selection
+					this.Data.option.Update(this.Data.gamePad0);
+					return 0;
 				}
 
 				if (Input.WasBackPressed(this.Data.gamePad0))  {
@@ -175,6 +202,12 @@ SceneCreator.prototype = {
 				if (!this.Data.camera.freeForm) {
 					this.Data.player.Update(timer, this.Data.gamePad0);
 				}
+
+
+				for(var i = 0; i < this.Data.scene.characters.length; i++) {
+					this.Data.scene.characters[i].Update(timer, this.Data.scene);
+				}
+
 
 				OP.physXScene.Update(this.Data.physXScene, timer);
 
@@ -243,7 +276,7 @@ SceneCreator.prototype = {
 					this.Data.Required = '';
 				}
 
-				if(OP.keyboard.WasPressed(OP.KEY.E) || this.Data.gamePad0.WasPressed(OP.gamePad.Y)) {
+				if(Input.WasActionPressed(this.Data.gamePad0)) {
 						for(var i = 0; i < collisions.length; i++) {
 
 							switch(collisions[i].type) {
@@ -260,7 +293,6 @@ SceneCreator.prototype = {
 										}
 									}
 
-									                    console.log(collisions[i].logic);
 									if(collisions[i].logic) {
 										collisions[i].logic();
 									}
@@ -278,7 +310,6 @@ SceneCreator.prototype = {
 								}
 								case 'game' : {
 									if(this.Data.game) continue;
-									console.log('LOADING GAME: ', collisions[i].data.game);
 									var game = require('./Games/' + collisions[i].data.game);
 									this.Data.game = game(this.Data.scene);
 									continue;
@@ -314,9 +345,10 @@ SceneCreator.prototype = {
 											text: collisions[i].data.options[0],
 											select: function() {
 												if(cup) {
-													global.game.target = global.game.cash - 0.25;
 													if(cup.coffee) {
-														global.game.target = global.game.cash - 0.50;
+														global.wallet.AddExpense(cup.type + ' ' + cup.coffee.type + ' Coffee', 'cup', 0.50);
+													} else {
+														global.wallet.AddExpense(cup.type + ' Cup', 'cup', 0.25);
 													}
 													global.inventory.Remove('cup');
 												}
@@ -359,11 +391,18 @@ SceneCreator.prototype = {
 							if(global.tasks[i].time > 3000) {
 								global.tasks.splice(i, 1);
 							}
+						} else if(global.tasks[i].failed && global.tasks[i].failed()) {
+							global.tasks[i].time += timer.elapsed;
+							if(global.tasks[i].time > 3000) {
+								global.tasks.splice(i, 1);
+							}
 						} else if(global.tasks[i].time < 0) {
 							global.tasks[i].time += timer.elapsed;
 						}
 					}
 				}
+
+				global.inventory.UpdateItems(timer, this.Data.gamePad0);
 
 				return 0;
 		},
@@ -371,8 +410,6 @@ SceneCreator.prototype = {
 		Update: function(timer) {
 			var result = this.update(timer);
 			if(result == -1) {
-				/// Ummm, I'm gonna need you to go ahead come in tomorrow
-				console.log('KILLED SCENE');
 				return 1;
 			} else {
 				this.Render();
@@ -417,9 +454,36 @@ SceneCreator.prototype = {
 					this.Data.fontManager36.SetAlign(OP.FONTALIGN.CENTER);
 					OP.fontRender.Color(0.9, 0.9, 0.9);
 					OP.fontRender('$' + global.wallet.TotalMoney.toFixed(2), 100, this.Data.size.ScaledHeight - 75);
+
+					if(global.wallet.Last) {
+						if(global.wallet.Last.type == 'expense') {
+							OP.fontRender.Color(1.0, 0.0, 0.0);
+							OP.fontRender('- $' + global.wallet.Last.amount.toFixed(2), 100, this.Data.size.ScaledHeight - 130);
+						} else {
+							OP.fontRender.Color(0.0, 0.8, 0.0);
+							OP.fontRender('+ $' + global.wallet.Last.amount.toFixed(2), 100, this.Data.size.ScaledHeight - 130);
+						}
+					}
+
 					this.Data.fontManager36.SetAlign(OP.FONTALIGN.RIGHT);
-					OP.fontRender(DateAndTime.format(global.time,'h:mm A'), this.Data.size.ScaledWidth - 20, 10);
+					OP.fontRender.Color(1.0, 1.0, 1.0);
+					OP.fontRender(DateAndTime.format(global.time,'E MMM DD YYYY'), this.Data.size.ScaledWidth - 20, 10);
+					OP.fontRender(DateAndTime.format(global.time,'h:mm A'), this.Data.size.ScaledWidth - 20, 40);
 					OP.fontRender.End();
+
+					if(global.job && global.job.clocked) {
+						OP.fontRender.Begin(this.Data.fontManager24);
+						this.Data.fontManager24.SetAlign(OP.FONTALIGN.RIGHT);
+						OP.fontRender.Color(0, 0.8, 0);
+						OP.fontRender('Working', this.Data.size.ScaledWidth - 20, 80);
+
+						var seconds = global.job.time / 1000;
+						var minutes = seconds / 60;
+						var hours = minutes / 60;
+						OP.fontRender(hours.toFixed(2) + ' hours', this.Data.size.ScaledWidth - 20, 100);
+						OP.fontRender.End();
+					}
+
 
 					if(this.Data.Required) {
 						OP.fontRender.Begin(this.Data.fontManager24);
@@ -444,6 +508,9 @@ SceneCreator.prototype = {
 						}
 						if(global.tasks[i].complete()) {
 							OP.fontRender.Color(0.0, 0.7, 0.0);
+							OP.fontRender('E', pos, 20 + i * 50);
+						} else if(global.tasks[i].failed && global.tasks[i].failed()) {
+							OP.fontRender.Color(1.0, 0.0, 0.0);
 							OP.fontRender('E', pos, 20 + i * 50);
 						} else {
 							OP.fontRender.Color(0.9, 0.9, 0.9);

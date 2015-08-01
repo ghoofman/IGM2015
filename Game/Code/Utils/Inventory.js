@@ -33,7 +33,7 @@ Inventory.prototype = {
 
 	Add: function(item, data) {
 		if(this.Has(item)) return;
-		
+
 		this.items[item] = data;
 		var sheet = data.sheet;
 
@@ -65,6 +65,14 @@ Inventory.prototype = {
 		this.Add(item, data);
 	},
 
+	UpdateItems: function(timer, gamepad) {
+		for (var key in this.items) {
+			if(this.items[key] && this.items[key].Entity) {
+				this.items[key].Entity.Update(timer, gamepad);
+			}
+		}
+	},
+
 	Update: function(item, data) {
 		var r = this.Remove(item);
 		if(r == null || r == undefined) {
@@ -86,6 +94,9 @@ Inventory.prototype = {
 		if(!this.items[item]) return null;
 
 		var data = this.items[item];
+		if(this.active == this.items[item]) {
+			this.active = false;
+		}
 
 		var sheet = this.items[item].sheet;
 
@@ -100,8 +111,27 @@ Inventory.prototype = {
 		}
 
 		this.items[item] = null;
+		delete this.items[item];
 
 		return data;
+	},
+
+	SetActive: function(item) {
+		if(!item) {
+			this.active = null;
+			return;
+		}
+
+		if(!this.items[item]) {
+			return null;
+		}
+
+		if(this.active) {
+			this.active.active = false;
+		}
+
+		this.active = this.items[item];
+		this.active.active = true;
 	}
 
 };

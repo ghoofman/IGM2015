@@ -1,11 +1,14 @@
 var OP = require('OPengine').OP;
 var OPgameState = require('OPgameState');
 var MixPanel = require('./Utils/MixPanel.js');
-var SceneCreator = require('./SceneCreator.js');
+var MainMenu = require('./MainMenu.js');
 var Inventory = require('./Utils/Inventory.js');
 var AudioPlayer = require('./Utils/AudioPlayer.js');
 var Wallet = require('./Utils/Wallet.js');
 
+
+// Setup global values
+// TODO: move to a setup file
 global.game = {
 	money: 100000,
 	cash: 10,
@@ -13,9 +16,8 @@ global.game = {
 	loans: 10
 };
 
-global.ai = {
-
-};
+global.ai = { };
+global.memory = {};
 
 global.wallet = new Wallet();
 
@@ -27,18 +29,11 @@ global.time.setMilliseconds(0);
 
 global.timeScale = 1000;
 
-global.tasks = [
-	{
-		text: 'Find an Apartment',
-		complete: function() { return global.inventory.Has('apartment-key'); },
-		time: -1000
-	},
-	{
-		text: 'Find a Job',
-		complete: function() { return global.inventory.Has('cafe-key'); },
-		time: -2000
-	}
-];
+global.tasks = [ ];
+
+global.journal = [ ];
+
+
 
 try {
 
@@ -46,12 +41,16 @@ try {
 		os: 'OSX'
 	});
 
-	global.debug = true;
-	var scene = new SceneCreator('/Scenes/Bedroom.json', 1);
+	global.spawned = true;
+	//global.debug = true;
+	//var scene = new SceneCreator('/Scenes/Bedroom.json', 1);
 	//var scene = new SceneCreator('/Scenes/Cafe.json', 1);
 	//var scene = new SceneCreator('/Scenes/Street.json', 1);
+	//var scene = new SceneCreator('/Scenes/TaxiCab.json', 1);
 	//var scene = new SceneCreator('/Scenes/Apartment.json', 1);
 	//var scene = new SceneCreator('/Scenes/Hallway.json', 1);
+
+	var scene = new MainMenu();
 
 	if(!process.env.WAYWARD_REPO) {
 		process.env.WAYWARD_REPO = '..';
@@ -65,7 +64,7 @@ try {
 		// TODO: (garrett) Correct it to location to load
 		OP.cman.Init('../../Assets');
 		OP.render.Init();
-		OP.gamePad.SetDeadZones(0.2);
+		OP.gamePad.SetDeadZones(0.3);
 
 		// Initialize PhysX and the debugger
 		OP.physX.Init();
@@ -73,7 +72,7 @@ try {
 
 		OP.fmod.Init();
 		global.AudioPlayer = new AudioPlayer();
-		//global.AudioPlayer.AddBackground('Audio/Background.ogg');
+		global.AudioPlayer.AddBackground('Audio/Degree_BG.ogg');
 
 		MixPanel.Track("Application Initialized");
 
@@ -85,9 +84,9 @@ try {
 	function AppUpdate(timer) {
 		global.AudioPlayer.Update(timer);
 
-		if (OP.keyboard.WasReleased(OP.KEY.T)) {
-			global.AudioPlayer.PlayEffect('Audio/pew.wav');
-		}
+		// if (OP.keyboard.WasReleased(OP.KEY.T)) {
+		// 	global.AudioPlayer.PlayEffect('Audio/pew.wav');
+		// }
 
 		OP.keyboard.Update();
 		OP.gamePad.Update();

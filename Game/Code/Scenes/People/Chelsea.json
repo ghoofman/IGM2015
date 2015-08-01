@@ -1,0 +1,6 @@
+{
+  "name" : "Chelsea",
+  "file" : "Chelsea.qb",
+  "AI" : "People/Chelsea.js",
+  "offset" : [ 45, 0, 50 ]
+}

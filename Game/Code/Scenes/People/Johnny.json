@@ -1,0 +1,6 @@
+{
+  "name" : "Johnny",
+  "file" : "Johnny.qb",
+  "AI" : "People/Johnny.js",
+  "offset" : [ 45, 0, 50 ]
+}

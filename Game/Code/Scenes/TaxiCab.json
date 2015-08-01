@@ -1,0 +1,72 @@
+{
+  "name" : "TaxiCab",
+  "scale" : 0.75,
+  "logic" : "Taxi.js",
+  "planes": {
+    "xNegative" : -30,
+    "xPositive" : 30,
+    "zNegative" : -1,
+    "zPositive" : 25,
+    "yNegative" : 0
+  },
+  "camera": {
+    "xNegative" : -50,
+    "xPositive" : 50,
+    "yDistance" : 40,
+    "zDistance" : 225,
+    "zNegative" : -80,
+    "zPositive" : -80,
+	"yOffset" : 10
+  },
+  "positions": [
+    {
+      "id": 1,
+      "position": [ 0, 0, 20 ]
+    }
+  ],
+  "characters" :  [
+    {
+      "file": "People/Mom.json",
+      "offset" : [ 300,0,120 ],
+      "scale" : [0.75, 0.75, 0.75 ]
+    },
+    {
+      "file": "People/Dad.json",
+      "offset" : [ 300,0,120 ],
+      "scale" : [0.75, 0.75, 0.75 ]
+    }
+  ],
+  "models" : [
+    {
+      "file" : "InsideTaxiCar.qb",
+      "offset" : [ 0, 0, 0 ],
+      "collision" : {
+        "default": false,
+        "custom" : [
+            {
+              "id" : 2,
+              "type" : "door",
+              "name" : "Street",
+              "data" : {
+                "file" : "Scenes/Street.json"
+              },
+              "collide" : false,
+              "offset" : [ -30, 0, 0 ],
+              "size" : [ 10, 30, 30 ]
+          },
+          {
+            "id" : 2,
+            "type" : "door",
+            "name" : "Street",
+            "data" : {
+              "file" : "Scenes/Street.json"
+            },
+            "collide" : false,
+            "offset" : [ 30, 0, 0 ],
+            "size" : [ 10, 30, 30 ]
+          }
+        ]
+      }
+    }
+  ]
+}

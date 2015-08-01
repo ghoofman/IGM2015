@@ -1,0 +1,6 @@
+{
+  "name" : "Lily",
+  "file" : "Lily.qb",
+  "AI" : "People/Lily.js",
+  "offset" : [ 45, 0, 50 ]
+}

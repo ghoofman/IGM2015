@@ -8,7 +8,7 @@ function Charles(character) {
 	global.charles = {};
 	this.vec3 = OP.vec3.Create(0,0,0);
 
-	if(global.job && global.job.title == 'barista') {
+	if((global.job && global.job.title == 'barista') || global.currentScene.name != 'Cafe' ) {
 		this.character.dead = true;
 		this.character.alive = false;
 		return;
@@ -26,23 +26,15 @@ Charles.prototype = {
 	Update: function(timer, scene) {
 
 		if(this.character.dead) {
-			console.log('CHARLES IS DEAD');
 			return;
-		} else {
-			console.log('CHARLES IS ALIVE');
 		}
 
 		if(!this.character.alive && (!global.job || global.job.title != 'barista')) {
-			console.log('SHOULD SPAWN');
 			if((!global.job || global.job.title != 'barista')) {
-				var start = this.character.scene.FindPosition(3);
-				this.character.Setup(null);
-			} else {
-				console.log('DID NOT SPAWN');
+				var start = this.character.scene.FindPosition(4);
+				this.character.Setup(start);
 			}
 			return;
-		} else {
-			console.log('DO NOT SPAWN', this.character.alive, global.job );
 		}
 
 		if(!this.character.alive) {
@@ -51,7 +43,6 @@ Charles.prototype = {
 
 		this.base.Move(timer);
 
-		console.log(this.state);
 		switch(this.state) {
 			case 'EXIT': {
 				var collisions = scene.Collisions(this.character);
@@ -59,6 +50,7 @@ Charles.prototype = {
 					if(collisions[i].type == 'door') {
 						this.target = null;
 						this.character.dead = 1;
+						this.character.alive = 0;
 						for(var i = 0; i < this.interactions.length; i++){
 							this.interactions[i].Leave && this.interactions[i].Leave(this.character);
 							this.interactions.splice(i, 1);
@@ -80,7 +72,6 @@ Charles.prototype = {
 								this.interactions.push(collisions[i].Entity);
 						}
 
-						console.log('Found the register');
 						this.target = null;
 						this.state = null;
 					}
@@ -91,6 +82,13 @@ Charles.prototype = {
 				var doors = scene.FindType('door');
 				for(var i = 0; i < doors.length; i++) {
 					if(doors[i].data && !doors[i].data.customer) {
+
+						for(var j = 0; j < this.interactions.length; j++){
+							this.interactions[j].Leave && this.interactions[j].Leave(this.character);
+							this.interactions.splice(j, 1);
+							j--;
+						}
+
 						this.target = doors[i].position;
 						this.state = 'EXIT';
 						break;
@@ -99,7 +97,6 @@ Charles.prototype = {
 				break;
 			}
 			case 'FIND_REGISTER': {
-				console.log('finding REGISTER');
 				this.state = 'REGISTER';
 				var registers = scene.FindType('register');
 				for(var i = 0; i < registers.length; i++) {
@@ -112,7 +109,6 @@ Charles.prototype = {
 			}
 			case 'WANDER': {
 				if(!this.target) {
-					console.log('Wander no more');
 					this.state = null;
 				}
 				break;
@@ -168,24 +164,53 @@ Charles.prototype = {
 			{ text: "A cup of coffee", select: CupSelect  },
 			{
 				text: 'A job please', select: function() {
-					var key = JSON('Scenes/Items/CafeKey.json');
-					global.inventory.Add(key.key, key.data);
-					global.job = {
-						title: 'barista',
-						rate: 8,
-						time: 0,
-						clocked: false
-					};
 
-                    global.tasks.push( {
-                		text: 'Get to work',
-                		complete: function() { return global.sceneName == 'Cafe' && global.sceneEntered == 3; },
-                		time: -1000
-                	});
+					return new Talk(self.character, 'Does the 9am to 1pm schedule work for you?',
+					[
+						{ text: 'I\'ll take it!', select: function() {
+							var key = JSON('Scenes/Items/CafeKey.json');
+							global.inventory.Add(key.key, key.data);
+							global.job = {
+								title: 'barista',
+								rate: 8,
+								time: 0,
+								clocked: false
+							};
 
-					self.done = true;
-					self.state = 'FIND_EXIT';
-					return new Talk(self.character, "You got it! I quit, here's the key to the back door. Enjoy.");
+							global.job.schedule = [{
+								start: 9,
+								end: 13
+							},{
+								start: 15,
+								end: 17
+							}];
+
+		                    global.job.activeSchedule = global.job.schedule[0];
+
+							if(global.job.activeSchedule.start - 1 > global.time.getHours() &&
+								global.job.activeSchedule.start < global.time.getHours()) {
+
+			                    global.tasks.push( {
+			                		text: 'Get to work',
+			                		complete: function() { return global.job && global.job.clocked; },
+			                		failed: function() { return !global.job; },
+									time: -1000
+			                	});
+							}
+
+							global.journal.unshift({
+								text: 'Got a job at Cup a Joe',
+								dt: global.time
+							});
+
+							self.done = true;
+							self.state = 'FIND_EXIT';
+							return new Talk(self.character, "You got it! I quit, here's the key to the back door. Enjoy.");
+						 }
+					 	},
+						{ text: 'No thanks.' }
+					]
+					);
 				}
         	}
 		]);

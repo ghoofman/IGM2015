@@ -18,11 +18,9 @@ Register.prototype = {
 
 		if(collision.data && collision.data.customer) {
 			this.customer = character;
-			console.log('CUSTOMER SET');
 		} else {
 			this.employee = character;
 		}
-		// console.log('INTERACTED', character);
 		// this.interacting.push(character);
 	},
 
@@ -36,14 +34,14 @@ Register.prototype = {
 	},
 
 	CanInteract: function() {
-		if(global.job && global.job.title == 'barista') {
+		if(global.job && global.job.title == 'barista' && global.job.clocked) {
 			if(this.customer) {
 				return null;
 			}
 			return {
 				text: 'No customer'
 			}
-		} else if(this.employee == true) {
+		} else if(!this.employee) {
 			return {
 				text: 'No employee'
 			}

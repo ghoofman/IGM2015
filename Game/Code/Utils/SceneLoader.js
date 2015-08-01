@@ -13,8 +13,10 @@ function SceneLoader(scene, name) {
 
     this.material = OP.physX.CreateMaterial(0.8, 0.8, 0.6);
 
-    this.Load(name);
 
+    this.logic = [];
+
+    this.Load(name);
 }
 
 SceneLoader.prototype = {
@@ -27,6 +29,7 @@ SceneLoader.prototype = {
     characters: [],
     scale: 1,
     limits: [ 0, 0, 150, 350, 0, 0 ],
+    logic: [],
 
     Load: function(name) {
         var scene = JSON.parse(fs.readFileSync(__dirname + '/../' + name, 'utf8'));
@@ -41,7 +44,8 @@ SceneLoader.prototype = {
           (scene.camera && scene.camera.yDistance) || 150,
           (scene.camera && scene.camera.zDistance) || 350,
           (scene.camera && scene.camera.zNegative) || 0,
-          (scene.camera && scene.camera.zPositive) || 0
+          (scene.camera && scene.camera.zPositive) || 0,
+          (scene.camera && scene.camera.yOffset) || 0
         ];
 
         var objects = [];
@@ -52,7 +56,6 @@ SceneLoader.prototype = {
         var characters = [];
         if(scene.characters) {
           for(var i = 0; i < scene.characters.length; i++) {
-            console.log('CHARACTER', i);
             var chr = scene.characters[i];
             characters.push(new Character(chr, this.scale, this.scene, this.material, this));
           }
@@ -60,57 +63,94 @@ SceneLoader.prototype = {
 
         // Add bounding Planes
 
-      	var yNegative = 0;
-      	var xNegative = -100;
-      	var xPositive = 100;
-      	var zNegative = -100;
-      	var zPositive = 100;
+      	this.yNegative = 0;
+      	this.xNegative = -100;
+      	this.xPositive = 100;
+      	this.zNegative = -100;
+      	this.zPositive = 100;
 
-      	if(scene.planes) {
-        		yNegative = scene.planes.yNegative || yNegative;
-        		xNegative = scene.planes.xNegative || xNegative;
-        		xPositive = scene.planes.xPositive || xPositive;
-        		zNegative = scene.planes.zNegative || zNegative;
-        		zPositive = scene.planes.zPositive || zPositive;
+  	    if(scene.planes) {
+    		this.yNegative = scene.planes.yNegative || this.yNegative;
+    		this.xNegative = scene.planes.xNegative || this.xNegative;
+    		this.xPositive = scene.planes.xPositive || this.xPositive;
+    		this.zNegative = scene.planes.zNegative || this.zNegative;
+    		this.zPositive = scene.planes.zPositive || this.zPositive;
       	}
 
-      	this.vec3_0.Set(0, yNegative, 0);
+      	this.vec3_0.Set(0, this.yNegative, 0);
       	this.vec3_1.Set(0, 0, 1);
       	var actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, 3.14 / 2.0, this.vec3_1);
       	OP.physX.AddPlaneShape(actor, this.material);
       	OP.physXScene.AddActor(this.scene, actor);
-
-
-      	this.vec3_0.Set(xNegative, 0, 0);
-      	this.vec3_1.Set(1, 0, 0);
-      	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0);
-      	OP.physX.AddPlaneShape(actor, this.material);
-      	OP.physXScene.AddActor(this.scene, actor);
-
-
-      	this.vec3_0.Set(xPositive, 0, 0);
-      	this.vec3_1.Set(0, 1, 0);
-      	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, -3.14, this.vec3_1);
-      	OP.physX.AddPlaneShape(actor, this.material);
-      	OP.physXScene.AddActor(this.scene, actor);
-
-
-      	this.vec3_0.Set(0, 0, zNegative);
-      	this.vec3_1.Set(0, 1, 0);
-      	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, -3.14 / 2.0, this.vec3_1);
-      	OP.physX.AddPlaneShape(actor, this.material);
-      	OP.physXScene.AddActor(this.scene, actor);
-
-
-      	this.vec3_0.Set(0, 0, zPositive);
-      	this.vec3_1.Set(0, 1, 0);
-      	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, 3.14 / 2.0, this.vec3_1);
-      	OP.physX.AddPlaneShape(actor, this.material);
-      	OP.physXScene.AddActor(this.scene, actor);
+        //
+        //
+     //  	this.vec3_0.Set(xNegative, 0, 0);
+     //  	this.vec3_1.Set(1, 0, 0);
+     //  	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0);
+     //  	OP.physX.AddPlaneShape(actor, this.material);
+     //  	OP.physXScene.AddActor(this.scene, actor);
+        //
+        //
+     //  	this.vec3_0.Set(xPositive, 0, 0);
+     //  	this.vec3_1.Set(0, 1, 0);
+     //  	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, -3.14, this.vec3_1);
+     //  	OP.physX.AddPlaneShape(actor, this.material);
+     //  	OP.physXScene.AddActor(this.scene, actor);
+        //
+        //
+     //  	this.vec3_0.Set(0, 0, zNegative);
+     //  	this.vec3_1.Set(0, 1, 0);
+     //  	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, -3.14 / 2.0, this.vec3_1);
+     //  	OP.physX.AddPlaneShape(actor, this.material);
+     //  	OP.physXScene.AddActor(this.scene, actor);
+        //
+        //
+     //  	this.vec3_0.Set(0, 0, zPositive);
+     //  	this.vec3_1.Set(0, 1, 0);
+     //  	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, 3.14 / 2.0, this.vec3_1);
+     //  	OP.physX.AddPlaneShape(actor, this.material);
+     //  	OP.physXScene.AddActor(this.scene, actor);
 
         this.data = scene;
         this.objects = objects;
         this.characters = characters;
+
+
+        if(scene.logic) {
+            if(Array.isArray(scene.logic)) {
+                for(var i = 0; i < scene.logic.length; i++) {
+                    var logic = require('../Logic/' + scene.logic[i]);
+                    this.logic.push(logic);
+                }
+            } else {
+                var logic = require('../Logic/' + scene.logic);
+                this.logic.push(logic);
+            }
+        }
+    },
+
+    LoadCharacters: function(file) {
+        var list = JSON.parse(fs.readFileSync(__dirname + '/../' + file, 'utf8'));
+
+        var characters = [];
+        for(var i = 0; i < list.length; i++) {
+            var chr = new Character(list[i], this.scale, this.scene, this.material, this);
+            characters.push(chr);
+            characters[chr.name] = chr;
+        }
+
+        this.characters = characters;
+
+    },
+
+    Logic: function(data, timer) {
+        for(var i = 0; i < this.logic.length; i++) {
+            if(this.logic[i](data, timer)) {
+                return 1;
+            }
+        }
+
+        return 0;
     },
 
     AddObject: function(json) {
@@ -193,14 +233,12 @@ SceneLoader.prototype = {
                     };
 
 
-                    console.log('LOGIC', coll.logic);
                     if(coll.logic) {
                         collision.logic = require('../Logic/' + coll.logic);
                     }
 
                     switch(collision.type) {
                         case 'trashcan': {
-                            console.log('Setup trashcan');
                             if(!actor.entities['trashcan']) {
                                 var Action = require('../Objects/Trashcan.js');
                                 actor.entities['trashcan'] = new Action();
@@ -209,7 +247,6 @@ SceneLoader.prototype = {
                             break;
                         }
                         case 'register': {
-                            console.log('Setup Register');
                             if(!actor.entities['register']) {
                                 var Action = require('../Objects/Register.js');
                                 actor.entities['register'] = new Action();

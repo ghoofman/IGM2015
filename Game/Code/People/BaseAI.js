@@ -19,6 +19,7 @@ BaseAI.prototype = {
 				this.ai.move = [ diffX, -0.98 * 4, diffZ ];
 				this.ai.vec3.Set(this.ai.move[0], this.ai.move[1], this.ai.move[2]);
 				this.ai.vec3.Norm();
+
 				OP.physXController.Move(this.ai.character.controller, this.ai.vec3, timer);
 				var oldPos = this.ai.character.FootPos;
 				this.ai.character.FootPos = OP.physXController.GetFootPos(this.ai.character.controller);
@@ -31,15 +32,11 @@ BaseAI.prototype = {
 				var moveZ = (oldPos.z - this.ai.character.FootPos.z);
 				// If we tried to move more than 0.1 but didn't on both axes, then it's time to wander
 				if(Math.abs(moveX) < 0.1 && Math.abs(diffX) > 0.1 && Math.abs(moveZ) < 0.1 && Math.abs(diffZ) > 0.1 ) {
-					//console.log("didn't move very far");
 					if(this.ai.state == 'WANDER') {
 						this.ai.state = null;
 						this.ai.target = null;
 					} else {
 						this.ai.state = 'WANDER';
-
-						// var x = oldPos.x - 30 + Math.random() * 60;
-						// var z = oldPos.z - 30 + Math.random() * 60;
 
 						var x = 0;
 						var z = 0;

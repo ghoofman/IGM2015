@@ -39,7 +39,7 @@ Camera.prototype = {
 
 
     // Look At
-    this.vec3_1.Set(target[0], target[1], target[2]);
+    this.vec3_1.Set(target[0], target[1] + this.limits[6], target[2]);
 
       if(target[0] < this.limits[0]) target[0] = this.limits[0];
       if(target[0] > this.limits[1]) target[0] = this.limits[1];

@@ -1,5 +1,6 @@
 var OP = require('OPengine').OP;
 var MixPanel = require('../Utils/MixPanel.js');
+var Input = require('../Utils/Input.js');
 
 function BaseSelector(name, optionSheet, options) {
   this.background = OP.texture2D.Create(OP.cman.LoadGet('FadedBackground.png'));
@@ -70,7 +71,7 @@ BaseSelector.prototype = {
 
     Update: function(timer, gamepad) {
 
-        if(OP.keyboard.WasPressed(OP.KEY.Q) || gamepad.WasPressed(OP.gamePad.BACK) || gamepad.WasPressed(OP.gamePad.B)) {
+        if(Input.WasBackPressed(gamepad)) {
             global.AudioPlayer.PlayEffect('Audio/Close.wav');
             if(!this.selectedSprite) {
                 return {
@@ -85,7 +86,7 @@ BaseSelector.prototype = {
             };
         }
 
-        if(this.canSelect && OP.keyboard.WasPressed(OP.KEY.A) || OP.keyboard.WasPressed(OP.KEY.LEFT) || gamepad.WasPressed(OP.gamePad.DPAD_LEFT) || gamepad.LeftThumbNowLeft()) {
+        if(this.canSelect && Input.WasLeftPressed(gamepad)) {
             OP.spriteSystem.SetSprite(this.selectors[this.selected], 1);
             this.selected--;
             if(this.selected < 0) this.selected = this.selectors.length - 1;
@@ -93,24 +94,24 @@ BaseSelector.prototype = {
             OP.spriteSystem.SetSprite(this.selectors[this.selected], 0);
         }
 
-        if(this.canSelect && OP.keyboard.WasPressed(OP.KEY.D) || OP.keyboard.WasPressed(OP.KEY.RIGHT) || gamepad.WasPressed(OP.gamePad.DPAD_RIGHT) || gamepad.LeftThumbNowRight()) {
+        if(this.canSelect && Input.WasRightPressed(gamepad)) {
             OP.spriteSystem.SetSprite(this.selectors[this.selected], 1);
             this.selected++;
             this.selected = this.selected % this.selectors.length;
             OP.spriteSystem.SetSprite(this.selectors[this.selected], 0);
         }
 
-        if(this.canSelect && OP.keyboard.IsDown(OP.KEY.E) || gamepad.IsDown(OP.gamePad.Y)) {
+        if(this.canSelect && Input.IsActionDown(gamepad)) {
             OP.spriteSystem.SetSprite(this.selectors[this.selected], 2);
         }
-        if(this.canSelect && OP.keyboard.WasReleased(OP.KEY.E) || gamepad.WasReleased(OP.gamePad.Y)) {
+        if(this.canSelect && Input.WasActionReleased(gamepad)) {
             OP.spriteSystem.SetSprite(this.selectors[this.selected], 0);
         }
 
-        if(this.canSelect && OP.keyboard.WasPressed(OP.KEY.E) || gamepad.WasPressed(OP.gamePad.Y)) {
+        if(this.canSelect && Input.WasActionPressed(gamepad)) {
             this.onSelected && this.onSelected(this.selected);
             global.AudioPlayer.PlayEffect('Audio/Selection.wav');
-        } else if(!this.canSelect && OP.keyboard.WasPressed(OP.KEY.E) || gamepad.WasPressed(OP.gamePad.Y)) {
+        } else if(!this.canSelect && Input.WasActionPressed(gamepad)) {
             global.AudioPlayer.PlayEffect('Audio/Denied.wav');
         }
 

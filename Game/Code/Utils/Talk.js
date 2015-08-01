@@ -1,4 +1,5 @@
 var OP = require('OPengine').OP;
+var Input = require('./Input.js');
 
 function Talk(character, text, options, complete) {
 	this.character = character;
@@ -7,10 +8,14 @@ function Talk(character, text, options, complete) {
 	this.complete = complete;
 
     this.fontManager = OP.fontManager.Setup('pixel.opf');
+    this.fontManager72 = OP.fontManager.Setup('pixel72.opf');
+    this.fontManager36 = OP.fontManager.Setup('pixel36.opf');
+
 	this.background = OP.texture2D.Create(OP.cman.LoadGet('FadedBackground.png'));
 	this.background.Scale.Set(2, 2);
 
 	var size = OP.render.Size();
+	this.size = size;
 	this.camera = OP.cam.Ortho(0, 0, -100, 0, 0, 0, 0, 1, 0, 0.1,250.0, 0, size.ScaledWidth, 0, size.ScaledHeight);
 
 	// The basic effect to use for all rendering (for now)
@@ -44,28 +49,24 @@ Talk.prototype = {
 	selected: 0,
 
 	Update: function(timer, gamepad) {
-		if(OP.keyboard.WasPressed(OP.KEY.Q) || gamepad.WasPressed(OP.gamePad.BACK) || gamepad.WasPressed(OP.gamePad.B)) {
-			return {
-				result: 1
-			};
-		}
+		// if(Input.WasBackPressed(gamepad)) {
+		// 	return {
+		// 		result: 1
+		// 	};
+		// }
 
 		if(this.options) {
-	        if(OP.keyboard.WasPressed(OP.KEY.W) || gamepad.WasPressed(OP.gamePad.DPAD_UP) || gamepad.LeftThumbNowUp()) {
+	        if(Input.WasUpPressed(gamepad)) {
 	            this.selected--;
 	            if(this.selected < 0) this.selected = this.options.length - 1;
 	        }
-	        if(OP.keyboard.WasPressed(OP.KEY.S) || gamepad.WasPressed(OP.gamePad.DPAD_DOWN) || gamepad.LeftThumbNowDown()) {
+	        if(Input.WasDownPressed(gamepad)) {
 	            this.selected++;
 	        }
 	        this.selected = this.selected % this.options.length;
 		}
-		//
-	    // if(OP.keyboard.IsDown(OP.KEY.E) || gamepad.IsDown(OP.gamePad.Y)) {
-	    //     OP.spriteSystem.SetSprite(this.btn, 2);
-	    // }
 
-        if(OP.keyboard.WasPressed(OP.KEY.ENTER) || OP.keyboard.WasPressed(OP.KEY.E) || gamepad.WasPressed(OP.gamePad.Y)) {
+        if(Input.WasActionPressed(gamepad)) {
 
 			if(this.options && this.options[this.selected].select) {
 				var result = this.options[this.selected].select();
@@ -75,9 +76,10 @@ Talk.prototype = {
 					next: result
 				};
 			} else {
-				this.complete && this.complete();
+				var result = this.complete && this.complete();
 				return {
-					result: 1
+					result: 1,
+					next: result
 				};
 			}
 		}
@@ -95,27 +97,48 @@ Talk.prototype = {
 		OP.spriteSystem.Render(this.spriteSystem, this.camera);
 
 
-        this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
       	OP.fontRender.Begin(this.fontManager);
+        this.fontManager.SetAlign(OP.FONTALIGN.LEFT);
 		var offset = 0;
+		var xOffset = 0;
 		if(this.options && this.options.length == 3) offset = 25;
-      	OP.fontRender(this.text, 250, 475 - offset);
+
+		if(Array.isArray(this.text)) {
+			for(var i = 0; i < this.text.length; i++) {
+		      	OP.fontRender(this.text[i], 250 + xOffset, 475 - offset);
+				offset -= 50;
+			}
+			offset += 50;
+		} else {
+	      	OP.fontRender(this.text, 250 + xOffset, 475 - offset);
+		}
+		offset -= 20;
+      	OP.fontRender.End();
+
 		if(this.options) {
+	      	OP.fontRender.Begin(this.fontManager36);
 	        for(var i = 0; i < this.options.length; i++) {
 	          if(this.selected == i) {
 	    		OP.fontRender.Color(0.5,1.0,0.5);
-	  		  	OP.fontRender('<', 265, 525 + i * 50 - offset);
+	  		  	OP.fontRender('<', 265 + xOffset, 525 + i * 50 - offset);
 	          } else {
 	    		OP.fontRender.Color(1,1,1);
 	          }
-			  OP.fontRender(this.options[i].text, 300, 525 + i * 50 - offset);
+			  OP.fontRender(this.options[i].text, 300 + xOffset, 525 + i * 50 - offset);
 	        }
+	      	OP.fontRender.End();
 		}
-      	OP.fontRender.End();
 
 		OP.render.Depth(1);
 		OP.render.DepthWrite(1);
 		this.character.DrawPos([-100,140,-40], [0.3, -0.7], 6, this.material, this.camera);
+
+		OP.fontRender.Begin(this.fontManager72);
+        this.fontManager72.SetAlign(OP.FONTALIGN.LEFT);
+	  	OP.fontRender.Color(1,1,1);
+		OP.fontRender(this.character.name, 250, 372);
+
+      	OP.fontRender.End();
 	},
 
 	Exit: function() {

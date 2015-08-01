@@ -8,6 +8,12 @@ function James(character) {
 	global.james = {};
 	this.vec3 = OP.vec3.Create(0,0,0);
 
+	if(global.currentScene.name != 'Apartment' ) {
+		this.character.dead = true;
+		this.character.alive = false;
+		return;
+	}
+
 	this.state = 'FIND_REGISTER';
 	this.target = null;
 
@@ -33,7 +39,6 @@ James.prototype = {
 
 		this.base.Move(timer);
 
-		//console.log(this.state);
 		switch(this.state) {
 			case 'EXIT': {
 				var collisions = scene.Collisions(this.character);
@@ -62,7 +67,6 @@ James.prototype = {
 								this.interactions.push(collisions[i].Entity);
 						}
 
-						console.log('Found the register');
 						this.target = null;
 						this.state = null;
 					}
@@ -81,7 +85,6 @@ James.prototype = {
 				break;
 			}
 			case 'FIND_REGISTER': {
-				console.log('finding REGISTER');
 				this.state = 'REGISTER';
 				var registers = scene.FindType('register');
 				for(var i = 0; i < registers.length; i++) {
@@ -94,7 +97,6 @@ James.prototype = {
 			}
 			case 'WANDER': {
 				if(!this.target) {
-					console.log('Wander no more');
 					this.state = null;
 				}
 				break;
@@ -112,21 +114,31 @@ James.prototype = {
 
 		global.AudioPlayer.PlayEffect('Audio/Speak.wav');
 
+		if(global.inventory.Has('apartment-key')) {
+			return new Talk(this.character, 'If there\'s anything I can do to help, let me know.');
+		}
+
         return new Talk(this.character, 'What would you like?', [
 			{ text: 'Nothing', select: function() {  } },
 			{ text: "A room please.", select: function() {
-					return new Talk(self.character, "It requires a $50 deposit and costs $10 / day. Does that work?", [
+					return new Talk(self.character, "It requires a $100 deposit and costs $15 / day. Does that work?", [
 						{ text: "I'll take it.", select: function() {
 
-							global.wallet.AddExpense('Down Payment', 'rent', 50);
+							global.wallet.AddExpense('Apartment Deposit', 'rent', 100);
 
 								var key = JSON('Scenes/Items/Apartment3Key.json');
 								global.inventory.Add(key.key, key.data);
 
 								global.apartment = {
-									rent: 10,
+									rent: 15,
 									room: 3
 								};
+
+								global.journal.unshift({
+									text: 'Got Apartment 3 at GLOBAL Apartments',
+									dt: global.time
+								});
+
 								return new Talk(self.character, "Very well, you can take Apartment 3");
 							}
 						},

@@ -2,6 +2,7 @@
   "name" : "Cafe",
   "scale" : 1,
   "planes": {
+    "useBlocking" : true,
     "xNegative" : -200,
     "xPositive" : 200,
     "zNegative" : -100,
@@ -11,6 +12,8 @@
   "camera": {
     "zNegative" : -50,
     "zPositive" : 50,
+    "xNegative" : -125,
+    "xPositive" : 125,
     "yDistance" : 275
   },
   "positions": [
@@ -21,6 +24,10 @@
     {
       "id": 3,
       "position": [ 180, 0, -80 ]
+    },
+    {
+      "id": 4,
+      "position": [ 65, 0, -32 ]
     }
   ],
   "characters" : [
@@ -31,6 +38,16 @@
     },
     {
       "file": "People/Charles.json",
+      "offset" : [ 65, 0, -50 ],
+      "force" : true
+    },
+    {
+      "file": "People/Lily.json",
+      "offset" : [ 65, 0, -50 ],
+      "force" : true
+    },
+    {
+      "file": "People/Johnny.json",
       "offset" : [ 65, 0, -50 ],
       "force" : true
     }
@@ -209,8 +226,8 @@
             "collide" : false,
             "size" : [ 18, 15, 25 ],
             "data": {
-              "text": "Want to throw your cup away?",
-              "options": [ "Toss it", "Nope"]
+              "text": "Do I want to throw my cup away?",
+              "options": [ "Throw it away", "Keep it" ]
             }
           }
         ]

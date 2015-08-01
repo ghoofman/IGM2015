@@ -1,64 +1,28 @@
 var OP = require('OPengine').OP;
 var Input = require('../Utils/Input.js');
+var DateAndTime = require('date-and-time');
+var Progress = require('./InventoryViewer/Progress.js');
+var Inventory = require('./InventoryViewer/Inventory.js');
+var Journal = require('./InventoryViewer/Journal.js');
+var Settings = require('./InventoryViewer/Settings.js');
+var Quit = require('./InventoryViewer/Quit.js');
+var Notifications = require('./InventoryViewer/Notifications.js');
+var Job = require('./InventoryViewer/Job.js');
 
 function InventoryViewer() {
 
-	this.spriteSystems = {};
-	this.items = [];
-	this.selected = -1;
+	this.initialRelease = 0;
 
 	this.background = OP.texture2D.Create(OP.cman.LoadGet('FadedBackground.png'));
 	this.background.Scale.Set(2, 2);
 
+	this.fontManager = OP.fontManager.Setup('pixel.opf');
 	this.fontManager36 = OP.fontManager.Setup('pixel.opf');
 	this.fontManager24 = OP.fontManager.Setup('pixel24.opf');
-
-	for(var key in global.inventory.items) {
-		console.log(key);
-		console.log(global.inventory.items[key]);
-		if(global.inventory.items[key]) {
-			this.items.push(global.inventory.items[key]);
-		}
-	}
-
-	for(var i = 0; i < this.items.length; i++) {
-		var sheet = this.items[i].sheet;
-		OP.cman.Load(sheet);
-		if(!this.spriteSystems[sheet]) {
-			this.spriteSystems[sheet] = {
-				sprites: [],
-				spriteSystem: null
-			};
-		}
-		console.log('ADDING ITEM', sheet, this.items[i].item);
-		this.spriteSystems[sheet].sprites.push(OP.cman.Get(sheet + '/' + this.items[i].item));
-	}
-
-	for(var key in this.spriteSystems) {
-		console.log('GEN SYSTEM', key, this.spriteSystems[key].sprites, this.spriteSystems[key].sprites.length);
-		this.spriteSystems[key].spriteSystem = OP.spriteSystem.Create(
-			this.spriteSystems[key].sprites,
-			1,
-			OP.SPRITESYSTEMALIGN.CENTER);
-	}
+	this.fontManager72 = OP.fontManager.Setup('pixel72.opf');
 
 	this.size = OP.render.Size();
 	this.screenCamera = OP.cam.Ortho(0, 0, 10, 0, 0, 0, 0, 1, 0, 0.1, 20.0, 0, this.size.ScaledWidth, 0, this.size.ScaledHeight);
-
-
-	if(this.items.length > 0) {
-		this.selected = 0;
-		var sheet = this.items[this.selected].sheet;
-		console.log('BUILDING ITEM', sheet);
-		this.items[this.selected]._sprite = OP.spriteSystem.Add(
-			this.spriteSystems[sheet].spriteSystem);
-
-		this.items[this.selected]._sprite.Scale.Set(0.5, 0.5, 0.5);
-		OP.spriteSystem.SetSprite(this.items[this.selected]._sprite, this.selected);
-		this.items[this.selected]._sprite.Position.Set(this.size.ScaledWidth / 2.0, this.size.ScaledHeight / 2.0);
-
-	}
-
 
 	var sheet = 'BaseSelector';
 	OP.cman.Load(sheet + '.opss');
@@ -71,9 +35,12 @@ function InventoryViewer() {
 	this.uiSpriteSystem.sprites.push(OP.cman.Get(sheet + '/ActionOff'));
 	this.uiSpriteSystem.sprites.push(OP.cman.Get(sheet + '/ActionPush'));
 	this.uiSpriteSystem.sprites.push(OP.cman.Get(sheet + '/ProgressBackground'));
+	this.uiSpriteSystem.sprites.push(OP.cman.Get(sheet + '/BackButton'));
+	this.uiSpriteSystem.sprites.push(OP.cman.Get(sheet + '/BackButtonOff'));
+	this.uiSpriteSystem.sprites.push(OP.cman.Get(sheet + '/BackButtonPush'));
 	this.uiSpriteSystem.spriteSystem = OP.spriteSystem.Create(
 		this.uiSpriteSystem.sprites,
-		2,
+		3,
 		OP.SPRITESYSTEMALIGN.CENTER);
 
 	var titleBg = OP.spriteSystem.Add(this.uiSpriteSystem.spriteSystem);
@@ -81,123 +48,86 @@ function InventoryViewer() {
 	titleBg.Scale.Set(1000, 1);
 	OP.spriteSystem.SetSprite(titleBg, 3);
 
-
 	this.btn = OP.spriteSystem.Add(this.uiSpriteSystem.spriteSystem);
 	this.btn.Position.Set(this.size.ScaledWidth - 100, 50);
+	OP.spriteSystem.SetSprite(this.btn, 1);
+
+	this.back = OP.spriteSystem.Add(this.uiSpriteSystem.spriteSystem);
+	this.back.Position.Set(100, 50);
+	OP.spriteSystem.SetSprite(this.back, 5);
+
+
+
+	var self = this;
+
+	this.subSelection = 0;
+	this.subSections = [];
+
+	this.subSections.push(new Inventory(this));
+	//this.subSections.push(new Notifications(this));
+	this.subSections.push(new Progress(this));
+	if(global.job) {
+		this.subSections.push(new Job(this));
+	}
+	this.subSections.push(new Journal(this));
+	this.subSections.push(new Settings(this));
+	this.subSections.push(new Quit(this));
 }
 
 InventoryViewer.prototype = {
 	spriteSystems: {},
 	items: [],
 	selected: -1,
+	subSelection: 0,
+	subSections : [],
+	state: 0,
 
 	Update: function(timer, gamepad) {
+		if(Input.WasDownPressed(gamepad)) {
+			this.subSelection++;
+			this.subSelection = this.subSelection % this.subSections.length;
+		}
 
-		if(Input.WasActionPressed(gamepad)) {
+		if(Input.WasUpPressed(gamepad)) {
+			this.subSelection--;
+			if(this.subSelection < 0) this.subSelection = this.subSections.length - 1;
+			this.subSelection = this.subSelection % this.subSections.length;
+		}
+
+		var result = this.subSections[this.subSelection].update(timer, gamepad);
+
+		if(!this.initialRelease && Input.WasBackReleased(gamepad)) {
+			this.initialRelease = true;
+		} else if(this.initialRelease && Input.WasBackReleased(gamepad)) {
 			return {
 				result: 1
-			}
-		}
-		if(Input.WasBackPressed(gamepad)) {
-			return {
-				result: 1
-			}
+			};
 		}
 
-
-		if(this.selected > -1) {
-
-	        if(Input.WasLeftPressed(gamepad)) {
-
-				if(this.items[this.selected]._sprite) {
-					var sheet = this.items[this.selected].sheet;
-					var spriteSystem = this.spriteSystems[sheet].spriteSystem;
-					OP.spriteSystem.Remove(spriteSystem, this.items[this.selected]._sprite);
-
-					console.log('LEFT', this.selected, this.items[this.selected]);
-					this.items[this.selected]._sprite = null;
-
-					this.selected--;
-		            if(this.selected < 0) this.selected = this.items.length - 1;
-		            this.selected = this.selected % this.items.length;
-
-					console.log('LEFT', this.selected, this.items[this.selected]);
-
-					var sheet = this.items[this.selected].sheet;
-					this.items[this.selected]._sprite = OP.spriteSystem.Add(
-						this.spriteSystems[sheet].spriteSystem);
-
-					this.items[this.selected]._sprite.Scale.Set(0.5, 0.5, 0.5);
-					OP.spriteSystem.SetSprite(this.items[this.selected]._sprite, this.selected);
-					this.items[this.selected]._sprite.Position.Set(this.size.ScaledWidth / 2.0, this.size.ScaledHeight / 2.0);
-		        }
-			}
-
-	        if(Input.WasRightPressed(gamepad)) {
-
-				if(this.items[this.selected]._sprite) {
-					OP.spriteSystem.Remove(this.spriteSystems[this.items[this.selected].sheet].spriteSystem, this.items[this.selected]._sprite);
-
-					console.log('RIGHT', this.selected, this.items[this.selected]);
-
-					this.selected++;
-		            this.selected = this.selected % this.items.length;
-
-
-					console.log('RIGHT', this.selected, this.items[this.selected]);
-
-					var sheet = this.items[this.selected].sheet;
-					this.items[this.selected]._sprite = OP.spriteSystem.Add(
-						this.spriteSystems[sheet].spriteSystem);
-
-					this.items[this.selected]._sprite.Scale.Set(0.5, 0.5, 0.5);
-					OP.spriteSystem.SetSprite(this.items[this.selected]._sprite, this.selected);
-					this.items[this.selected]._sprite.Position.Set(this.size.ScaledWidth / 2.0, this.size.ScaledHeight / 2.0);
-
-		        }
-			}
-		}
-
-		return {
-			result: 0
-		};
+		return result;
 	},
 
 	Draw: function() {
         OP.texture2D.Render(this.background);
 
-		OP.spriteSystem.Render(
-			this.uiSpriteSystem.spriteSystem, this.screenCamera);
-
-		for(var key in this.spriteSystems) {
-			//console.log(this.spriteSystems[key].spriteSystem, this.screenCamera);
-			OP.spriteSystem.Render(
-				this.spriteSystems[key].spriteSystem, this.screenCamera);
-		}
+		OP.spriteSystem.Render(this.uiSpriteSystem.spriteSystem, this.screenCamera);
 
 		OP.fontRender.Begin(this.fontManager36);
-		this.fontManager36.SetAlign(OP.FONTALIGN.CENTER);
-		OP.fontRender("My Inventory", this.size.ScaledWidth / 2.0, -250 + this.size.ScaledHeight / 2.0);
+		this.fontManager36.SetAlign(OP.FONTALIGN.LEFT);
 		OP.fontRender.Color(0.0, 0.7, 0.0);
-		if(this.items.length > 1) {
-			OP.fontRender(">", -200 + this.size.ScaledWidth / 2.0, this.size.ScaledHeight / 2.0);
-			OP.fontRender("<", 200 + this.size.ScaledWidth / 2.0, this.size.ScaledHeight / 2.0);
+		OP.fontRender("<", 50, -250 + this.subSelection * 50 + this.size.ScaledHeight / 2.0);
+
+		for(var i = 0; i < this.subSections.length; i++) {
+			if(i == this.subSelection) {
+				OP.fontRender.Color(0.0, 0.7, 0.0);
+			} else {
+				OP.fontRender.Color(1.0, 1.0, 1.0);
+			}
+			OP.fontRender(this.subSections[i].text, 100, -250 + i * 50 + this.size.ScaledHeight / 2.0);
 		}
 		OP.fontRender.End();
 
-		if(this.selected > -1) {
-			OP.fontRender.Begin(this.fontManager36);
-			this.fontManager36.SetAlign(OP.FONTALIGN.CENTER);
-			OP.fontRender(this.items[this.selected].text, this.size.ScaledWidth / 2.0, 100 + this.size.ScaledHeight / 2.0);
-			OP.fontRender.End();
-
-			OP.fontRender.Begin(this.fontManager24);
-			this.fontManager24.SetAlign(OP.FONTALIGN.CENTER);
-			for(var i = 0 ; i < this.items[this.selected].desc.length; i++) {
-				OP.fontRender(this.items[this.selected].desc[i], this.size.ScaledWidth / 2.0, i * 30 + 175 + this.size.ScaledHeight / 2.0);
-			}
-			OP.fontRender.End();
-		}
+		this.subSections[this.subSelection].render();
 	},
 
 	Exit: function() {

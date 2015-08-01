@@ -1,0 +1,67 @@
+{
+  "name" : "GLOBAL Bedroom",
+  "scale" : 1,
+  "planes": {
+    "xNegative" : -90,
+    "xPositive" : 85,
+    "zNegative" : -45,
+    "zPositive" : 50,
+    "yNegative" : 0
+  },
+  "camera": {
+    "xNegative" : -50,
+    "xPositive" : 50,
+    "yDistance" : 150,
+    "zDistance" : 250,
+    "zNegative" : -50,
+    "zPositive" : -50
+  },
+  "positions": [
+    {
+      "id": 1,
+      "position": [ -60, 0, -30 ]
+    }
+  ],
+  "models" : [
+    {
+      "file" : "GLOBALBedroom.qb",
+      "offset" : [ 0, 0, 0 ],
+      "collision" : {
+        "default": false,
+        "custom" : [
+          {
+            "id" : 1,
+            "type" : "door",
+            "name" : "Hallway",
+            "data" : {
+              "file":  "Scenes/GLOBALHallway.json"
+            },
+            "collide" : false,
+            "offset" : [ -70, 0, -45 ],
+            "size" : [ 30, 55, 10 ]
+          }
+        ]
+      }
+    },
+    {
+      "file" : "GLOBALBed.qb",
+      "offset" : [ 50, 0, -20 ],
+      "collision": {
+        "default" : true,
+        "custom" : [
+          {
+            "id" : 1,
+            "type" : "game",
+            "data" : {
+                "game" : "EndOfDay.js"
+            },
+            "name" : "My Bed",
+            "collide" : false,
+            "size" : [ 50, 30, 30 ],
+            "offset" : [ 0, 0, 0 ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+	"key": "global-apartment-key-1-c",
+	"data": {
+		"sheet": "CoffeeSelector",
+		"item": "Key-iso",
+		"text": "GLOBAL Apartments - Key 1C",
+		"desc": [ "I can use this to get into apartment 1C"]
+	}
+}

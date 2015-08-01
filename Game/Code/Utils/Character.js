@@ -8,6 +8,8 @@ function Character(json, scale, physXScene, material, scene) {
     this.json = json;
     this.data = JSON.parse(fs.readFileSync(__dirname + '/../Scenes/' + json.file, 'utf8'));
 
+    this.name = this.data.name;
+
     this.scale = scale || 1.0;
     this.physXScene = physXScene;
     this.scene = scene;
@@ -22,7 +24,6 @@ function Character(json, scale, physXScene, material, scene) {
     if(this.data.AI) {
         var ai = require('../' + this.data.AI);
         this.AI = new ai(this);
-        console.log(this.json);
     }
 
 }
@@ -41,11 +42,6 @@ Character.prototype = {
     },
 
     Setup: function(start) {
-        console.log('------------');
-        console.log('------------');
-        console.log('CHARACTER SETUP');
-        console.log('------------');
-        console.log('------------');
         this.alive = true;
         this.dead = false;
 
@@ -118,7 +114,7 @@ Character.prototype = {
     },
 
     DrawPos: function(pos, rot, scl, material, camera) {
-        if(this.dead || !this.alive) return;
+        if(this.dead) return;
       	this.model.world.SetScl(scl);
       	this.model.world.RotX(rot[0]);
       	this.model.world.RotY(rot[1]);
@@ -129,6 +125,14 @@ Character.prototype = {
     Interact: function() {
         if(this.dead || !this.alive) return;
 
+        if(this.AI) {
+            return this.AI.Interact();
+        }
+
+        return null;
+    },
+
+    ForceInteract: function() {
         if(this.AI) {
             return this.AI.Interact();
         }

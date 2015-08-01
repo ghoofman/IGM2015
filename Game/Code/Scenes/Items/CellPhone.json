@@ -1,0 +1,9 @@
+{
+	"key": "phone",
+	"data": {
+		"sheet": "CoffeeSelector",
+		"item": "CellPhone-iso",
+		"text": "Cell Phone",
+		"desc": [ "It's my eyePhone. I call people with it.", "And I internet all day long on it."]
+	}
+}

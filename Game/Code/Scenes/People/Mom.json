@@ -1,0 +1,6 @@
+{
+  "name" : "Mom",
+  "file" : "Mom.qb",
+  "AI" : "People/Mom.js",
+  "offset" : [ 45, 0, 50 ]
+}
