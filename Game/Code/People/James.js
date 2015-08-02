@@ -8,10 +8,16 @@ function James(character) {
 	global.james = {};
 	this.vec3 = OP.vec3.Create(0,0,0);
 
-	if(global.currentScene.name != 'Apartment' ) {
-		this.character.dead = true;
-		this.character.alive = false;
-		return;
+	if(global.currentScene.name == 'Street' && global.win) {
+		var start = this.character.scene.FindPosition(104);
+		this.character.Setup(start);
+	} else {
+
+		if(global.currentScene.name != 'Apartment' ) {
+			this.character.dead = true;
+			this.character.alive = false;
+			return;
+		}
 	}
 
 	this.state = 'FIND_REGISTER';
@@ -25,6 +31,10 @@ James.prototype = {
 
 	Update: function(timer, scene) {
 
+			if(global.win) {
+				this.character.rotate += 0.1;
+				return;
+			}
 		if(this.character.dead) return;
 
 		if(!this.character.alive) {

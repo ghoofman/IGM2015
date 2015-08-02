@@ -6,13 +6,19 @@ function Lily(character) {
 	this.character = character;
 	this.vec3 = OP.vec3.Create(0,0,0);
 
-	if(global.currentScene.name != 'Cafe' ) {
-		this.character.dead = true;
-		this.character.alive = false;
-		return;
-	}
+	if(global.currentScene.name == 'Street' && global.win) {
+		var start = this.character.scene.FindPosition(106);
+		this.character.Setup(start);
+	} else {
 
-	this.character.alive = 0;
+		if(global.currentScene.name != 'Cafe' ) {
+			this.character.dead = true;
+			this.character.alive = false;
+			return;
+		}
+
+		this.character.alive = 0;
+	}
 	if(!global.ai.lily) {
 		global.ai.lily = { };
 	}
@@ -30,6 +36,10 @@ Lily.prototype = {
 
 	Update: function(timer, scene) {
 
+			if(global.win) {
+				this.character.rotate += 0.1;
+				return;
+			}
 		if(this.character.dead) return;
 
 		// Lily comes into the cafe at 9am

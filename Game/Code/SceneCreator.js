@@ -122,6 +122,8 @@ SceneCreator.prototype = {
 					{ text: 'No', select: RemoveOption }
 				]);
 
+				this.Data.color = [ 1, 1, 1];
+
 				return 1;
 		},
 
@@ -192,7 +194,11 @@ SceneCreator.prototype = {
 			if(Input.IsSpeedDown(this.Data.gamePad0) || (global.job && global.job.clocked && aliveCharacters == 0)) { //
 				global.timeScale = 100;
 			} else {
-				global.timeScale = 8;
+				if(global.tasks.length == 0) {
+					global.timeScale = 8;
+				} else {
+					global.timeScale = 4;
+				}
 			}
 
 			if(this.Data.scene.Logic(this, timer)){
@@ -232,6 +238,25 @@ SceneCreator.prototype = {
 			}
 
 			global.wallet.Update(timer);
+
+
+
+			if(!global.win && global.days == 8) {
+				global.win = true;
+				var SceneCreator = require('./SceneCreator.js');
+				OPgameState.Change(new SceneCreator('Scenes/Street.json', 110));
+				return 1;
+			}
+
+			if(global.win) {
+				if(this.Data.colorTime == undefined || this.Data.colorTime == null)
+					this.Data.colorTime = 200;
+				this.Data.colorTime -= timer.elapsed;
+				if(this.Data.colorTime < 0) {
+					this.Data.colorTime = 200;
+					this.Data.color = [Math.random(),Math.random(),Math.random()];
+				}
+			}
 
 			timer.elapsed *= global.timeScale;
 			OP.timer.SetElapsed(timer, timer.elapsed);
@@ -274,6 +299,7 @@ SceneCreator.prototype = {
 				if (Input.WasBackPressed(this.Data.gamePad0))  {
 					var game = require('./Games/InventoryViewer.js');
 					this.Data.game = game();
+					return 0;
 				}
 
 				// Toggle between driving the character and driving the camera
@@ -300,6 +326,12 @@ SceneCreator.prototype = {
 
 				this.Data.camera.Update(timer);
 				this.Data.camera.LookAt(this.Data.player);
+
+				if(!global.started) {
+					var game = require('./Games/InventoryViewer.js');
+					this.Data.game = game();
+					return 0;
+				}
 
 				var collisions = this.Data.scene.Collisions(this.Data.player);
 				var name = this.Data.Name;
@@ -536,6 +568,8 @@ SceneCreator.prototype = {
 			var result = this.update(timer);
 			if(result == -1) {
 				return 1;
+			} else if(result == 1) {
+				return 0;
 			} else {
 				this.Render();
 			}
@@ -618,6 +652,16 @@ SceneCreator.prototype = {
 						OP.fontRender('[ ' + this.Data.Required.text + ' ]', 1280 / 2.0, 100);
 						OP.fontRender.End();
 
+					}
+
+					if(global.win && this.name == 'Street') {
+						OP.fontRender.Begin(this.Data.fontManager);
+						this.Data.fontManager.SetAlign(OP.FONTALIGN.CENTER);
+						OP.fontRender.Color(1,1,1);
+						OP.fontRender('You won!', 1280 / 2.0, 720 / 4.0);
+						OP.fontRender.Color(this.Data.color[0], this.Data.color[1], this.Data.color[2]);
+						OP.fontRender('You survived a whole week out of college!', 1280 / 2.0, 720 / 3.0);
+						OP.fontRender.End();
 					}
 
 					if(global.inventory) {

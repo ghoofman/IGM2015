@@ -55,6 +55,16 @@ Camera.prototype = {
       this.camera.Camera.UpdateView();
     },
 
+    Look: function(pos, target) {    // Look At
+        this.vec3_1.Set(pos[0], pos[1], pos[2]);      // Camera Position
+        this.vec3_0.Set(target[0], target[1], target[2]);
+
+        this.camera.Camera.SetPos(this.vec3_1);
+        this.camera.Camera.SetTarget(this.vec3_0);
+        this.camera.Camera.UpdateView();
+
+    },
+
     Camera: function() {
         return this.camera.Camera;
     }

@@ -8,10 +8,16 @@ function Mom(character) {
 	global.ai.mom = {};
 	this.vec3 = OP.vec3.Create(0,0,0);
 
-	if(global.currentScene.name != 'TaxiCab' ) {
-		this.character.dead = true;
-		this.character.alive = false;
-		return;
+	if(global.currentScene.name == 'Street' && global.win) {
+		var start = this.character.scene.FindPosition(107);
+		this.character.Setup(start);
+	} else {
+
+		if(global.currentScene.name != 'TaxiCab' ) {
+			this.character.dead = true;
+			this.character.alive = false;
+			return;
+		}
 	}
 
 	this.state = 'FIND_REGISTER';
@@ -26,6 +32,10 @@ Mom.prototype = {
 
 	Update: function(timer, scene) {
 
+			if(global.win) {
+				this.character.rotate += 0.1;
+				return;
+			}
 		if(this.character.dead) return;
 
 
@@ -44,7 +54,10 @@ Mom.prototype = {
 							select: function() {
 								global.tasks.push({
 									text: 'Find an Apartment',
-									complete: function() { return global.inventory.Has('apartment-key'); },
+									complete: function() {
+										return global.inventory.Has('apartment-key') ||
+											global.inventory.Has('global-apartment-key-1-c');
+									},
 									time: -1000
 								});
 								global.ai.mom.finishedTalking = true;
@@ -61,7 +74,10 @@ Mom.prototype = {
 					});
 					global.tasks.push({
 						text: 'Find an Apartment',
-						complete: function() { return global.inventory.Has('apartment-key'); },
+						complete: function() {
+							return global.inventory.Has('apartment-key') ||
+								global.inventory.Has('global-apartment-key-1-c');
+						},
 						time: -1000
 					});
 					global.ai.mom.finishedTalking = true;

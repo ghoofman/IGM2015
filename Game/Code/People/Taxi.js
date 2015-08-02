@@ -22,7 +22,7 @@ function Taxi(character) {
 		global.player.alive = false;
 	}
 
-	this.target = [-500,0,120];
+	this.target = [-1500,0,120];
 }
 
 Taxi.prototype = {

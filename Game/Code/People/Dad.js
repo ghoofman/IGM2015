@@ -8,12 +8,17 @@ function Dad(character) {
 	global.ai.dad = {};
 	this.vec3 = OP.vec3.Create(0,0,0);
 
-	if(global.currentScene.name != 'TaxiCab' ) {
-		this.character.dead = true;
-		this.character.alive = false;
-		return;
-	}
+	if(global.currentScene.name == 'Street' && global.win) {
+		var start = this.character.scene.FindPosition(102);
+		this.character.Setup(start);
+	} else {
 
+		if(global.currentScene.name != 'TaxiCab' ) {
+			this.character.dead = true;
+			this.character.alive = false;
+			return;
+		}
+	}
 	this.state = 'FIND_REGISTER';
 	this.target = null;
 
@@ -25,6 +30,10 @@ Dad.prototype = {
 	interactions: [],
 
 	Update: function(timer, scene) {
+		if(global.win) {
+			this.character.rotate += 0.1;
+			return;
+		}
 
 		if(this.character.dead) return;
 

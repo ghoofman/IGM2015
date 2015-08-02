@@ -132,6 +132,7 @@ EndOfDay.prototype = {
                 }
 
                 global.wallet.CompleteDay();
+                global.days++;
 
                 global.time = new Date();
                 global.time.setHours(8);
@@ -142,6 +143,8 @@ EndOfDay.prototype = {
                 if(global.job) {
                     global.job.time = 0;
                 }
+
+                global.currentScene.removeAHunger();
 
                 if(global.wallet.cash < 0) {
                     var game = require('./GameOver.js');

@@ -8,6 +8,7 @@ var Settings = require('./InventoryViewer/Settings.js');
 var Quit = require('./InventoryViewer/Quit.js');
 var Notifications = require('./InventoryViewer/Notifications.js');
 var Job = require('./InventoryViewer/Job.js');
+var Controls = require('./InventoryViewer/Controls.js');
 
 function InventoryViewer() {
 
@@ -60,9 +61,19 @@ function InventoryViewer() {
 
 	var self = this;
 
-	this.subSelection = 0;
+	this.subSelection = 1;
 	this.subSections = [];
 
+	this.subSections.push({
+		text: 'Back',
+		update: function(timer, gamepad) {
+			if(Input.WasBackReleased(gamepad) || Input.WasActionReleased(gamepad)) {
+				return { result: 1 };
+			}
+			return { result: 0 };
+		},
+		render: function() { }
+	});
 	this.subSections.push(new Inventory(this));
 	//this.subSections.push(new Notifications(this));
 	this.subSections.push(new Progress(this));
@@ -70,8 +81,16 @@ function InventoryViewer() {
 		this.subSections.push(new Job(this));
 	}
 	this.subSections.push(new Journal(this));
+	this.subSections.push(new Controls(this));
 	this.subSections.push(new Settings(this));
 	this.subSections.push(new Quit(this));
+
+	if(!global.started) {
+		this.subSelection = 4;
+		global.started = true;
+		this.subSections[4].state = 1;
+		this.initialRelease = 1;
+	}
 }
 
 InventoryViewer.prototype = {

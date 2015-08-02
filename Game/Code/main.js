@@ -33,6 +33,8 @@ global.tasks = [ ];
 
 global.journal = [ ];
 
+global.days = 1;
+
 
 
 try {

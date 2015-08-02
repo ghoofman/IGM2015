@@ -6,23 +6,30 @@ function Frank(character) {
 	this.character = character;
 	this.vec3 = OP.vec3.Create(0,0,0);
 
-	if(global.currentScene.name != 'Cafe' && global.currentScene.name != 'GroceryStore' ) {
-		this.character.dead = true;
-		this.character.alive = false;
-		return;
-	}
-
-	if(global.currentScene.name == 'Cafe') {
-		this.Update = this.UpdateCafe;
-		this.Interact = this.InteractCafe;
+	if(global.currentScene.name == 'Street' && global.win) {
+		var start = this.character.scene.FindPosition(103);
+		this.character.Setup(start);
+		this.Update = this.UpdateWin;
 	} else {
-		this.state = 'FIND_REGISTER';
-		this.target = null;
-		this.Update = this.UpdateGrocery;
-		this.Interact = this.InteractGrocery;
+
+		if(global.currentScene.name != 'Cafe' && global.currentScene.name != 'GroceryStore' ) {
+			this.character.dead = true;
+			this.character.alive = false;
+			return;
+		}
+
+		if(global.currentScene.name == 'Cafe') {
+			this.Update = this.UpdateCafe;
+			this.Interact = this.InteractCafe;
+		} else {
+			this.state = 'FIND_REGISTER';
+			this.target = null;
+			this.Update = this.UpdateGrocery;
+			this.Interact = this.InteractGrocery;
+		}
+			this.character.alive = 0;
 	}
 
-	this.character.alive = 0;
 	if(!global.ai.frank) {
 		global.ai.frank = { };
 	}
@@ -33,6 +40,14 @@ function Frank(character) {
 Frank.prototype = {
 
 	interactions : [],
+
+		UpdateWin: function() {
+
+				if(global.win) {
+					this.character.rotate += 0.1;
+					return;
+				}
+		},
 
 		UpdateCafe: function(timer, scene) {
 
@@ -324,8 +339,10 @@ Frank.prototype = {
 	},
 
 	EndOfDay: function() {
-		global.ai.frank.receivedCoffee = false;
-		global.ai.frank.talked = false;
+		if(global.ai && global.ai.frank) {
+			global.ai.frank.receivedCoffee = false;
+			global.ai.frank.talked = false;
+		}
 	}
 };
 

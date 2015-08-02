@@ -126,7 +126,7 @@ Character.prototype = {
         if(this.dead || !this.alive) return;
 
         if(this.AI) {
-            return this.AI.Interact();
+            return this.AI.Interact && this.AI.Interact();
         }
 
         return null;
@@ -134,7 +134,7 @@ Character.prototype = {
 
     ForceInteract: function() {
         if(this.AI) {
-            return this.AI.Interact();
+            return this.AI.Interact && this.AI.Interact();
         }
 
         return null;
