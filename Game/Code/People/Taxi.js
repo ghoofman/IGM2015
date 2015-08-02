@@ -15,14 +15,23 @@ function Taxi(character) {
 	}
 
 	if(global.spawned) {
-		this.character.dead = true;
-		this.character.alive = false;
+		if(Math.random() > 0.8) {
+			this.character.dead = false;
+			this.character.alive = false;
+			this.target = [-1500,130,-120];
+			this.start = [1000,130,-120];
+			this.base.speed = 3;
+		} else {
+			this.character.dead = true;
+			this.character.alive = false;
+		}
 		return;
 	} else {
 		global.player.alive = false;
+		this.start = [0,0,120];
+		this.target = [-1500,0,120];
 	}
 
-	this.target = [-1500,0,120];
 }
 
 Taxi.prototype = {
@@ -33,8 +42,8 @@ Taxi.prototype = {
 		if(this.character.dead) return;
 		//
 		if(!this.character.alive) {
-			var start = [0,0,120];// = this.character.scene.FindPosition(2);
-			this.character.Setup(start);
+			// = this.character.scene.FindPosition(2);
+			this.character.Setup(this.start);
 
 	        // this.character.vec3.Set(20 * this.character.scale, 20 * this.character.scale, 20 * this.character.scale);
 	        // var shape = OP.physX.AddBoxShape(this.character.controller.actor, this.character.material, this.character.vec3);

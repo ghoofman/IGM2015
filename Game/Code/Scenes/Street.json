@@ -10,7 +10,7 @@
   },
   "camera" : {
     "xNegative" : -250,
-    "xPositive" : 360,
+    "xPositive" : 560,
     "zNegative" : -150,
     "zPositive" : 50,
     "zDistance" : 450,
@@ -120,7 +120,7 @@
     },
     {
         "file" : "GroceryStore.qb",
-        "offset" : [ 535, 0, -47 ],
+        "offset" : [ 500, 0, -47 ],
         "scale" : [ 1, 1, 1 ],
         "collision": {
           "default" : false,
@@ -240,7 +240,7 @@
     },
     {
       "file" : "Highway_postL.qb",
-      "offset" : [ -165, 0, -90 ]
+      "offset" : [ -765, 0, -90 ]
     },
     {
       "file" : "Highway_postL.qb",
@@ -248,7 +248,7 @@
     },
     {
       "file" : "Highway_postL.qb",
-      "offset" : [ -165, 0, -150 ]
+      "offset" : [ -765, 0, -150 ]
     },
     {
       "file" : "Highway_postL.qb",
@@ -264,7 +264,7 @@
     },
     {
       "file" : "Highway_postR.qb",
-      "offset" : [ 426, 0, -90 ]
+      "offset" : [ 1026, 0, -90 ]
     },
     {
       "file" : "Highway_postR.qb",
@@ -272,7 +272,7 @@
     },
     {
       "file" : "Highway_postR.qb",
-      "offset" : [ 426, 0, -150 ]
+      "offset" : [ 1026, 0, -150 ]
     },
     {
       "file" : "Highway_postR.qb",
@@ -281,6 +281,18 @@
     {
       "file" : "Highway_wallR.qb",
       "offset" : [ 226, 0, -150 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ -700, 114, -140 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ -600, 114, -140 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ -500, 114, -140 ]
     },
     {
       "file" : "HighwayOverpass.qb",
@@ -331,6 +343,18 @@
       "offset" : [ 700, 114, -140 ]
     },
     {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ 800, 114, -140 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ 900, 114, -140 ]
+    },
+    {
+      "file" : "HighwayOverpass.qb",
+      "offset" : [ 1000, 114, -140 ]
+    },
+    {
       "file" : "fullroad.qb",
       "offset" : [ 115, -4, -111 ],
       "rotation" : [ 0, 90, 0 ]
@@ -376,6 +400,26 @@
     },
     {
       "file" : "fullroad.qb",
+      "offset" : [ -394, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ -444, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ -494, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ -544, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ -594, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
       "offset" : [ 386, -4, 100 ]
     },
     {
@@ -399,6 +443,30 @@
       "offset" : [ 636, -4, 100 ]
     },
     {
+      "file" : "fullroad.qb",
+      "offset" : [ 686, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 736, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 786, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 836, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 886, -4, 100 ]
+    },
+    {
+      "file" : "fullroad.qb",
+      "offset" : [ 936, -4, 100 ]
+    },
+    {
       "file" : "StopSign.qb",
       "offset" : [ 75, 0, 73 ],
       "rotation" : [ 0, -90, 0 ]
@@ -410,39 +478,39 @@
     },
     {
       "file" : "grass.qb",
-      "offset" : [ 1000, -6, 390 ],
-      "scale" : [ 1000, 1, 300 ],
+      "offset" : [ 2000, -6, 390 ],
+      "scale" : [ 2000, 1, 300 ],
       "collision" : {
         "default" : false
       }
     },
     {
       "file" : "Sky.qb",
-      "offset" : [ 1000, 270, -200 ],
-      "scale" : [ 1000, 15, 1 ],
+      "offset" : [ 2000, 270, -200 ],
+      "scale" : [ 2000, 15, 1 ],
       "collision" : {
         "default" : false
       }
     },
     {
       "file" : "LampPost.qb",
-      "offset" : [ -350, 0, 75 ]
+      "offset" : [ -800, 0, 75 ]
     },
     {
       "file" : "LampPost.qb",
-      "offset" : [ -250, 0, 75 ]
+      "offset" : [ -600, 0, 75 ]
     },
     {
       "file" : "LampPost.qb",
-      "offset" : [ -150, 0, 75 ]
+      "offset" : [ -400, 0, 75 ]
     },
     {
       "file" : "LampPost.qb",
-      "offset" : [ -50, 0, 75 ]
+      "offset" : [ -200, 0, 75 ]
     },
     {
       "file" : "LampPost.qb",
-      "offset" : [ 50, 0, 75 ]
+      "offset" : [ 0, 0, 75 ]
     },
     {
       "file" : "LampPost.qb",
@@ -450,19 +518,19 @@
     },
     {
       "file" : "LampPost.qb",
-      "offset" : [ 335, 0, 75 ]
-    },
-    {
-      "file" : "LampPost.qb",
       "offset" : [ 435, 0, 75 ]
     },
     {
       "file" : "LampPost.qb",
-      "offset" : [ 535, 0, 75 ]
+      "offset" : [ 635, 0, 75 ]
     },
     {
       "file" : "LampPost.qb",
-      "offset" : [ 635, 0, 75 ]
+      "offset" : [ 835, 0, 75 ]
+    },
+    {
+      "file" : "LampPost.qb",
+      "offset" : [ 1035, 0, 75 ]
     },
     {
       "file" : "Flower.qb",
@@ -494,6 +562,14 @@
     },
     {
       "file" : "sidewalk_4x1.qb",
+      "offset" : [ 778, 0, 56 ]
+    },
+    {
+      "file" : "sidewalk_4x1.qb",
+      "offset" : [ 898, 0, 56 ]
+    },
+    {
+      "file" : "sidewalk_4x1.qb",
       "offset" : [ -122, 0, 56 ]
     },
     {
@@ -505,8 +581,24 @@
       "offset" : [ -362, 0, 56 ]
     },
     {
+      "file" : "sidewalk_4x1.qb",
+      "offset" : [ -482, 0, 56 ]
+    },
+    {
+      "file" : "sidewalk_4x1.qb",
+      "offset" : [ -602, 0, 56 ]
+    },
+    {
+      "file" : "sidewalk_4x1.qb",
+      "offset" : [ -722, 0, 56 ]
+    },
+    {
+      "file" : "sidewalk_4x1.qb",
+      "offset" : [ -842, 0, 56 ]
+    },
+    {
       "file" : "Dumpster.qb",
-      "offset" : [ 430, 0, -26 ],
+      "offset" : [ 395, 0, -26 ],
       "collision": {
         "default" : true,
         "custom" : [
@@ -519,7 +611,7 @@
             },
             "collide" : false,
             "offset" : [ 0, 0, 0 ],
-            "size" : [ 50, 50, 50 ]
+            "size" : [ 30, 50, 30 ]
           }
         ]
       }

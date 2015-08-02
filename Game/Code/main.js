@@ -35,6 +35,8 @@ global.journal = [ ];
 
 global.days = 1;
 
+global.meshes = {};
+
 
 
 try {

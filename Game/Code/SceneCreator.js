@@ -128,30 +128,22 @@ SceneCreator.prototype = {
 		},
 
 		resetHunger: function() {
-			console.log('RESET HUNGER', global.hungerAmount);
 			for(var i = 0; i < global.hunger; i++) {
 				OP.spriteSystem.Remove(global.spriteSystemFood, global.hunger[i]);
 			}
 			global.hunger = [];
 			for(var i = 0; i < 4; i++) {
-				// var hunger = OP.spriteSystem.Add(this.spriteSystem);
-				// hunger.Position.Set(this.Data.size.ScaledWidth - 50 - 50 * i, 50);
-				// OP.spriteSystem.SetSprite(hunger, 2);
-				// global.hunger.push(hunger);
 				this.AddAHunger(true);
 			}
 		},
 
 		removeAHunger: function() {
-			console.log('**** REMOVE A HUNGER **** ', global.hunger, global.hungerAmount);
-				global.hungerAmount = 0;
+			global.hungerAmount = 0;
 			if(global.hunger.length < 1) {
-				console.log('**** DID NOT, YOU IS DEAD **** ', global.hunger, global.hungerAmount);
 				return false;
 			}
 
 			var pos = global.hunger.length - 1;
-			console.log('**** REMOVING ', pos);
 			OP.spriteSystem.Remove(global.spriteSystemFood, global.hunger[pos]);
 			global.hunger.splice(pos, 1);
 
@@ -159,17 +151,13 @@ SceneCreator.prototype = {
 		},
 
 		AddAHunger: function(init) {
-			console.log('**** ADD A HUNGER **** ', global.hunger, global.hungerAmount);
 			if(global.hunger.length > 7) {
 				global.AudioPlayer.PlayEffect('Audio/Denied.wav');
-				console.log('**** ALREADY AT MAX **** ', global.hunger, global.hungerAmount);
 				return false;
 			}
 			if(!init) {
 				global.AudioPlayer.PlayEffect('Audio/Nom.ogg');
 			}
-
-			console.log('**** ADDING **** ', global.hunger.length);
 
 			var hunger = OP.spriteSystem.Add(global.spriteSystemFood);
 			hunger.Position.Set(this.Data.size.ScaledWidth - 50 - 50 * (global.hunger.length), 50);
@@ -258,6 +246,8 @@ SceneCreator.prototype = {
 				}
 			}
 
+			var beforeScaleElapsed = timer.elapsed;
+
 			timer.elapsed *= global.timeScale;
 			OP.timer.SetElapsed(timer, timer.elapsed);
 			global.hungerAmount += timer.elapsed;
@@ -324,7 +314,17 @@ SceneCreator.prototype = {
 				}
 				this.Data.player.Move(timer);
 
-				this.Data.camera.Update(timer);
+				if (this.Data.camera.freeForm) {
+					var tmp = timer.elapsed;
+					timer.elapsed = beforeScaleElapsed;
+					OP.timer.SetElapsed(timer, timer.elapsed);
+					this.Data.camera.Update(timer);
+					timer.elapsed = tmp;
+					OP.timer.SetElapsed(timer, timer.elapsed);
+				} else {
+					this.Data.camera.Update(timer);
+				}
+
 				this.Data.camera.LookAt(this.Data.player);
 
 				if(!global.started) {

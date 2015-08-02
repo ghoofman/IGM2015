@@ -2,6 +2,7 @@ var OP = require('OPengine').OP;
 
 function BaseAI(ai) {
 	this.ai = ai;
+	this.speed = 1;
 }
 
 BaseAI.prototype = {
@@ -19,6 +20,8 @@ BaseAI.prototype = {
 				this.ai.move = [ diffX, -0.98 * 4, diffZ ];
 				this.ai.vec3.Set(this.ai.move[0], this.ai.move[1], this.ai.move[2]);
 				this.ai.vec3.Norm();
+				var speed = this.speed || 1;
+				this.ai.vec3.Set(this.ai.vec3.x * speed, this.ai.vec3.y, this.ai.vec3.z * speed)
 
 				OP.physXController.Move(this.ai.character.controller, this.ai.vec3, timer);
 				var oldPos = this.ai.character.FootPos;

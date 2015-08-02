@@ -324,7 +324,6 @@ Frank.prototype = {
 					return new Talk(self.character, 'Alright it\'ll be $' + amount.toFixed(2), [
 							{ text: 'Alright', select: function() {
 								for(var i = 0; i < basket.items.length; i++) {
-									console.log('Added', basket.items[i].text);
 									global.wallet.AddExpense(basket.items[i].text, 'food', basket.items[i].cost);
 							        global.inventory.Add(basket.items[i].text, basket.items[i], true);
 								}

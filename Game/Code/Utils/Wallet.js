@@ -33,11 +33,12 @@ Wallet.prototype = {
 		return result;
 	},
 
-	AddIncome: function(name, type, amount, rate, rateScale) {
+	AddIncome: function(name, type, amount, rate, rateScale, info) {
 		var income = {
 			name: name,
 			type: type,
-			amount: amount
+			amount: amount,
+			desc: info
 		};
 		if(rate) {
 			income.rate = rate;
@@ -62,11 +63,12 @@ Wallet.prototype = {
 		this.target -= amount;
 	},
 
-	AddExpense: function(name, type, amount, rate, rateScale) {
+	AddExpense: function(name, type, amount, rate, rateScale, info) {
 		var expense = {
 			name: name,
 			type: type,
-			amount: amount
+			amount: amount,
+			desc: info
 		};
 		if(rate) {
 			expense.rate = rate;
@@ -149,6 +151,29 @@ Wallet.prototype = {
 				this.Last = null;
 			}
 		}
+	},
+
+	AddWalletLines: function() {
+
+		var interest = this.loans * (0.04 / 365.0);
+
+	    this.AddExpense('Student Loan Payment', 'loan', 10, 10, 'day', '$' + interest.toFixed(2) + ' of Interest');
+	    this.loans -= 10 - interest;
+
+	    this.AddExpense('Cell Phone Plan', 'cell', 2, 60, 'mo');
+
+	    if(global.apartment) {
+	        this.AddExpense('Apartment Rent', 'rent', global.apartment.rent, global.apartment.rent * 30, 'mo');
+	    }
+	    if(global.job) {
+	        var rate = global.job.rate || 8;
+	        var totalTime = global.job.time || 0;
+	        var seconds = totalTime / 1000;
+	        var minutes = seconds / 60;
+	        var hours = minutes / 60.0;
+	        this.AddIncome('Cafe Pay Check', 'pay', hours * rate, rate, 'hr', hours.toFixed(2) + ' hours @ $' + rate.toFixed(2) + ' / hr');
+	        this.AddExpense('Taxes', 'tax', (hours * rate) * 0.33, null, null, '33% of Pay Check');
+	    }
 	}
 };
 
