@@ -240,8 +240,10 @@ Lily.prototype = {
 	},
 
 	EndOfDay: function() {
-		global.ai.lily.receivedCoffee = false;
-		global.ai.lily.talked = false;
+		if(global.ai && global.ai.lily) {
+			global.ai.lily.receivedCoffee = false;
+			global.ai.lily.talked = false;
+		}
 	}
 };
 

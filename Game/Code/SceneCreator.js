@@ -76,10 +76,14 @@ SceneCreator.prototype = {
 				var sprites = [];
 				sprites.push(OP.cman.Get(sheet + '/Black50'));
 				sprites.push(OP.cman.Get(sheet + '/Dollar'));
+				sprites.push(OP.cman.Get(sheet + '/Hunger-iso'));
 
 			  	this.Data.size = OP.render.Size();
-				this.spriteSystem = OP.spriteSystem.Create(sprites, 6, OP.SPRITESYSTEMALIGN.CENTER);
-				this.screenCamera = OP.cam.Ortho(0, 0, 10, 0, 0, 0, 0, 1, 0, 0.1, 20.0, 0, this.Data.size.ScaledWidth, 0, this.Data.size.ScaledHeight);
+				this.spriteSystem = OP.spriteSystem.Create(sprites, 12, OP.SPRITESYSTEMALIGN.CENTER);
+				if(!global.spriteSystemFood) {
+					global.spriteSystemFood = OP.spriteSystem.Create(sprites, 12, OP.SPRITESYSTEMALIGN.CENTER);
+				}
+			this.screenCamera = OP.cam.Ortho(0, 0, 10, 0, 0, 0, 0, 1, 0, 0.1, 20.0, 0, this.Data.size.ScaledWidth, 0, this.Data.size.ScaledHeight);
 
 				this.Data.bgSprite = null;
 
@@ -90,6 +94,12 @@ SceneCreator.prototype = {
 				if(!global.inventory.Has('diploma')) {
 					var diploma = JSON('Scenes/Items/Diploma.json');
 					global.inventory.Add(diploma.key, diploma.data);
+				}
+
+				if(!global.hunger) {
+					global.hunger = [];
+					global.hungerAmount = 0;
+					this.resetHunger();
 				}
 
 
@@ -115,7 +125,63 @@ SceneCreator.prototype = {
 				return 1;
 		},
 
+		resetHunger: function() {
+			console.log('RESET HUNGER', global.hungerAmount);
+			for(var i = 0; i < global.hunger; i++) {
+				OP.spriteSystem.Remove(global.spriteSystemFood, global.hunger[i]);
+			}
+			global.hunger = [];
+			for(var i = 0; i < 4; i++) {
+				// var hunger = OP.spriteSystem.Add(this.spriteSystem);
+				// hunger.Position.Set(this.Data.size.ScaledWidth - 50 - 50 * i, 50);
+				// OP.spriteSystem.SetSprite(hunger, 2);
+				// global.hunger.push(hunger);
+				this.AddAHunger(true);
+			}
+		},
+
+		removeAHunger: function() {
+			console.log('**** REMOVE A HUNGER **** ', global.hunger, global.hungerAmount);
+				global.hungerAmount = 0;
+			if(global.hunger.length < 1) {
+				console.log('**** DID NOT, YOU IS DEAD **** ', global.hunger, global.hungerAmount);
+				return false;
+			}
+
+			var pos = global.hunger.length - 1;
+			console.log('**** REMOVING ', pos);
+			OP.spriteSystem.Remove(global.spriteSystemFood, global.hunger[pos]);
+			global.hunger.splice(pos, 1);
+
+			return true;
+		},
+
+		AddAHunger: function(init) {
+			console.log('**** ADD A HUNGER **** ', global.hunger, global.hungerAmount);
+			if(global.hunger.length > 7) {
+				global.AudioPlayer.PlayEffect('Audio/Denied.wav');
+				console.log('**** ALREADY AT MAX **** ', global.hunger, global.hungerAmount);
+				return false;
+			}
+			if(!init) {
+				global.AudioPlayer.PlayEffect('Audio/Nom.ogg');
+			}
+
+			console.log('**** ADDING **** ', global.hunger.length);
+
+			var hunger = OP.spriteSystem.Add(global.spriteSystemFood);
+			hunger.Position.Set(this.Data.size.ScaledWidth - 50 - 50 * (global.hunger.length), 50);
+			OP.spriteSystem.SetSprite(hunger, 2);
+			global.hunger.push(hunger);
+
+			global.hungerAmount = 0;
+
+			return true;
+		},
+
 		update: function(timer) {
+			this.Data.gamePad0 = OP.gamePad.Get(0);
+
 			if(timer.elapsed > 500) return;
 
 			var aliveCharacters = 0;
@@ -152,7 +218,7 @@ SceneCreator.prototype = {
 					dt: global.time
 				});
 				var game = require('./Games/EndOfDay.js');
-				this.Data.game = game(this.Data.scene);
+				this.Data.game = game(this.Data.scene, true);
 			}
 
 			if(beforeAddingHour == 22 && afterAddingHour == 23) {
@@ -169,6 +235,17 @@ SceneCreator.prototype = {
 
 			timer.elapsed *= global.timeScale;
 			OP.timer.SetElapsed(timer, timer.elapsed);
+			global.hungerAmount += timer.elapsed;
+
+			// Remove 1 every 3 hours
+			var hungerMax = 1000 * 60 * 6 * 3;
+			if(global.hungerAmount > hungerMax) {
+				if(!this.removeAHunger()) {
+					var game = require('./Games/GameOver.js');
+					this.Data.game = game(this.Data.scene, ['You\'ve starved. You failed to take care of yourself.', 'At least you still have your parents basement.']);
+					return 0;
+				}
+			}
 
 
 				if(this.Data.game) {
@@ -185,8 +262,13 @@ SceneCreator.prototype = {
 
 				if(this.Data.option) {
 					// Getting a selection
-					this.Data.option.Update(this.Data.gamePad0);
-					return 0;
+					var result = this.Data.option.Update(this.Data.gamePad0);
+					if(result && result.result) {
+						this.Data.option = null;
+						return 0;
+					} else {
+						return 0;
+					}
 				}
 
 				if (Input.WasBackPressed(this.Data.gamePad0))  {
@@ -265,6 +347,7 @@ SceneCreator.prototype = {
 					this.Data.bgSprite = OP.spriteSystem.Add(this.spriteSystem);
 					this.Data.bgSprite.Position.Set(this.Data.size.ScaledWidth / 2.0, this.Data.size.ScaledHeight - 80);
 					this.Data.bgSprite.Scale.Set(200, 1);
+					OP.spriteSystem.SetSprite(this.Data.bgSprite, 0);
 				}
 
 				if(!this.Data.Name && this.Data.bgSprite) {
@@ -366,6 +449,48 @@ SceneCreator.prototype = {
 
 									continue;
 								}
+								case 'trashbag': {
+									var self = this;
+									var options = [
+										{
+											text: 'Ugh... yes.',
+											select: function() {
+												var r = Math.random();
+												if(r > 0.75) {
+												      global.inventory.Add('sandwich', {
+												          id: 'sandwich',
+												          type: 'food',
+												          sheet: 'CoffeeSelector',
+												          item: 'HalfEatenSandwich-iso',
+												          text: 'Half Eaten Sandwich',
+												          desc: [ 'It\s from the garbage, but it looks edible', '[ Fills 1 hunger ]', '1 bite remains' ],
+														  Entity: {
+											                  Interact: function() {
+											                      global.currentScene.AddAHunger();
+																  return true;
+											                  }
+											              }
+												      });
+													self.Data.option = new OptionSelector('Found a half eaten sandwich!', null);
+												} else {
+													self.Data.option = new OptionSelector('Didn\'t find anything. So gross.', null);
+												}
+											}
+										},
+										{ text: 'Not a chance.' }
+									];
+									this.Data.option = new OptionSelector('Should I search the trash?', options);
+
+									break;
+								}
+								case 'item': {
+									if(collisions[i].data.file) {
+						            	global.AudioPlayer.PlayEffect('Audio/Selection.wav');
+										var key = JSON('Scenes/Items/' + collisions[i].data.file);
+										global.inventory.Add(key.key, key.data);
+									}
+									break;
+								}
 
 								default: {
 									global.AudioPlayer.PlayEffect('Audio/Denied.wav');
@@ -441,6 +566,7 @@ SceneCreator.prototype = {
 					this.Data.game.Draw();
 				} else {
 					OP.spriteSystem.Render(this.spriteSystem, this.screenCamera);
+					OP.spriteSystem.Render(global.spriteSystemFood, this.screenCamera);
 
 					if(this.Data.Name) {
 						OP.fontRender.Begin(this.Data.fontManager);

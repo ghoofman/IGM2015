@@ -105,9 +105,29 @@ Inventory.prototype = {
 		}
 
 		if(Input.WasActionReleased(gamepad)) {
-			global.inventory.SetActive(this.items[this.selected].key);
-			if(this.items[this.selected].Entity) {
-				this.items[this.selected].Entity.Interact();
+			if(global.inventory.Activate(this.items[this.selected].key)) {
+
+				var sheet = this.items[this.selected].sheet;
+				var spriteSystem = this.spriteSystems[sheet].spriteSystem;
+				OP.spriteSystem.Remove(spriteSystem, this.items[this.selected]._sprite);
+
+				this.items.splice(this.selected, 1);
+
+
+				if(this.items.length > 0) {
+					this.selected--;
+					if(this.selected < 0) this.selected = this.items.length - 1;
+					this.selected = this.selected % this.items.length;
+					
+					var sheet = this.items[this.selected].sheet;
+					this.items[this.selected]._sprite = OP.spriteSystem.Add(
+						this.spriteSystems[sheet].spriteSystem);
+
+					this.items[this.selected]._sprite.Scale.Set(0.5, 0.5, 0.5);
+					OP.spriteSystem.SetSprite(this.items[this.selected]._sprite, this.selected);
+					this.items[this.selected]._sprite.Position.Set(this.base.size.ScaledWidth / 2.0, this.base.size.ScaledHeight / 2.0);
+				}
+
 			}
 		}
 

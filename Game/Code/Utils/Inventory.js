@@ -31,8 +31,15 @@ Inventory.prototype = {
 		}
 	},
 
-	Add: function(item, data) {
-		if(this.Has(item)) return;
+	Add: function(item, data, multiple) {
+		if(!multiple && this.Has(item)) return;
+		if(multiple) {
+			var startedWith = item + '';
+			var i = 2;
+			while(this.Has(item)) {
+				item = startedWith + ' ' + (i++);
+			}
+		}
 
 		this.items[item] = data;
 		var sheet = data.sheet;
@@ -67,7 +74,7 @@ Inventory.prototype = {
 
 	UpdateItems: function(timer, gamepad) {
 		for (var key in this.items) {
-			if(this.items[key] && this.items[key].Entity) {
+			if(this.items[key] && this.items[key].Entity && this.items[key].Entity.Update) {
 				this.items[key].Entity.Update(timer, gamepad);
 			}
 		}
@@ -116,22 +123,31 @@ Inventory.prototype = {
 		return data;
 	},
 
-	SetActive: function(item) {
+	Activate: function(item) {
 		if(!item) {
-			this.active = null;
-			return;
+			//this.active = null;
+			return null;
 		}
 
 		if(!this.items[item]) {
 			return null;
 		}
 
-		if(this.active) {
-			this.active.active = false;
+		// if(this.active) {
+		// 	this.active.active = false;
+		// }
+
+		// this.active = this.items[item];
+		// this.active.active = true;
+
+		if(this.items[item].Entity) {
+			if(this.items[item].Entity.Interact()) {
+				this.Remove(item);
+				return true;
+			}
 		}
 
-		this.active = this.items[item];
-		this.active.active = true;
+		return false;
 	}
 
 };

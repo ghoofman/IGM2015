@@ -46,20 +46,29 @@ function OptionSelector(text, options) {
 
 OptionSelector.prototype = {
   text: '',
-  options: [],
+  options: null,
   selected: 0,
 
   Update: function(gamepad) {
-      if(Input.WasUpPressed(gamepad)) {
-          this.selected--;
-          if(this.selected < 0) this.selected = this.options.length - 1;
-      }
-      if(Input.WasDownPressed(gamepad)) {
-          this.selected++;
-      }
-      this.selected = this.selected % this.options.length;
-      if(Input.WasActionPressed(gamepad)) {
-          return this.options[this.selected].select && this.options[this.selected].select();
+
+      if(this.options) {
+          if(Input.WasUpPressed(gamepad)) {
+              this.selected--;
+              if(this.selected < 0) this.selected = this.options.length - 1;
+          }
+          if(Input.WasDownPressed(gamepad)) {
+              this.selected++;
+          }
+          this.selected = this.selected % this.options.length;
+          if(Input.WasActionPressed(gamepad)) {
+              return this.options[this.selected].select && this.options[this.selected].select();
+          }
+      } else {
+          if(Input.WasActionPressed(gamepad)) {
+            return {
+                result: 1
+            };
+        }
       }
 
       return {
@@ -68,6 +77,8 @@ OptionSelector.prototype = {
   },
 
   Render: function(fontManager) {
+      fontManager = fontManager || this.fontManager;
+      
       OP.texture2D.Render(this.background);
 
       OP.spriteSystem.Render(this.spriteSystem, this.camera);
@@ -77,17 +88,20 @@ OptionSelector.prototype = {
     	OP.fontRender(this.text, 300, 270);
       	OP.fontRender.End();
 
-      	OP.fontRender.Begin(this.fontManager36);
-      for(var i = 0; i < this.options.length; i++) {
-        if(this.selected == i) {
-      		OP.fontRender.Color(0.5,1.0,0.5);
-    		OP.fontRender('<', 320, 335 + i * 50);
-        } else {
-      		OP.fontRender.Color(1,1,1);
+        if(this.options) {
+          	OP.fontRender.Begin(this.fontManager36);
+              for(var i = 0; i < this.options.length; i++) {
+                if(this.selected == i) {
+              		OP.fontRender.Color(0.5,1.0,0.5);
+            		OP.fontRender('<', 320, 335 + i * 50);
+                } else {
+              		OP.fontRender.Color(1,1,1);
+                }
+            		OP.fontRender(this.options[i].text, 350, 335 + i * 50);
+              }
+
+        	OP.fontRender.End();
         }
-    		OP.fontRender(this.options[i].text, 350, 335 + i * 50);
-      }
-    	OP.fontRender.End();
 
 
 		OP.render.Depth(1);

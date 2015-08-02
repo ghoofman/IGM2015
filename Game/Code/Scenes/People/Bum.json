@@ -1,0 +1,6 @@
+{
+  "name" : "Squatter",
+  "file" : "BumSitting.qb",
+  "AI" : "People/Bum.js",
+  "offset" : [ 45, 0, 50 ]
+}

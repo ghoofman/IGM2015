@@ -1,0 +1,9 @@
+{
+	"key": "basket",
+	"data": {
+		"sheet": "CoffeeSelector",
+		"item": "Basket-iso",
+		"text": "Grocery Store Basket",
+		"desc": [ "I can put groceries in it."]
+	}
+}

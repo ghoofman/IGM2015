@@ -6,10 +6,20 @@ function Frank(character) {
 	this.character = character;
 	this.vec3 = OP.vec3.Create(0,0,0);
 
-	if(global.currentScene.name != 'Cafe' ) {
+	if(global.currentScene.name != 'Cafe' && global.currentScene.name != 'GroceryStore' ) {
 		this.character.dead = true;
 		this.character.alive = false;
 		return;
+	}
+
+	if(global.currentScene.name == 'Cafe') {
+		this.Update = this.UpdateCafe;
+		this.Interact = this.InteractCafe;
+	} else {
+		this.state = 'FIND_REGISTER';
+		this.target = null;
+		this.Update = this.UpdateGrocery;
+		this.Interact = this.InteractGrocery;
 	}
 
 	this.character.alive = 0;
@@ -24,95 +34,186 @@ Frank.prototype = {
 
 	interactions : [],
 
-	Update: function(timer, scene) {
+		UpdateCafe: function(timer, scene) {
 
-		if(this.character.dead) return;
+			if(this.character.dead) return;
 
-		// Frank comes into the cafe at 8
-		if(!this.character.alive && !global.ai.frank.receivedCoffee) {
-			if(global.job && global.job.title == 'barista' && global.job.clocked && global.time.getHours() == 8 && Math.random() < 0.01) {
-				var start = this.character.scene.FindPosition(2);
+			// Frank comes into the cafe at 8
+			if(!this.character.alive && !global.ai.frank.receivedCoffee) {
+				if(global.job && global.job.title == 'barista' && global.job.clocked && global.time.getHours() == 8 && Math.random() < 0.01) {
+					var start = this.character.scene.FindPosition(2);
+					this.character.Setup(start);
+				}
+				return;
+			}
+
+			this.base.Move(timer);
+
+			switch(this.state) {
+				case 'EXIT': {
+					var collisions = scene.Collisions(this.character);
+					for(var i = 0; i < collisions.length; i++) {
+						if(collisions[i].type == 'door') {
+							this.target = null;
+							this.character.dead = 1;
+							this.character.alive = 0;
+
+							for(var i = 0; i < this.interactions.length; i++){
+								this.interactions[i].Leave && this.interactions[i].Leave(this.character);
+								this.interactions.splice(i, 1);
+								i--;
+							}
+							OP.physXScene.Remove(this.character.physXScene, this.character.controller.actor);
+
+						}
+					}
+					break;
+				}
+				case 'FIND': {
+					var collisions = scene.Collisions(this.character);
+					for(var i = 0; i < collisions.length; i++) {
+						if(collisions[i].type == 'register' && collisions[i].data && collisions[i].data.customer) {
+
+							if(collisions[i].Entity) {
+								collisions[i].Entity.CharacterInteract &&
+									collisions[i].Entity.CharacterInteract(this.character, collisions[i]);
+
+								this.interactions.push(collisions[i].Entity);
+							}
+
+							this.target = null;
+							this.character.atRegister = 1;
+							this.state = 'GETTING COFEE';
+							break;
+						}
+					}
+					// Not colliding with a register right now
+
+					break;
+				}
+				case 'GETTING COFEE': {
+					if(global.ai.frank.receivedCoffee) {
+						var registers = scene.FindType('door');
+						if(registers.length > 0) {
+							this.target = registers[0].position;
+							this.state = 'EXIT';
+						}
+					}
+					break;
+				}
+				case 'WANDER': {
+					if(!this.target) {
+						this.state = null;
+					}
+				}
+				default: {
+					if(!this.target && !this.character.atRegister) {
+						var registers = scene.FindType('register');
+						this.state = 'FIND';
+						// choose the customer side
+						for(var i = 0; i < registers.length; i++) {
+							if(registers[i].data && registers[i].data.customer) {
+								this.target = registers[i].position;
+								break;
+							}
+						}
+					}
+				}
+			}
+		},
+
+		UpdateGrocery: function(timer, scene) {
+
+			if(this.character.dead) return;
+
+			// Frank comes into the cafe at 8
+			if(!this.character.alive) {
+				var start = this.character.scene.FindPosition(12);
 				this.character.Setup(start);
+				return;
 			}
-			return;
-		}
 
-		this.base.Move(timer);
+			this.base.Move(timer);
 
-		switch(this.state) {
-			case 'EXIT': {
-				var collisions = scene.Collisions(this.character);
-				for(var i = 0; i < collisions.length; i++) {
-					if(collisions[i].type == 'door') {
-						this.target = null;
-						this.character.dead = 1;
-						this.character.alive = 0;
-
-						for(var i = 0; i < this.interactions.length; i++){
-							this.interactions[i].Leave && this.interactions[i].Leave(this.character);
-							this.interactions.splice(i, 1);
-							i--;
+			switch(this.state) {
+				case 'EXIT': {
+					var collisions = scene.Collisions(this.character);
+					for(var i = 0; i < collisions.length; i++) {
+						if(collisions[i].type == 'door') {
+							this.target = null;
+							this.character.dead = 1;
+							this.character.alive = 0;
+							for(var i = 0; i < this.interactions.length; i++){
+								this.interactions[i].Leave && this.interactions[i].Leave(this.character);
+								this.interactions.splice(i, 1);
+								i--;
+							}
+							OP.physXScene.Remove(this.character.physXScene, this.character.controller.actor);
 						}
-						OP.physXScene.Remove(this.character.physXScene, this.character.controller.actor);
-
 					}
+					break;
 				}
-				break;
-			}
-			case 'FIND': {
-				var collisions = scene.Collisions(this.character);
-				for(var i = 0; i < collisions.length; i++) {
-					if(collisions[i].type == 'register' && collisions[i].data && collisions[i].data.customer) {
+				case 'REGISTER': {
+					var collisions = scene.Collisions(this.character);
+					for(var i = 0; i < collisions.length; i++) {
+						if(collisions[i].type == 'register') {
 
-						if(collisions[i].Entity) {
-							collisions[i].Entity.CharacterInteract &&
-								collisions[i].Entity.CharacterInteract(this.character, collisions[i]);
+							if(collisions[i].Entity) {
+								collisions[i].Entity.CharacterInteract &&
+									collisions[i].Entity.CharacterInteract(this.character, collisions[i]);
+									this.interactions.push(collisions[i].Entity);
+							}
 
-							this.interactions.push(collisions[i].Entity);
+							this.target = null;
+							this.state = null;
 						}
-
-						this.target = null;
-						this.character.atRegister = 1;
-						this.state = 'GETTING COFEE';
-						break;
 					}
+					break;
 				}
-				// Not colliding with a register right now
+				case 'FIND_EXIT': {
+					var doors = scene.FindType('door');
+					for(var i = 0; i < doors.length; i++) {
+						if(doors[i].data && !doors[i].data.customer) {
 
-				break;
-			}
-			case 'GETTING COFEE': {
-				if(global.ai.frank.receivedCoffee) {
-					var registers = scene.FindType('door');
-					if(registers.length > 0) {
-						this.target = registers[0].position;
-						this.state = 'EXIT';
+							for(var j = 0; j < this.interactions.length; j++){
+								this.interactions[j].Leave && this.interactions[j].Leave(this.character);
+								this.interactions.splice(j, 1);
+								j--;
+							}
+
+							this.target = doors[i].position;
+							this.state = 'EXIT';
+							break;
+						}
 					}
+					break;
 				}
-				break;
-			}
-			case 'WANDER': {
-				if(!this.target) {
-					this.state = null;
-				}
-			}
-			default: {
-				if(!this.target && !this.character.atRegister) {
+				case 'FIND_REGISTER': {
+					this.state = 'REGISTER';
 					var registers = scene.FindType('register');
-					this.state = 'FIND';
-					// choose the customer side
 					for(var i = 0; i < registers.length; i++) {
-						if(registers[i].data && registers[i].data.customer) {
+						if(!registers[i].data || !registers[i].data.customer) {
 							this.target = registers[i].position;
 							break;
 						}
 					}
+					break;
+				}
+				case 'WANDER': {
+					if(!this.target) {
+						this.state = null;
+					}
+					break;
+				}
+				default: {
+
+					break;
 				}
 			}
-		}
-	},
 
-	Interact: function() {
+		},
+
+	InteractCafe: function() {
 		//global.AudioPlayer.PlayEffect('Audio/Speak2.wav');
 
 		if(!global.job || global.job.title != 'barista') {
@@ -191,6 +292,35 @@ Frank.prototype = {
         }, { text: "Can't do that right now" } ]);
 
         return null;
+	},
+
+	InteractGrocery: function() {
+		var self = this;
+        return new Talk(this.character, 'Ready to check out man?', [ {
+        	text: 'Lets do it', select: function() {
+				var basket = global.inventory.Get('basket');
+				if(basket == null || basket.items == null || basket.items.length == 0) {
+					return new Talk(self.character, 'Uhh, dude you don\'t have anything to buy...');
+				} else {
+					var amount = 0;
+					for(var i = 0; i < basket.items.length; i++) {
+						amount += basket.items[i].cost;
+					}
+					return new Talk(self.character, 'Alright it\'ll be $' + amount.toFixed(2), [
+							{ text: 'Alright', select: function() {
+								for(var i = 0; i < basket.items.length; i++) {
+									console.log('Added', basket.items[i].text);
+									global.wallet.AddExpense(basket.items[i].text, 'food', basket.items[i].cost);
+							        global.inventory.Add(basket.items[i].text, basket.items[i], true);
+								}
+								basket.items = [];
+								basket.names = {};
+							}},
+							{ text: 'Oh. Nevermind.' }
+					]);
+				}
+			}
+        }, { text: "Nevermind, not yet." } ]);
 	},
 
 	EndOfDay: function() {

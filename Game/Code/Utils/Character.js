@@ -74,7 +74,7 @@ Character.prototype = {
 
     Update: function(timer, scene) {
         // TODO: fill with AI
-        this.AI && this.AI.Update(timer, scene);
+        this.AI && this.AI.Update && this.AI.Update(timer, scene);
     },
 
     Move: function(timer) {

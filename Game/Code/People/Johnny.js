@@ -218,8 +218,10 @@ Johnny.prototype = {
 	},
 
 	EndOfDay: function() {
-		global.ai.johnny.receivedCoffee = false;
-		global.ai.johnny.talked = false;
+		if(global.ai && global.ai.johnny) {
+			global.ai.johnny.receivedCoffee = false;
+			global.ai.johnny.talked = false;
+		}
 	}
 };
 

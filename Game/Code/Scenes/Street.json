@@ -3,7 +3,7 @@
   "scale" : 0.5,
   "planes": {
     "xNegative" : -250,
-    "xPositive" : 360,
+    "xPositive" : 560,
     "zNegative" : -150,
     "zPositive" : 150,
     "yNegative" : 0
@@ -32,6 +32,14 @@
     {
       "id": 4,
       "position": [ -210, 0, 40 ]
+    },
+    {
+      "id": 6,
+      "position": [ 535, 0, 40 ]
+    },
+    {
+      "id": 14,
+      "position": [ 415, 0, -26 ]
     }
   ],
   "characters" : [
@@ -69,6 +77,33 @@
           }
         ]
       }
+    },
+    {
+        "file" : "GroceryStore.qb",
+        "offset" : [ 535, 0, -47 ],
+        "scale" : [ 1, 1, 1 ],
+        "collision": {
+          "default" : false,
+          "custom" : [
+            {
+              "collide" : true,
+              "type" : "",
+              "offset" : [ 0, 0, 0 ],
+              "size" : [ 93, 117, 64 ]
+            },
+            {
+              "id" : 1,
+              "type" : "door",
+              "name" : "Grocery Store",
+              "data" : {
+                "file" : "Scenes/GroceryStore.json"
+              },
+              "collide" : false,
+              "offset" : [ 0, 0, 64 ],
+              "size" : [ 13, 117, 4 ]
+            }
+          ]
+        }
     },
     {
       "file" : "BuildingTest3.qb",
@@ -428,6 +463,26 @@
     {
       "file" : "sidewalk_4x1.qb",
       "offset" : [ -362, 0, 56 ]
+    },
+    {
+      "file" : "Dumpster.qb",
+      "offset" : [ 430, 0, -26 ],
+      "collision": {
+        "default" : true,
+        "custom" : [
+          {
+            "id" : 1,
+            "type" : "door",
+            "name" : "Dumpster",
+            "data" : {
+              "file" : "Scenes/Dumpster.json"
+            },
+            "collide" : false,
+            "offset" : [ 0, 0, 0 ],
+            "size" : [ 50, 50, 50 ]
+          }
+        ]
+      }
     }
   ]
 }

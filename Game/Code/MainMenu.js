@@ -20,8 +20,10 @@ MainMenu.prototype = {
 		if(Input.WasActionPressed(this.Data.gamePad0)) {
 			//var scene = new SceneCreator('/Scenes/TaxiCab.json', 1);
 			//var scene = new SceneCreator('/Scenes/Street.json', 1);
+			var scene = new SceneCreator('/Scenes/GroceryStore.json', 1);
+			//var scene = new SceneCreator('/Scenes/Dumpster.json', 1);
 			//var scene = new SceneCreator('/Scenes/GLOBAL.json', 1);
-			var scene = new SceneCreator('/Scenes/GLOBALBedroom.json', 1);
+			//var scene = new SceneCreator('/Scenes/GLOBALBedroom.json', 1);
 			OPgameState.Change(scene);
 			return 0;
 		}

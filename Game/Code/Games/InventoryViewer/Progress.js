@@ -259,7 +259,7 @@ Progress.prototype = {
         OP.fontRender("Cash", offsetX + 550, 150);
         OP.fontRender("Income", offsetX + 550, 200);
         if(diff >= 0) {
-            OP.fontRender("Gained", offsetX + 550, 300);
+            OP.fontRender("Gain", offsetX + 550, 300);
         }
         OP.fontRender.Color(1.0, 0.0, 0.0);
         OP.fontRender("Expenses", offsetX + 550, 250);

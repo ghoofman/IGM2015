@@ -1,0 +1,174 @@
+{
+  "name" : "GroceryStore",
+  "scale" : 1,
+  "planes": {
+    "xNegative" : 0,
+    "xPositive" : 600,
+    "zNegative" : -300,
+    "zPositive" : 150,
+    "yNegative" : 0
+  },
+  "camera": {
+    "zNegative" : -50,
+    "zPositive" : 50,
+	"xNegative" : 100,
+	"xPositive" : 500,
+    "yDistance" : 150
+  },
+  "positions": [
+    {
+      "id": 1,
+      "position": [ 30, 0, -30 ]
+    },
+    {
+      "id": 3,
+      "position": [ 265, 0, -100 ]
+    },
+    {
+      "id": 4,
+      "position": [ 350, 0, 100 ]
+    },
+    {
+      "id": 12,
+      "position": [ 230, 0, 50 ]
+    }
+  ],
+  "models" : [
+	{
+		"file": "GroceryInsideEntrance.qb",
+		"offset": [ 0, 0, -76 ],
+		"collision": {
+			"default" : false,
+            "custom" : [
+                  {
+                    "collide" : true,
+                    "offset" : [ -16, 0, 0 ],
+                    "size" : [ 16, 78, 126]
+				},
+                  {
+                    "id" : 6,
+                    "type" : "door",
+                    "name" : "Street",
+                    "data" : {
+                      "file": "Scenes/Street.json"
+                    },
+                    "collide" : false,
+                    "offset" : [ 0, 0, 0 ],
+                    "size" : [ 20, 60, 60]
+                  }
+            ]
+		}
+	},
+	{
+		"file" : "Basket.qb",
+		"offset" : [ 120, 0, -250 ]
+	},
+	{
+		"file" : "Basket.qb",
+		"offset" : [ 150, 0, -250 ],
+        "collision" : {
+            "default" : true,
+            "custom" : [
+                {
+                    "id": 10,
+                    "type": "item",
+                    "name": "Basket",
+                    "data" : {
+                        "file" : "Basket.json"
+                    },
+                    "collide": false,
+                    "size" : [ 40, 40, 40 ]
+                }
+            ]
+        }
+	},
+	{
+		"file" : "Basket.qb",
+		"offset" : [ 180, 0, -250 ]
+	},
+	{
+		"file" : "Basket.qb",
+		"offset" : [ 150, 20, -250 ]
+	},
+	{
+		"file" : "Basket.qb",
+		"offset" : [ 180, 20, -250 ]
+	},
+	{
+		"file" : "GroceryCheckout.qb",
+		"offset" : [ 200, 0, 0 ],
+        "collision" : {
+          "default" : false,
+          "custom" : [
+            {
+              "collide" : true,
+              "size" : [ 110, 40, 30 ],
+              "offset": [ 0, 0, -10 ]
+            },
+              {
+                "collide" : true,
+                "size" : [ 30, 40, 30 ],
+                "offset": [ 80, 0, 15 ]
+              },
+            {
+              "id" : 6,
+              "type" : "register",
+              "name" : "Register",
+              "collide" : false,
+              "size" : [ 20, 40, 30 ],
+              "offset": [ 30, 0, 0 ]
+            },
+            {
+              "id" : 7,
+              "type" : "register",
+              "data" : {
+                  "customer" : true
+              },
+              "name" : "Register",
+              "collide" : false,
+              "size" : [ 70, 40, 30 ],
+              "offset": [ 30, 0, -40 ]
+            }
+          ]
+        }
+	},
+    {
+      "file" : "GroceryFruitSelect.qb",
+      "offset" : [ 300, 0, -250 ],
+      "collision": {
+        "default": false,
+        "custom": [
+          {
+            "id" : 4,
+            "type" : "game",
+            "name" : "Fruit",
+            "data" : {
+                "game": "FruitSelector"
+            },
+            "collide" : false,
+            "size" : [ 20, 30, 40 ]
+          }
+        ]
+      }
+    },
+    {
+      "file" : "GroceryFruitSelect.qb",
+      "offset" : [ 400, 0, -250 ],
+      "collision": {
+        "default": false,
+        "custom": [
+          {
+            "id" : 5,
+            "type" : "game",
+            "name" : "Grains",
+            "data" : {
+                "game": "GrainSelector"
+            },
+            "collide" : false,
+            "size" : [ 20, 30, 40 ]
+          }
+        ]
+      }
+    }
+  ]
+}

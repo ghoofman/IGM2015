@@ -1,11 +1,11 @@
 {
-  "name" : "GLOBALBedroom",
+  "name" : "Dumpster",
   "scale" : 1,
   "planes": {
-    "xNegative" : -90,
-    "xPositive" : 85,
-    "zNegative" : -45,
-    "zPositive" : 50,
+    "xNegative" : -35,
+    "xPositive" : 35,
+    "zNegative" : -25,
+    "zPositive" : 20,
     "yNegative" : 0
   },
   "camera": {
@@ -19,49 +19,42 @@
   "positions": [
     {
       "id": 1,
-      "position": [ -60, 0, -30 ]
-  },
-    {
-      "id": 4,
-      "position": [ 70, 0, 20 ]
+      "position": [ 0, 0, 0 ]
     }
   ],
   "models" : [
     {
-      "file" : "GLOBALBedroom.qb",
+      "file" : "InnerDumpster.qb",
       "offset" : [ 0, 0, 0 ],
       "collision" : {
         "default": false,
         "custom" : [
           {
-            "id" : 1,
+            "id" : 14,
             "type" : "door",
-            "name" : "Hallway",
+            "name" : "Street",
             "data" : {
-              "file":  "Scenes/GLOBALHallway.json"
+              "file":  "Scenes/Street.json"
             },
             "collide" : false,
-            "offset" : [ -70, 0, -45 ],
-            "size" : [ 30, 55, 10 ]
+            "offset" : [ 0, 0, 20 ],
+            "size" : [ 50, 55, 5 ]
           }
         ]
       }
     },
     {
-      "file" : "GLOBALBed.qb",
-      "offset" : [ 50, 0, -20 ],
+      "file" : "TrashBags.qb",
+      "offset" : [ -20, 0, -7 ],
       "collision": {
         "default" : true,
         "custom" : [
           {
             "id" : 1,
-            "type" : "game",
-            "data" : {
-                "game" : "EndOfDay.js"
-            },
-            "name" : "My Bed",
+            "type" : "trashbag",
+            "name" : "Trash Bag",
             "collide" : false,
-            "size" : [ 30, 30, 20 ],
+            "size" : [ 30, 30, 30 ],
             "offset" : [ 0, 0, 0 ]
           }
         ]
