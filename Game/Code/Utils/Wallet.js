@@ -174,6 +174,9 @@ Wallet.prototype = {
 	        this.AddIncome('Cafe Pay Check', 'pay', hours * rate, rate, 'hr', hours.toFixed(2) + ' hours @ $' + rate.toFixed(2) + ' / hr');
 	        this.AddExpense('Taxes', 'tax', (hours * rate) * 0.33, null, null, '33% of Pay Check');
 	    }
+		if(global.girlfriend) {
+			this.AddExpense('Girlfriend Expense', 'pay', 10);
+		}
 	}
 };
 

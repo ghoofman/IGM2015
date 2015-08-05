@@ -13,6 +13,7 @@ function Inventory(base) {
 		if(global.inventory.items[key]) {
 			var item = global.inventory.items[key];
 			item.key = key;
+			item.active = true;
 			this.items.push(item);
 		}
 	}
@@ -79,9 +80,9 @@ Inventory.prototype = {
 			for(var i = 0 ; i < this.items[this.selected].desc.length; i++) {
 				OP.fontRender(this.items[this.selected].desc[i], this.base.size.ScaledWidth / 2.0, i * 30 + 175 + this.base.size.ScaledHeight / 2.0);
 			}
-			if(this.items[this.selected].active) {
-				OP.fontRender('[ Currently Selected ]', this.base.size.ScaledWidth / 2.0, i * 30 + 225 + this.base.size.ScaledHeight / 2.0);
-			}
+			// if(this.items[this.selected].active) {
+			// 	OP.fontRender('[ Currently Selected ]', this.base.size.ScaledWidth / 2.0, i * 30 + 225 + this.base.size.ScaledHeight / 2.0);
+			// }
 			OP.fontRender.End();
 		}
 	},
@@ -109,16 +110,16 @@ Inventory.prototype = {
 
 				var sheet = this.items[this.selected].sheet;
 				var spriteSystem = this.spriteSystems[sheet].spriteSystem;
+				this.items[this.selected].active = false;
 				OP.spriteSystem.Remove(spriteSystem, this.items[this.selected]._sprite);
+				//this.items.splice(this.selected, 1);
 
-				this.items.splice(this.selected, 1);
 
-
-				if(this.items.length > 0) {
+				//if(this.items.length > 0) {
 					this.selected--;
 					if(this.selected < 0) this.selected = this.items.length - 1;
 					this.selected = this.selected % this.items.length;
-					
+
 					var sheet = this.items[this.selected].sheet;
 					this.items[this.selected]._sprite = OP.spriteSystem.Add(
 						this.spriteSystems[sheet].spriteSystem);
@@ -126,7 +127,7 @@ Inventory.prototype = {
 					this.items[this.selected]._sprite.Scale.Set(0.5, 0.5, 0.5);
 					OP.spriteSystem.SetSprite(this.items[this.selected]._sprite, this.selected);
 					this.items[this.selected]._sprite.Position.Set(this.base.size.ScaledWidth / 2.0, this.base.size.ScaledHeight / 2.0);
-				}
+				//}
 
 			}
 		}
@@ -146,6 +147,12 @@ Inventory.prototype = {
 					if(this.selected < 0) this.selected = this.items.length - 1;
 					this.selected = this.selected % this.items.length;
 
+					while(!this.items[this.selected].active) {
+						this.selected--;
+						if(this.selected < 0) this.selected = this.items.length - 1;
+						this.selected = this.selected % this.items.length;
+					}
+
 					var sheet = this.items[this.selected].sheet;
 					this.items[this.selected]._sprite = OP.spriteSystem.Add(
 						this.spriteSystems[sheet].spriteSystem);
@@ -163,6 +170,10 @@ Inventory.prototype = {
 
 					this.selected++;
 					this.selected = this.selected % this.items.length;
+					while(!this.items[this.selected].active) {
+						this.selected++;
+						this.selected = this.selected % this.items.length;
+					}
 
 					var sheet = this.items[this.selected].sheet;
 					this.items[this.selected]._sprite = OP.spriteSystem.Add(

@@ -155,7 +155,7 @@ SceneLoader.prototype = {
 
     AddObject: function(json) {
 
-      	var mesh = BuildVoxelMesh(json.file);
+      	var mesh = BuildVoxelMesh(json.file, true);
       	var model = OP.model.Create(mesh);
 
         var offset = json.offset;

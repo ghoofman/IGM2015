@@ -34,7 +34,8 @@ Controls.prototype = {
 		OP.fontRender('Back', this.base.size.ScaledWidth / 2.0, 250);
 		OP.fontRender('Move', this.base.size.ScaledWidth / 2.0, 300);
 		OP.fontRender('Jump', this.base.size.ScaledWidth / 2.0, 400);
-		OP.fontRender('Time', this.base.size.ScaledWidth / 2.0, 450);
+		OP.fontRender('Fast Time', this.base.size.ScaledWidth / 2.0, 450);
+		OP.fontRender('Slow Time', this.base.size.ScaledWidth / 2.0, 500);
 
 		OP.fontRender.Color(1.0, 1.0, 1.0);
 		this.base.fontManager36.SetAlign(OP.FONTALIGN.LEFT);
@@ -43,8 +44,8 @@ Controls.prototype = {
 		OP.fontRender('W / A / S / D', 20 + this.base.size.ScaledWidth / 2.0, 300);
 		OP.fontRender('Up / Down / Left / Right', 20 + this.base.size.ScaledWidth / 2.0, 350);
 		OP.fontRender('Space', 20 + this.base.size.ScaledWidth / 2.0, 400);
-		OP.fontRender('Left Shift', 20 + this.base.size.ScaledWidth / 2.0, 450);
-		OP.fontRender('Right Shift', 20 + this.base.size.ScaledWidth / 2.0, 500);
+		OP.fontRender('Z / Left Shift', 20 + this.base.size.ScaledWidth / 2.0, 450);
+		OP.fontRender('C / Right Shift', 20 + this.base.size.ScaledWidth / 2.0, 500);
 		OP.fontRender.End();
 	},
 
@@ -62,7 +63,8 @@ Controls.prototype = {
 		OP.fontRender('Back', this.base.size.ScaledWidth / 2.0, 250);
 		OP.fontRender('Move', this.base.size.ScaledWidth / 2.0, 300);
 		OP.fontRender('Jump', this.base.size.ScaledWidth / 2.0, 400);
-		OP.fontRender('Time', this.base.size.ScaledWidth / 2.0, 450);
+		OP.fontRender('Fast Time', this.base.size.ScaledWidth / 2.0, 450);
+		OP.fontRender('Slow Time', this.base.size.ScaledWidth / 2.0, 500);
 
 		OP.fontRender.Color(1.0, 1.0, 1.0);
 		this.base.fontManager36.SetAlign(OP.FONTALIGN.LEFT);
@@ -71,7 +73,8 @@ Controls.prototype = {
 		OP.fontRender('Left Stick', 20 + this.base.size.ScaledWidth / 2.0, 300);
 		OP.fontRender('Up / Down / Left / Right', 20 + this.base.size.ScaledWidth / 2.0, 350);
 		OP.fontRender('Y', 20 + this.base.size.ScaledWidth / 2.0, 400);
-		OP.fontRender('Right Trigger', 20 + this.base.size.ScaledWidth / 2.0, 450);
+		OP.fontRender('Left Trigger', 20 + this.base.size.ScaledWidth / 2.0, 450);
+		OP.fontRender('Right Trigger', 20 + this.base.size.ScaledWidth / 2.0, 500);
 		OP.fontRender.End();
 	},
 

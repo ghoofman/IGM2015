@@ -53,9 +53,9 @@ Frank.prototype = {
 
 			if(this.character.dead) return;
 
-			// Frank comes into the cafe at 8
+			// Frank comes into the cafe at 9
 			if(!this.character.alive && !global.ai.frank.receivedCoffee) {
-				if(global.job && global.job.title == 'barista' && global.job.clocked && global.time.getHours() == 8 && Math.random() < 0.01) {
+				if(global.job && global.job.title == 'barista' && global.job.clocked && global.time.getHours() == 9 && Math.random() < 0.01) {
 					var start = this.character.scene.FindPosition(2);
 					this.character.Setup(start);
 				}
@@ -295,16 +295,14 @@ Frank.prototype = {
 
         global.ai.frank.talked = true;
 
-        return new Talk(this.character, 'I want a Tall Bold Coffee. Right Now', [ {
-        	text: 'You got it', select: function() {
+        return new Talk(this.character, 'I want a Tall Bold Coffee. Right Now', null, function() {
 
                 global.tasks.push( {
             		text: 'Get Frank a Tall Bold Coffee',
             		complete: function() { return global.ai.frank.receivedCoffee; },
             		time: -1000
             	});
-			}
-        }, { text: "Can't do that right now" } ]);
+        });
 
         return null;
 	},

@@ -87,7 +87,7 @@
             "data": {
                 "require" : {
                     "Apt1" : "key",
-                    "text" : "Key needed"
+                    "text" : "Safety inspection declared no longer inhabitable"
                 }
             },
             "collide" : false,

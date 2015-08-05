@@ -5,7 +5,7 @@
     "xNegative" : 0,
     "xPositive" : 600,
     "zNegative" : -300,
-    "zPositive" : 150,
+    "zPositive" : 40,
     "yNegative" : 0
   },
   "camera": {
@@ -13,7 +13,7 @@
     "zPositive" : 50,
 	"xNegative" : 100,
 	"xPositive" : 500,
-    "yDistance" : 150
+    "yDistance" : 250
   },
   "positions": [
     {
@@ -49,6 +49,7 @@
                     "id" : 6,
                     "type" : "door",
                     "name" : "Street",
+                    "logic" : "RemoveBasket.js",
                     "data" : {
                       "file": "Scenes/Street.json"
                     },
@@ -134,9 +135,9 @@
 	},
     {
       "file" : "GroceryFruitSelect.qb",
-      "offset" : [ 300, 0, -250 ],
+      "offset" : [ 300, 0, -240 ],
       "collision": {
-        "default": false,
+        "default": true,
         "custom": [
           {
             "id" : 4,
@@ -152,10 +153,10 @@
       }
     },
     {
-      "file" : "GroceryFruitSelect.qb",
-      "offset" : [ 400, 0, -250 ],
+      "file" : "GroceryGrainSelector.qb",
+      "offset" : [ 480, 0, -240 ],
       "collision": {
-        "default": false,
+        "default": true,
         "custom": [
           {
             "id" : 5,
@@ -169,6 +170,70 @@
           }
         ]
       }
+  },
+  {
+      "file" : "GroceryLeftCorner.qb",
+      "offset" : [16, 0, -246 ],
+      "collision" : {
+          "default": false,
+          "custom" : [
+          {
+              "collide" : true,
+              "size" : [ 60, 100, 30 ],
+              "offset" : [ 0, 0, -60 ]
+          },
+            {
+              "id" : 6,
+              "type" : "door",
+              "name" : "Secret",
+              "logic" : "Secret.js",
+              "collide" : false,
+              "offset" : [ -100, 0, 0 ],
+              "size" : [ 20, 60, 30]
+            }
+      ]
     }
+  },
+  {
+      "file" : "GroceryBackWall.qb",
+      "offset" : [176, 0, -246 ],
+      "collision" : {
+          "default": false,
+          "custom" : [
+          {
+              "collide" : true,
+              "size" : [ 109, 100, 30 ],
+              "offset" : [ 0, 0, -60 ]
+          }
+      ]
+    }
+  },
+  {
+      "file" : "GroceryBackWall.qb",
+      "offset" : [394, 0, -246 ],
+      "collision" : {
+          "default": false,
+          "custom" : [
+          {
+              "collide" : true,
+              "size" : [ 109, 100, 30 ],
+              "offset" : [ 0, 0, -60 ]
+          }
+      ]
+    }
+  },
+  {
+      "file" : "GroceryRightCorner.qb",
+      "offset" : [548, 0, -246 ]
+  },
+  {
+      "file" : "GroceryRightWall.qb",
+      "offset" : [560, 0, -76 ]
+  },
+  {
+      "file" : "GroceryFloor.qb",
+      "offset" : [594, -2, 50 ],
+      "scale": [ 315, 1, 200 ]
+  }
   ]
 }

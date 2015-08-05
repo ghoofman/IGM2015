@@ -134,7 +134,7 @@
                 {
                   "id" : 1,
                   "type" : "auto",
-                  "name" : "Apartment",
+                  "name" : "Village Apartments",
                   "data" : {
                     "file": "Scenes/Apartment.json"
                   },
@@ -145,7 +145,7 @@
                   {
                     "id" : 1,
                     "type" : "door",
-                    "name" : "Apartment",
+                    "name" : "Village Apartments",
                     "data" : {
                       "file": "Scenes/Apartment.json"
                     },

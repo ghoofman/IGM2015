@@ -2,8 +2,10 @@ var OP = require('OPengine').OP,
 	OPgameState = require('OPgameState'),
 	Input = require('./Utils/Input.js'),
 	SceneCreator = require('./SceneCreator.js'),
+	Difficulty = require('./Difficulty.js'),
 	BuildVoxelMesh = require('./Utils/BuildVoxelMesh.js'),
 	Camera = require('./Utils/Camera.js');
+	var Wallet = require('./Utils/Wallet.js');
 
 
 function MainMenu() {
@@ -13,6 +15,41 @@ MainMenu.prototype = {
 	Data: {},
 
 	Initialize: function() {
+
+			global.game = {
+				money: 100000,
+				cash: 10,
+				target: 10,
+				loans: 10
+			};
+
+			global.ai = { };
+			global.memory = {};
+
+			global.wallet = new Wallet();
+
+			global.time = new Date();
+			global.time.setHours(8);
+			global.time.setMinutes(0);
+			global.time.setSeconds(0);
+			global.time.setMilliseconds(0);
+
+			global.timeScale = 1000;
+
+			global.tasks = [ ];
+
+			global.journal = [ ];
+
+			global.days = 1;
+			global.EndDay = 8;
+			global.announcement = null;
+			// {
+			// 	text: 'TEST',
+			// 	time: 3000
+			// };
+
+			global.meshes = {};
+
 		this.Data.gamePad0 = OP.gamePad.Get(0);
 		this.Data.fontManager = OP.fontManager.Setup('pixel72.opf');
 		this.Data.fontManager36 = OP.fontManager.Setup('pixel36.opf');
@@ -33,6 +70,25 @@ MainMenu.prototype = {
 		this.camera.Look([-125, 150, 350], [ -125,0,0]);
 
 
+			// global.tasks.push( {
+			// 	text: 'Get to work',
+			// 	location: function() {
+			// 		if(global.currentScene.name == 'Street') {
+			// 			return {
+			// 				pos: [210, 40, -50],
+			// 				startScale: 0.5,
+			// 				scale: 1.0,
+			// 				rotateY: 0,
+			// 				rotateZ: 3.14 / 2.0
+			// 			};
+			// 		}
+			// 		return null;
+			// 	},
+			// 	complete: function() {
+			// 		return false;
+			// 	}
+			// });
+
 		return 1;
 	},
 
@@ -40,9 +96,12 @@ MainMenu.prototype = {
 
 		if(Input.WasActionPressed(this.Data.gamePad0)) {
 			//global.win = true;
+			global.spawned = true;
+			var scene = new Difficulty();
 			//var scene = new SceneCreator('/Scenes/TaxiCab.json', 1);
-			var scene = new SceneCreator('/Scenes/Street.json', 1);
+			//var scene = new SceneCreator('/Scenes/Street.json', 1);
 			//var scene = new SceneCreator('/Scenes/Cafe.json', 1);
+			//var scene = new SceneCreator('/Scenes/Apartment.json', 1);
 			//var scene = new SceneCreator('/Scenes/GroceryStore.json', 1);
 			//var scene = new SceneCreator('/Scenes/Dumpster.json', 1);
 			//var scene = new SceneCreator('/Scenes/GLOBAL.json', 1);

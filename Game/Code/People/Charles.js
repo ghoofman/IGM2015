@@ -11,13 +11,23 @@ function Charles(character) {
 	if(global.currentScene.name == 'Street' && global.win) {
 		var start = this.character.scene.FindPosition(100);
 		this.character.Setup(start);
+		this.Update = this.UpdateWin;
+		this.Interact = this.InteractWin;
+	} else if(global.currentScene.name == 'Street' && (global.job && global.job.title == 'barista')) {
+		var start = this.character.scene.FindPosition(400);
+		this.character.Setup(start);
+		this.Update = this.UpdateStreet;
+		this.Interact = this.InteractStreet;
+		this.character.rotate = -3.14 / 2.0;
 	} else {
-
-		if((global.job && global.job.title == 'barista') || global.currentScene.name != 'Cafe' ) {
+		if((global.job && global.job.title == 'barista') ||
+			global.currentScene.name != 'Cafe' ) {
 			this.character.dead = true;
 			this.character.alive = false;
 			return;
 		}
+		this.Update = this.UpdateCafe;
+		this.Interact = this.InteractCafe;
 	}
 
 	this.state = 'FIND_REGISTER';
@@ -29,11 +39,17 @@ function Charles(character) {
 Charles.prototype = {
 	interactions: [],
 
-	Update: function(timer, scene) {
-		if(global.win) {
-			this.character.rotate += 0.1;
+	UpdateWin: function(timer, scene) {
+		this.character.rotate += 0.1;
+	},
+
+	UpdateStreet: function(timer, scene) {
+		if(this.character.dead) {
 			return;
 		}
+	},
+
+	UpdateCafe: function(timer, scene) {
 
 		if(this.character.dead) {
 			return;
@@ -131,7 +147,12 @@ Charles.prototype = {
 
 	},
 
-	Interact: function() {
+	InteractStreet: function() {
+		var self = this;
+		return new Talk(self.character, 'Get to work I\'m on a "smoke" break.');
+	},
+
+	InteractCafe: function() {
 		if(global.job == 'barista') {
 			return new Talk(this.character, 'Go around back and you can take over');
 		}
@@ -190,9 +211,6 @@ Charles.prototype = {
 							global.job.schedule = [{
 								start: 9,
 								end: 13
-							},{
-								start: 15,
-								end: 17
 							}];
 
 		                    global.job.activeSchedule = global.job.schedule[0];
@@ -215,7 +233,7 @@ Charles.prototype = {
 
 							self.done = true;
 							self.state = 'FIND_EXIT';
-							return new Talk(self.character, "You got it! I quit, here's the key to the back door. Enjoy.");
+							return new Talk(self.character, [ "You got the job! Here's the key to the back door,", "you can start tomorrow morning."]);
 						 }
 					 	},
 						{ text: 'No thanks.' }

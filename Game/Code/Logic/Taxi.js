@@ -4,7 +4,7 @@ var OP = require('OPengine').OP,
 module.exports = function(sceneCreator, timer) {
 	// Add events
 	if(global.ai.dad.finishedTalking) {
-		global.spawned = 0;
+		//global.spawned = 0;
 	}
 
 	return 0;

@@ -14,7 +14,7 @@ GameOver.prototype = {
 	Update: function(timer, gamepad) {
         if(Input.WasActionPressed(gamepad) || Input.WasBackPressed(gamepad)) {
 			return {
-				result: -1
+				result: -2
 			};
 		}
 

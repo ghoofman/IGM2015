@@ -3,6 +3,9 @@ var OP = require('OPengine').OP;
 function Inventory() {
 	this.size = OP.render.Size();
 	this.screenCamera = OP.cam.Ortho(0, 0, 10, 0, 0, 0, 0, 1, 0, 0.1, 20.0, 0, this.size.ScaledWidth, 0, this.size.ScaledHeight);
+	this.items = {};
+	this.sheets = {};
+	this.systems = [];
 }
 
 Inventory.prototype = {

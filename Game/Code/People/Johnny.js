@@ -38,8 +38,8 @@ Johnny.prototype = {
 			}
 		if(this.character.dead) return;
 
-		// Johnny comes into the cafe at 10
-		if(!this.character.alive && !global.ai.johnny.receivedCoffee && global.time.getHours() == 10) {
+		// Johnny comes into the cafe at 11
+		if(!this.character.alive && !global.ai.johnny.receivedCoffee && global.time.getHours() == 11) {
 			if(global.job && global.job.title == 'barista' && global.job.clocked && Math.random() < 0.01) {
 				var start = this.character.scene.FindPosition(2);
 				this.character.Setup(start);
@@ -212,16 +212,15 @@ Johnny.prototype = {
 
         global.ai.johnny.talked = true;
 
-        return new Talk(this.character, 'I\'d like a Grande Bold Coffee.', [ {
-        	text: 'You got it', select: function() {
+        return new Talk(this.character, 'I\'d like a Grande Bold Coffee.', null, function() {
 
                 global.tasks.push( {
             		text: 'Get Johnny a Grande Bold Coffee',
             		complete: function() { return global.ai.johnny.receivedCoffee; },
             		time: -1000
             	});
-			}
-        }, { text: "Can't do that right now" } ]);
+
+        });
 
         return null;
 	},

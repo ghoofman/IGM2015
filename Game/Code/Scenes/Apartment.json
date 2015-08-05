@@ -1,5 +1,5 @@
 {
-  "name" : "Apartment",
+  "name" : "VillageApartments",
   "scale" : 1,
   "planes": {
     "xNegative" : -300,
@@ -11,22 +11,22 @@
   "camera": {
     "zNegative" : -50,
     "zPositive" : 50,
-	"xNegative" : -150,
-	"xPositive" : 150,
+	"xNegative" : 75,
+	"xPositive" : 75,
     "yDistance" : 150
   },
   "positions": [
     {
       "id": 1,
-      "position": [ 310, 15, 0 ]
+      "position": [ 200, 15, 120 ]
     },
     {
       "id": 2,
-      "position": [ -15, 0, 60 ]
+      "position": [ -15, 0, 0 ]
     },
     {
       "id": 3,
-      "position": [ 60, 0, -90 ]
+      "position": [ 100, 0, -60 ]
     }
   ],
   "characters" : [
@@ -37,50 +37,68 @@
     } ],
   "models" : [
 	  {
-		"file": "Apartment_Back.qb",
-		"offset": [ 230, 0, -16 ],
+		"file": "VillageInsideFloor.qb",
+		"offset": [ 60, -2, 80 ]
+	  },
+	  {
+		"file": "VillageInsideFloor.qb",
+		"offset": [ 60, -2, -80 ]
+	  },
+	  {
+		"file": "VillageInsideFloor.qb",
+		"offset": [ 220, -2, -80 ]
+	  },
+	  {
+		"file": "VillageInsideFloor.qb",
+		"offset": [ 220, -2, 80 ]
+      },
+	  {
+		"file": "VillageInsideDesk.qb",
+		"offset": [ 100, 0, -30 ],
 		"collision": {
 			"default" : true,
-			"custom" : [
-
-			]
+            "custom" : [
+              {
+                "id" : 6,
+                "type" : "register",
+                "name" : "Front Desk",
+                "collide" : false,
+                "size" : [ 40, 100, 30 ],
+                "offset": [ 0, 0, -10 ]
+              },
+              {
+                "id" : 7,
+                "type" : "register",
+                "data" : {
+                    "customer" : true
+                },
+                "name" : "Front Desk",
+                "collide" : false,
+                "size" : [ 40, 100, 30 ],
+                "offset": [ 0, 0, 20 ]
+              }
+            ]
 		}
 	  },
 	  {
-		"file": "HallwayBackStairs.qb",
-		"offset": [ 320, 0, -16 ]
+		"file": "VillageInsideBackWall.qb",
+		"offset": [ 106, 0, -82 ]
 	  },
 	  {
-		"file": "Apartment_Floor.qb",
-		"offset": [ 60, 0, 46 ]
-	  },
-	  {
-		"file": "Apartment_Floor.qb",
-		"offset": [ 60, 0, -86 ]
-	  },
-	  {
-		"file": "Apartment_Floor.qb",
-		"offset": [ 220, 0, -86 ]
-	  },
-	  {
-		"file": "Apartment_Floor.qb",
-		"offset": [ 220, 0, 46 ]
-	  },
-	  {
-		"file": "Apartment_Floor.qb",
-		"offset": [ 380, 0, 46 ]
+		"file": "VillageInsideRightWall.qb",
+		"offset": [ 228, 0, 4 ]
 	  },
 	  {
 		"file": "HallwayBackStairs.qb",
-		"offset": [ 320, 0, 48 ]
+		"offset": [ 250, 0, 90 ]
 	  },
 	  {
-		"file": "ApartmentDesk.qb",
-		"offset": [ 71, 0, -30 ]
+		"file": "HallwayFloorBlock.qb",
+		"offset": [ 252, 30, 130 ]
 	  },
 	  {
-		"file": "ApartmentEntrance.qb",
-		"offset": [ -20, 0, 38 ],
+		"file": "VillageInsideLeftWall.qb",
+		"offset": [ -16, 0, 40 ],
 		"collision": {
 			"default" : true,
 			"custom" : [
@@ -92,7 +110,7 @@
 					  "file": "Scenes/Street.json"
 					},
 					"collide" : false,
-					"offset" : [ 0, 0, 24 ],
+					"offset" : [ 0, 0, -24 ],
 					"size" : [ 10, 62, 29]
 				  }
 			]
@@ -100,7 +118,7 @@
 	  },
 	  {
 		"file" : "Stairs_Flipped.qb",
-		"offset" : [ 320, 0, 16 ],
+		"offset" : [ 200, 0, 130 ],
         "collision": {
           "default" : false,
           "custom" : [
@@ -168,7 +186,7 @@
                                 "file": "Scenes/Hallway.json"
                               },
                               "collide" : false,
-                              "offset" : [ 15, 0, 0 ],
+                              "offset" : [ 60, 0, 0 ],
                               "size" : [ 10, 60, 29]
                             }
           ]

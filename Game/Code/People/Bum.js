@@ -6,14 +6,20 @@ var JSON = require('../Utils/JSON.js');
 function Bum(character) {
 	this.character = character;
 	global.ai.Bum = {};
+	if(!global.memory.bum) {
+		global.memory.bum = {};
+	}
 	this.vec3 = OP.vec3.Create(0,0,0);
 
 	if(global.currentScene.name == 'Street' && global.win) {
 		var start = this.character.scene.FindPosition(99);
 		this.character.Setup(start);
+	} if(global.currentScene.name == 'Street' && global.memory.bum.hasSandwich) {
+		var start = this.character.scene.FindPosition(300);
+		this.character.Setup(start);
 	} else {
 
-		if(global.currentScene.name != 'GLOBALBedroom' ) {
+		if(global.memory.bum.hasSandwich || global.currentScene.name != 'GLOBALBedroom' ) {
 			this.character.dead = true;
 			this.character.alive = false;
 			return;
@@ -42,8 +48,33 @@ Bum.prototype = {
 
 	},
 
+	AgreeToLeave: function() {
+		global.memory.bum.hasSandwich = true;
+
+		global.inventory.Remove('sandwich');
+		return new Talk(this.character, 'Fine, but not until I eat my sandwich.')
+	},
+
+	AskForSandwich: function() {
+		var self = this;
+		return new Talk(this.character, 'You have a sandwich. I want it.',
+			[ { text: 'Alright, but you have to leave my apartment then.', select: function() {
+				return self.AgreeToLeave();
+			} },
+			  { text: 'It\'s my sandwich. Buzz off.' }]
+		);
+	},
+
 	Interact: function() {
 		var self = this;
+
+		if(global.currentScene.name == 'Street' && global.memory.bum.hasSandwich) {
+			return new Talk(this.character, 'Sandwich was good.');
+		}
+
+		if(global.inventory.Has('sandwich')) {
+			return this.AskForSandwich();
+		}
 
         return new Talk(this.character, 'Leave me alone.');
 	}

@@ -8,7 +8,7 @@ function Player(scale, scene, material, start, worldScene) {
   this.worldScene = worldScene;
   this.material = material;
   this.start = start;
-  this.mesh = BuildVoxelMesh('Person.qb');
+  this.mesh = BuildVoxelMesh('Person.qb', false, true);
   this.model = OP.model.Create(this.mesh);
 
 
@@ -72,7 +72,7 @@ Player.prototype = {
         if(this.move[0] + this.FootPos.x < this.worldScene.xNegative || this.move[0] + this.FootPos.x > this.worldScene.xPositive) {
             this.move[0] = 0;
         }
-        
+
         if(this.move[2] + this.FootPos.z < this.worldScene.zNegative || this.move[2] + this.FootPos.z > this.worldScene.zPositive) {
             this.move[2] = 0;
         }
@@ -81,6 +81,10 @@ Player.prototype = {
     Move: function(timer) {
         if(!this.alive) return;
         this.vec3.Set(this.move[0], this.move[1], this.move[2]);
+        this.vec3.Norm();
+        var scl = (timer.actualElapsed / 6.0) * timer.scaled;
+        this.vec3.Set(this.vec3.x * scl, this.vec3.y * scl, this.vec3.z * scl);
+
   		OP.physXController.Move(this.controller, this.vec3, timer);
         this.move = [ 0, -0.98 * 4, 0 ];
         this.FootPos = OP.physXController.GetFootPos(this.controller);
@@ -104,6 +108,10 @@ Player.prototype = {
         if(changed) {
             OP.physXController.SetFootPos(this.controller, this.FootPos.x, this.FootPos.y, this.FootPos.z);
         }
+    },
+
+    Position: function(pos) {
+        OP.physXController.SetFootPos(this.controller, pos[0], pos[1], pos[2]);
     },
 
     Draw: function(material, camera) {

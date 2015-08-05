@@ -3,10 +3,10 @@
   "scale" : 0.75,
   "logic" : "Taxi.js",
   "planes": {
-    "xNegative" : -30,
-    "xPositive" : 30,
-    "zNegative" : -1,
-    "zPositive" : 25,
+    "xNegative" : -24,
+    "xPositive" : 24,
+    "zNegative" : 18,
+    "zPositive" : 18,
     "yNegative" : 0
   },
   "camera": {

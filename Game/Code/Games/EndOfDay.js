@@ -96,17 +96,71 @@ EndOfDay.prototype = {
                 if(this.scene) {
                     this.scene.EndOfDay();
                 }
+                // Clear out any temporary ai data for the day
+                // Note global.memory is still there for long term ai data
                 global.ai = {};
+                global.tasks = [];
+
                 var self = this;
                 if(global.job) {
                     global.tasks.push( {
                 		text: 'Get to work',
+                        location: function() {
+                            if(global.currentScene.name == 'Street') {
+                                return {
+                                    pos: [210, 40, -50],
+                                    startScale: 0.5,
+                                    scale: 1.0,
+                                    rotateY: 0,
+                                    rotateZ: 0
+                                };
+                            }
+                            return null;
+                        },
+                        update: function() {
+                            if(global.job && global.job.clocked) return;
+                            
+                            // There is a job
+                            if(global.job && global.job.activeSchedule) {
+                                // Check if we've passed the start time
+                    			if(global.time.getHours() >= global.job.activeSchedule.start) {
+                    				global.job = null;
+                                    global.inventory.Remove('cafe-key');
+
+
+        							var game = require('./GameOver.js');
+                                    return {
+                                        result: 2,
+                                        next: game(global.currentScene, ['You couldn\'t even hold down a job.', 'Time to hide away in your parents basement for all of eternity.'])
+                                    };
+                    			}
+
+                                if(global.time.getHours() == global.job.activeSchedule.start - 1 &&
+                                    global.time.getMinutes() == 50 && !this.alerted) {
+                                        this.alerted = true;
+                                        return {
+                                            result: 1,
+                                            next: new OptionSelector('If I don\'t hurry I\'m going to be late for work')
+                                        };
+                                }
+
+                            }
+
+                            return {
+                                result: 0
+                            };
+                        },
                 		complete: function() { return global.job && global.job.clocked; },
                 		failed: function() { return !global.job; },
                 		time: -1000
                 	});
                     global.job.activeSchedule = global.job.schedule[0];
                 }
+
+                global.announcement = {
+                    time: 2000,
+                    text: 'Survived Day ' + global.days
+                };
 
                 global.wallet.CompleteDay();
                 global.days++;

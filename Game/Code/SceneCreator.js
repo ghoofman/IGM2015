@@ -10,11 +10,12 @@ var OP = require('OPengine').OP,
 		Input = require('./Utils/Input.js'),
 		JSON = require('./Utils/JSON.js');
 
-function SceneCreator(file, callingId) {
+function SceneCreator(file, callingId, opt) {
 		this.Data.file = file;
 		this.Data.callingId = callingId;
 		global.sceneEntered = callingId;
 		global.currentScene = this;
+		this.Data.nextOpt = opt;
 }
 
 SceneCreator.prototype = {
@@ -26,6 +27,9 @@ SceneCreator.prototype = {
 
 				OP.render.Depth(1);
 
+				this.Data.game = null;
+				this.Data.option = null;
+
 				// Get the gamepad to use
 				this.Data.gamePad0 = OP.gamePad.Get(0);
 
@@ -33,6 +37,7 @@ SceneCreator.prototype = {
 				this.Data.fontManager = OP.fontManager.Setup('pixel.opf');
 				this.Data.fontManager24 = OP.fontManager.Setup('pixel24.opf');
 				this.Data.fontManager36 = OP.fontManager.Setup('pixel36.opf');
+				this.Data.fontManager72 = OP.fontManager.Setup('pixel72.opf');
 				this.Data.fontManagerUI = OP.fontManager.Setup('ui.opf');
 
 
@@ -60,6 +65,9 @@ SceneCreator.prototype = {
 				this.Data.player = new Player(this.Data.scene.scale, this.Data.physXScene, this.Data.physXmaterial, start, this.Data.scene);
 
 				global.player = this.Data.player;
+
+				this.Data.arrowMesh = BuildVoxelMesh('Arrow.qb');
+				this.Data.arrowModel = OP.model.Create(this.Data.arrowMesh);
 
 				// The basic effect to use for all rendering (for now)
 				this.Data.effect = OP.effect.Gen('Colored3D.vert', 'Colored.frag', OP.ATTR.POSITION | OP.ATTR.NORMAL | OP.ATTR.COLOR, 'Voxel Shader', this.Data.player.mesh.VertexSize);
@@ -143,6 +151,10 @@ SceneCreator.prototype = {
 				return false;
 			}
 
+			if(global.hunger.length == 2) {
+				this.Data.option = new OptionSelector('I\'m so hungry. I need to eat soon.', null);
+			}
+
 			var pos = global.hunger.length - 1;
 			OP.spriteSystem.Remove(global.spriteSystemFood, global.hunger[pos]);
 			global.hunger.splice(pos, 1);
@@ -172,7 +184,37 @@ SceneCreator.prototype = {
 		update: function(timer) {
 			this.Data.gamePad0 = OP.gamePad.Get(0);
 
-			if(timer.elapsed > 500) return;
+			if(timer.elapsed > 500 || timer.elapsed == 0) return 1;
+
+			timer.actualElapsed = timer.elapsed;
+
+
+
+			if(this.Data.game) {
+				var result = this.Data.game.Update(timer, this.Data.gamePad0);
+				if(result.result == -1) {
+					return -1;
+				}
+				if(result.result == -2) {
+					return -2;
+				}
+				if(result.result) {
+					this.Data.game.Exit && this.Data.game.Exit();
+					this.Data.game = result.next;
+				}
+				return 0;
+			}
+
+			if(this.Data.option) {
+				// Getting a selection
+				var result = this.Data.option.Update(this.Data.gamePad0);
+				if(result && result.result) {
+					this.Data.option = null;
+					return 0;
+				} else {
+					return 0;
+				}
+			}
 
 			var aliveCharacters = 0;
 			for(var i = 0; i < this.Data.scene.characters.length; i++) {
@@ -181,12 +223,18 @@ SceneCreator.prototype = {
 
 			if(Input.IsSpeedDown(this.Data.gamePad0) || (global.job && global.job.clocked && aliveCharacters == 0)) { //
 				global.timeScale = 100;
+				timer.scaled = 8;
+			} else if(Input.IsSlowDown(this.Data.gamePad0)) { //
+				global.timeScale = 1;
+				timer.scaled = 1;
 			} else {
-				if(global.tasks.length == 0) {
+				//if(global.tasks.length == 0) {
 					global.timeScale = 8;
-				} else {
-					global.timeScale = 4;
-				}
+					timer.scaled = 2;
+				// } else {
+				// 	global.timeScale = 4;
+				// 	timer.scaled = 1;
+				// }
 			}
 
 			if(this.Data.scene.Logic(this, timer)){
@@ -206,9 +254,9 @@ SceneCreator.prototype = {
 			var afterAddingHour = global.time.getHours();
 
 			if(beforeAddingHour == 23 && afterAddingHour == 0) {
-				global.wallet.AddExpense('Mugged', 'mugged', 20);
+				global.wallet.AddExpense('Mugged', 'mugged', 50);
 				global.journal.unshift({
-					text: 'I was mugged and lost $20',
+					text: 'I was mugged and lost $50',
 					dt: global.time
 				});
 				var game = require('./Games/EndOfDay.js');
@@ -229,7 +277,7 @@ SceneCreator.prototype = {
 
 
 
-			if(!global.win && global.days == 8) {
+			if(!global.win && global.days == global.EndDay) {
 				global.win = true;
 				var SceneCreator = require('./SceneCreator.js');
 				OPgameState.Change(new SceneCreator('Scenes/Street.json', 110));
@@ -262,29 +310,6 @@ SceneCreator.prototype = {
 				}
 			}
 
-
-				if(this.Data.game) {
-					var result = this.Data.game.Update(timer, this.Data.gamePad0);
-					if(result.result == -1) {
-						return -1;
-					}
-					if(result.result) {
-						this.Data.game.Exit && this.Data.game.Exit();
-						this.Data.game = result.next;
-					}
-					return 0;
-				}
-
-				if(this.Data.option) {
-					// Getting a selection
-					var result = this.Data.option.Update(this.Data.gamePad0);
-					if(result && result.result) {
-						this.Data.option = null;
-						return 0;
-					} else {
-						return 0;
-					}
-				}
 
 				if (Input.WasBackPressed(this.Data.gamePad0))  {
 					var game = require('./Games/InventoryViewer.js');
@@ -327,11 +352,11 @@ SceneCreator.prototype = {
 
 				this.Data.camera.LookAt(this.Data.player);
 
-				if(!global.started) {
-					var game = require('./Games/InventoryViewer.js');
-					this.Data.game = game();
-					return 0;
-				}
+				// if(!global.started) {
+				// 	var game = require('./Games/InventoryViewer.js');
+				// 	this.Data.game = game();
+				// 	return 0;
+				// }
 
 				var collisions = this.Data.scene.Collisions(this.Data.player);
 				var name = this.Data.Name;
@@ -408,15 +433,23 @@ SceneCreator.prototype = {
 										}
 									}
 
+									var opt = null;
 									if(collisions[i].logic) {
-										collisions[i].logic();
+										var result = collisions[i].logic(collisions[i]);
+										if(result && result.result) {
+											this.Data.option = result.next;
+											return 0;
+										} else if( result && result.result == 0) {
+											opt = result.next;
+										}
 									}
 
 									if(collisions[i].data.file) {
 										global.AudioPlayer.PlayEffect('Audio/Door.wav');
 										MixPanel.Track("Opened Door in " + this.Data.scene.data.name, { state: this.Data.scene.data.name, id: collisions[i].id });
 										var SceneCreator = require('./SceneCreator.js');
-										OPgameState.Change(new SceneCreator(collisions[i].data.file, collisions[i].id));
+										var next = new SceneCreator(collisions[i].data.file, collisions[i].id, opt);
+										OPgameState.Change(next);
 										return 1;
 									} else {
 										global.AudioPlayer.PlayEffect('Audio/Denied.wav');
@@ -541,25 +574,53 @@ SceneCreator.prototype = {
 					});
 				}
 
-				if(timer.elapsed < 250) {
-					for(var i = 0; i < global.tasks.length; i++) {
-						if(global.tasks[i].complete()) {
-							global.tasks[i].time += timer.elapsed;
-							if(global.tasks[i].time > 3000) {
-								global.tasks.splice(i, 1);
-							}
-						} else if(global.tasks[i].failed && global.tasks[i].failed()) {
-							global.tasks[i].time += timer.elapsed;
-							if(global.tasks[i].time > 3000) {
-								global.tasks.splice(i, 1);
-							}
-						} else if(global.tasks[i].time < 0) {
-							global.tasks[i].time += timer.elapsed;
+				for(var i = 0; i < global.tasks.length; i++) {
+					if(global.tasks[i].done || global.tasks[i].time < 0) {
+						global.tasks[i].time += timer.actualElapsed;
+					}
+
+					if(global.tasks[i].time > 3000) {
+						global.tasks.splice(i, 1);
+						continue;
+					}
+
+					if(global.tasks[i].update) {
+						var result = global.tasks[i].update();
+						if(result && result.result == 2) {
+							this.Data.game = result.next;
+							return 0;
 						}
+						if(result && result.result && result.next) {
+							this.Data.option = result.next;
+						}
+					}
+
+					if(global.tasks[i].complete && global.tasks[i].complete()) {
+						global.tasks[i].done = true;
+					}
+
+					if(global.tasks[i].failed && global.tasks[i].failed()) {
+						global.tasks[i].done = true;
 					}
 				}
 
 				global.inventory.UpdateItems(timer, this.Data.gamePad0);
+
+				for(var i = 0; i < global.tasks.length; i++) {
+					global.tasks[i].scaleTime = global.tasks[i].scaleTime || 0;
+					global.tasks[i].scaleTime += timer.elapsed;
+				}
+
+				if(global.announcement && global.announcement.time <= 0) {
+					global.announcement = null;
+				} else if(global.announcement) {
+					global.announcement.time -= timer.actualElapsed;
+				}
+
+				if(this.Data.nextOpt) {
+					this.Data.option = this.Data.nextOpt;
+					this.Data.nextOpt = null;
+				}
 
 				return 0;
 		},
@@ -569,6 +630,10 @@ SceneCreator.prototype = {
 			if(result == -1) {
 				return 1;
 			} else if(result == 1) {
+				return 0;
+			} else if(result == -2) {
+				var MainMenu = require('./MainMenu.js');
+				OPgameState.Change(new MainMenu());
 				return 0;
 			} else {
 				this.Render();
@@ -591,8 +656,40 @@ SceneCreator.prototype = {
 
 				this.Data.player.Draw(this.Data.material, this.Data.camera.Camera());
 
-				this.Data.option && this.Data.option.Render(this.Data.fontManager);
 
+				for(var i = 0; i < global.tasks.length; i++) {
+					if(global.tasks[i].location) {
+						var r = global.tasks[i].location();
+						if(!r) continue;
+
+
+						//this.Data.arrowModel.world.SetScl(250, 250, 250);
+						this.Data.arrowModel.world.SetTranslate(r.pos[0], r.pos[1], r.pos[2]);
+						var time = global.tasks[i].scaleTime % 5000.0;
+						if(time > 2500) time = 2500 - (time - 2500);
+
+						this.Data.arrowModel.world.Scl((r.startScale || 0.5) + (r.scale || 1.0) * ((time) / 10000.0));
+						this.Data.arrowModel.world.RotY(r.rotateY || 0);
+						this.Data.arrowModel.world.RotZ(r.rotateZ || 0);
+
+						OP.model.Draw(this.Data.arrowModel, this.Data.material, this.Data.camera.Camera());
+					}
+				}
+
+
+
+				if(this.Data.option) {
+					this.Data.option.Render(this.Data.fontManager);
+				} else {
+					if(global.announcement) {
+						console.log('Announce', announcement);
+						OP.fontRender.Begin(this.Data.fontManager72);
+						this.Data.fontManager72.SetAlign(OP.FONTALIGN.CENTER);
+		      			OP.fontRender.Color(0.9, 0.9, 0.9);
+				    	OP.fontRender(global.announcement.text, 1280 / 2.0, 100);
+						OP.fontRender.End();
+					}
+				}
 
 
 
@@ -660,7 +757,7 @@ SceneCreator.prototype = {
 						OP.fontRender.Color(1,1,1);
 						OP.fontRender('You won!', 1280 / 2.0, 720 / 4.0);
 						OP.fontRender.Color(this.Data.color[0], this.Data.color[1], this.Data.color[2]);
-						OP.fontRender('You survived a whole week out of college!', 1280 / 2.0, 720 / 3.0);
+						OP.fontRender('You survived ' + (global.EndDay - 1) + ' days out of college!', 1280 / 2.0, 720 / 3.0);
 						OP.fontRender.End();
 					}
 
@@ -702,6 +799,8 @@ SceneCreator.prototype = {
 					OP.fontRender.End();
 
 				}
+
+
 
 
 				OP.render.Present();

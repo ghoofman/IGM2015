@@ -42,8 +42,8 @@ Lily.prototype = {
 			}
 		if(this.character.dead) return;
 
-		// Lily comes into the cafe at 9am
-		if(!this.character.alive && !global.ai.lily.receivedCoffee && global.time.getHours() == 9) {
+		// Lily comes into the cafe at 10am
+		if(!this.character.alive && !global.ai.lily.receivedCoffee && global.time.getHours() == 10) {
 			if(global.job && global.job.title == 'barista' && global.job.clocked && (Math.random() < 0.01) || global.time.getMinutes() == 59) {
 				var start = this.character.scene.FindPosition(2);
 				this.character.Setup(start);
@@ -170,7 +170,10 @@ Lily.prototype = {
             if(!global.ai.lily.talked) {
 				if(global.memory.lily && global.memory.lily.regular) {
                    return new Talk(this.character, 'Aww you remembered what I like :)', [
-					   { text: "Could I get your number?" },
+					   { text: "Could I get your number?", select: function() {
+						   global.girlfriend = 'Lily';
+						   return new Talk(self.character, 'Sure it\'s 444-555-6756');
+					   } },
 					   { text: "It\'s an easy one to remember." } ], function() {
 						   	global.inventory.Remove('cup');
 							global.wallet.AddIncome('Tip from Lily', 'tip', 4);
@@ -235,8 +238,7 @@ Lily.prototype = {
 
         global.ai.lily.talked = true;
 
-        return new Talk(this.character, 'Could I please have a Grande Regular Coffee?', [ {
-        	text: 'You got it', select: function() {
+        return new Talk(this.character, 'Could I please have a Grande Regular Coffee?', null, function() {
 
                 global.tasks.push( {
             		text: 'Get Lily a Grande Regular Coffee',
@@ -244,7 +246,7 @@ Lily.prototype = {
             		time: -1000
             	});
 			}
-        }, { text: "Can't do that right now" } ]);
+        );
 
         return null;
 	},

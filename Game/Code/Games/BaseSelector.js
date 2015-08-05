@@ -145,10 +145,13 @@ BaseSelector.prototype = {
             		  OP.fontRender.Color(1.0, 1.0, 1.0);
               }
               OP.fontRender(this.options[i].name, 200 + i * 300, 450);
+              if(this.options[i].subDesc) {
+                  OP.fontRender(this.options[i].subDesc, 200 + i * 300, 500);
+              }
             }
 
     		OP.fontRender.Color(1, 1, 1);
-			OP.fontRender(this.name + ' Selection', 1280 / 2.0, 60);
+			OP.fontRender(this.name, 1280 / 2.0, 60);
 
 
             if(this.selectedName) {
@@ -174,6 +177,7 @@ BaseSelector.prototype = {
                         OP.fontRender(text, 200 + 3 * 300, 500 + line * 50);
                     }
                 }
+
             }
 
 			OP.fontRender.End();

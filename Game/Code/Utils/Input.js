@@ -55,15 +55,27 @@ module.exports = {
 	},
 
 	WasSpeedPressed: function(gamepad) {
-		return OP.keyboard.WasPressed(OP.KEY.LSHIFT) || gamepad.RightTriggerWasPressed();
+		return OP.keyboard.WasPressed(OP.KEY.LSHIFT) || OP.keyboard.WasPressed(OP.KEY.Z) || gamepad.LeftTriggerWasPressed();
 	},
 
 	WasSpeedReleased: function(gamepad) {
-		return OP.keyboard.WasReleased(OP.KEY.LSHIFT) || gamepad.RightTriggerWasReleased();
+		return OP.keyboard.WasReleased(OP.KEY.LSHIFT) || OP.keyboard.WasReleased(OP.KEY.Z) || gamepad.LeftTriggerWasReleased();
 	},
 
 	IsSpeedDown: function(gamepad) {
-		return OP.keyboard.IsDown(OP.KEY.LSHIFT) || gamepad.RightTriggerIsDown();
+		return OP.keyboard.IsDown(OP.KEY.LSHIFT) || OP.keyboard.IsDown(OP.KEY.Z) || gamepad.LeftTriggerIsDown();
+	},
+
+	WasSlowPressed: function(gamepad) {
+		return OP.keyboard.WasPressed(OP.KEY.RSHIFT) || OP.keyboard.WasPressed(OP.KEY.C) || gamepad.RightTriggerWasPressed();
+	},
+
+	WasSlowReleased: function(gamepad) {
+		return OP.keyboard.WasReleased(OP.KEY.RSHIFT) || OP.keyboard.WasReleased(OP.KEY.C) || gamepad.RightTriggerWasReleased();
+	},
+
+	IsSlowDown: function(gamepad) {
+		return OP.keyboard.IsDown(OP.KEY.RSHIFT) || OP.keyboard.IsDown(OP.KEY.C) || gamepad.RightTriggerIsDown();
 	}
 
 };

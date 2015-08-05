@@ -3,7 +3,9 @@ var Talk = require('../Utils/Talk.js');
 function CellPhone() {
 	this.time = 0;
 	if(global.currentScene.name == 'TaxiCab') {
-		global.spawned = false;
+		//global.spawned = false;
+		global.memory.taxi = global.memory.taxi || {};
+		global.memory.taxi.dropoff = true;
 	}
 }
 

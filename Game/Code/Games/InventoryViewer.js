@@ -85,12 +85,12 @@ function InventoryViewer() {
 	this.subSections.push(new Settings(this));
 	this.subSections.push(new Quit(this));
 
-	if(!global.started) {
-		this.subSelection = 4;
-		global.started = true;
-		this.subSections[4].state = 1;
-		this.initialRelease = 1;
-	}
+	// if(!global.started) {
+	// 	this.subSelection = 4;
+	// 	global.started = true;
+	// 	this.subSections[4].state = 1;
+	// 	this.initialRelease = 1;
+	// }
 }
 
 InventoryViewer.prototype = {

@@ -5,13 +5,13 @@
     "xNegative" : -250,
     "xPositive" : 560,
     "zNegative" : -150,
-    "zPositive" : 150,
+    "zPositive" : 120,
     "yNegative" : 0
   },
   "camera" : {
     "xNegative" : -250,
     "xPositive" : 560,
-    "zNegative" : -150,
+    "zNegative" : 50,
     "zPositive" : 50,
     "zDistance" : 450,
     "yDistance" : 250
@@ -39,7 +39,7 @@
     },
     {
       "id": 14,
-      "position": [ 415, 0, -26 ]
+      "position": [ 385, 0, -26 ]
     },
     {
       "id": 99,
@@ -80,6 +80,14 @@
     {
       "id": 110,
       "position": [ 150, 0, 90 ]
+    },
+    {
+      "id": 300,
+      "position": [ -180, 0, 40 ]
+    },
+    {
+      "id": 400,
+      "position": [ 225, 0, -20 ]
     }
   ],
   "characters" : [
@@ -146,8 +154,8 @@
         }
     },
     {
-      "file" : "BuildingTest3.qb",
-      "offset" : [ 0, 0, 0 ],
+      "file" : "BuildingTest2.qb",
+      "offset" : [ -3, 0, -2 ],
       "scale" : [ 1, 1, 1 ],
       "collision": {
         "default" : false,
@@ -161,7 +169,7 @@
           {
             "id" : 2,
             "type" : "door",
-            "name" : "Apartment",
+            "name" : "Village Apartments",
             "data" : {
               "file" : "Scenes/Apartment.json"
             },

@@ -13,7 +13,7 @@ function James(character) {
 		this.character.Setup(start);
 	} else {
 
-		if(global.currentScene.name != 'Apartment' ) {
+		if(global.currentScene.name != 'VillageApartments' ) {
 			this.character.dead = true;
 			this.character.alive = false;
 			return;
@@ -145,7 +145,7 @@ James.prototype = {
 								};
 
 								global.journal.unshift({
-									text: 'Got Apartment 3 at GLOBAL Apartments',
+									text: 'Got Apartment 3 at Village Apartments',
 									dt: global.time
 								});
 
