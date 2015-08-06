@@ -1,6 +1,7 @@
 var OP = require('OPengine').OP;
 var Talk = require('../Utils/Talk.js');
 var BaseAI = require('./BaseAI.js');
+var CafeLogic = require('./Common/CafeLogic.js');
 
 function Johnny(character) {
 	this.character = character;
@@ -9,6 +10,8 @@ function Johnny(character) {
 	if(global.currentScene.name == 'Street' && global.win) {
 		var start = this.character.scene.FindPosition(105);
 		this.character.Setup(start);
+		this.Update = this.UpdateWin;
+		this.Interact = this.InteractWin;
 	} else {
 
 		if(global.currentScene.name != 'Cafe' ) {
@@ -17,6 +20,8 @@ function Johnny(character) {
 			return;
 		}
 		this.character.alive = 0;
+		this.Update = this.UpdateCafe;
+		this.Interact = this.InteractCafe;
 	}
 
 	if(!global.ai.johnny) {
@@ -30,7 +35,7 @@ Johnny.prototype = {
 
 	interactions : [],
 
-	Update: function(timer, scene) {
+	UpdateCafe: function(timer, scene) {
 
 			if(global.win) {
 				this.character.rotate += 0.1;
@@ -143,7 +148,7 @@ Johnny.prototype = {
 		}
 	},
 
-	Interact: function() {
+	InteractCafe: function() {
 		//global.AudioPlayer.PlayEffect('Audio/Speak2.wav');
 
 		if(!global.job || global.job.title != 'barista') {
@@ -217,7 +222,14 @@ Johnny.prototype = {
                 global.tasks.push( {
             		text: 'Get Johnny a Grande Bold Coffee',
             		complete: function() { return global.ai.johnny.receivedCoffee; },
-            		time: -1000
+					failed: function() {
+						if(global.currentScene.name != 'Cafe') {
+							return true;
+						}
+						return false;
+					},
+					time: -1000,
+					location: CafeLogic('Grande', 'Bold')
             	});
 
         });
@@ -230,6 +242,11 @@ Johnny.prototype = {
 			global.ai.johnny.receivedCoffee = false;
 			global.ai.johnny.talked = false;
 		}
+	},
+
+	InteractWin: function() {
+		var self = this;
+		return new Talk(self.character, 'Hey mate, happy you\'re still alive.');
 	}
 };
 

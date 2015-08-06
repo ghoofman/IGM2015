@@ -6,18 +6,28 @@ var JSON = require('../Utils/JSON.js');
 function Mom(character) {
 	this.character = character;
 	global.ai.mom = {};
+	if(!global.memory.mom) {
+		global.memory.mom = {};
+	}
+
 	this.vec3 = OP.vec3.Create(0,0,0);
 
 	if(global.currentScene.name == 'Street' && global.win) {
 		var start = this.character.scene.FindPosition(107);
 		this.character.Setup(start);
+		this.Update = this.UpdateWin;
+		this.Interact = this.InteractWin;
+	} else if(global.currentScene.name == 'Street') {
+		this.Update = this.UpdateStreet;
+		this.Interact = this.InteractStreet;
 	} else {
-
 		if(global.currentScene.name != 'TaxiCab' ) {
 			this.character.dead = true;
 			this.character.alive = false;
 			return;
 		}
+		this.Update = this.UpdateTaxi;
+		this.Interact = this.InteractTaxi;
 	}
 
 	this.state = 'FIND_REGISTER';
@@ -30,7 +40,7 @@ function Mom(character) {
 Mom.prototype = {
 	interactions: [],
 
-	Update: function(timer, scene) {
+	UpdateTaxi: function(timer, scene) {
 
 			if(global.win) {
 				this.character.rotate += 0.1;
@@ -41,7 +51,50 @@ Mom.prototype = {
 
 	},
 
-	Interact: function() {
+	UpdateStreet: function(timer, scene) {
+		if(this.Interact) {
+			global.currentScene.Data.game = this.Interact();
+		}
+	},
+
+	CoreyIsSuccessful: function() {
+		return new Talk(this.character, ['He\'s the Vice-President of GenCo-Electronics now!', 'I hope your job as a ' + global.job.title + ' is everything you hoped...']);
+	},
+
+	TalkAboutCorey: function() {
+		var self = this;
+		return new Talk(this.character, 'Did you hear about Corey?', [
+			{ text: '( lie ) Yes mom, I\'m on FaceNovel too.', select: function() {
+				return self.CoreyIsSuccessful();
+			}},
+			{ text: '( truth ) Nope, what about him?', select: function() {
+				return self.CoreyIsSuccessful();
+			}},
+		]);
+	},
+
+	MakePhoneCall: function(target) {
+		return new Talk(this.character, 'Mom is calling', [
+			{ text: 'Answer it', select: function() {
+				return target();
+				}
+			},
+			{ text: 'Decline' }
+		]);
+	},
+
+	InteractStreet: function() {
+		var self = this;
+
+		if(!global.memory.mom.chatter && global.job && global.job.clockedAtLeastOnce && Math.random() > 0.98) {
+			global.memory.mom.chatter = true;
+			return this.MakePhoneCall(function() {
+				return self.TalkAboutCorey()
+			});
+		}
+	},
+
+	InteractTaxi: function() {
 		var self = this;
 
         return new Talk(this.character, ['Oh Timmy, you finally graduated. It took you longer', 'than it should have, but you did it all the same.'], null, function() {
@@ -84,6 +137,11 @@ Mom.prototype = {
 				}
 			} ]);
 		});
+	},
+
+	InteractWin: function() {
+		var self = this;
+		return new Talk(self.character, 'Oh hun, I\'m so proud of you.');
 	}
 };
 

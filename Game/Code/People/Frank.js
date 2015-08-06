@@ -1,6 +1,7 @@
 var OP = require('OPengine').OP;
 var Talk = require('../Utils/Talk.js');
 var BaseAI = require('./BaseAI.js');
+var CafeLogic = require('./Common/CafeLogic.js');
 
 function Frank(character) {
 	this.character = character;
@@ -10,6 +11,7 @@ function Frank(character) {
 		var start = this.character.scene.FindPosition(103);
 		this.character.Setup(start);
 		this.Update = this.UpdateWin;
+		this.Interact = this.InteractWin;
 	} else {
 
 		if(global.currentScene.name != 'Cafe' && global.currentScene.name != 'GroceryStore' ) {
@@ -300,7 +302,14 @@ Frank.prototype = {
                 global.tasks.push( {
             		text: 'Get Frank a Tall Bold Coffee',
             		complete: function() { return global.ai.frank.receivedCoffee; },
-            		time: -1000
+					failed: function() {
+						if(global.currentScene.name != 'Cafe') {
+							return true;
+						}
+						return false;
+					},
+					time: -1000,
+					location: CafeLogic('Tall', 'Bold')
             	});
         });
 
@@ -340,6 +349,11 @@ Frank.prototype = {
 			global.ai.frank.receivedCoffee = false;
 			global.ai.frank.talked = false;
 		}
+	},
+
+	InteractWin: function() {
+		var self = this;
+		return new Talk(self.character, 'Dude... Dude.');
 	}
 };
 

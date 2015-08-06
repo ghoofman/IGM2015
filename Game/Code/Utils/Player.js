@@ -7,9 +7,27 @@ function Player(scale, scene, material, start, worldScene) {
   this.scene = scene;
   this.worldScene = worldScene;
   this.material = material;
+
   this.start = start;
-  this.mesh = BuildVoxelMesh('Person.qb', false, true);
+  //this.mesh = BuildVoxelMesh('Person.qb', false, true);
+  this.mesh = OP.cman.LoadGet('Person.opm');
   this.model = OP.model.Create(this.mesh);
+
+    // The basic effect to use for all rendering (for now)
+    this.effect = OP.effect.Gen('Skinning.vert', 'Skinning.frag', OP.ATTR.POSITION | OP.ATTR.NORMAL | OP.ATTR.UV | OP.ATTR.BONES, 'Voxel Shader', this.mesh.VertexSize);
+
+    // The base material to use for all rendering (for now)
+    this.renderMaterial = OP.material.Create(this.effect);
+    this.tex = OP.cman.LoadGet('Person.png');
+    this.renderMaterial.AddParam(OP.material.ParamType.TEXTURE, 'uColorTexture', this.tex, 1);
+
+    this.skeleton = OP.skeleton.Wrap(OP.cman.LoadGet('person.opm.skel'));
+
+    this.renderMaterial.AddParam(OP.material.ParamType.MATRIX4V, "uBones", this.skeleton.skinned, this.skeleton.hierarchyCount);
+
+    this.walk = OP.cman.LoadGet("person.opm.Take 001.anim");
+    this.idle = OP.cman.LoadGet("person.opm.Idle.anim");
+    this.animation = this.idle;
 
 
   if(global.spawned || global.debug) {
@@ -26,13 +44,21 @@ Player.prototype = {
     vec3: null,
     move: [ 0, 0, 0 ],
     rotate: 0,
+    height: 40,
     FootPos: {
       x: 0, y: 0, z: 0
     },
 
     Setup: function(start) {
         this.manager = OP.physXController.CreateManager(this.scene);
-        this.controller = OP.physXController.Create(this.manager, this.material, this.mesh.voxelData.size.y * this.scale * 2.0, this.mesh.voxelData.size.x * this.scale * 0.75);
+        // var height = this.mesh.voxelData.size.y;
+        // var width = this.mesh.voxelData.size.x;
+        this.height = 80;
+        var width = 15;
+        this.controller = OP.physXController.Create(this.manager,
+            this.material,
+            this.height * this.scale * 2.0,
+            width * this.scale * 0.75);
 
         this.start = start || this.start || [ -20, 0, 40 ];
 
@@ -46,6 +72,10 @@ Player.prototype = {
 
     Update: function(timer, gamepad) {
         if(!this.alive) return;
+
+        //OP.mat4.SetScl({ ptr: this.skeleton.skinned }, )
+
+
     		var x = 0, y = -0.98 * 4, z = 0;
 
         var left = gamepad.LeftThumb();
@@ -59,13 +89,42 @@ Player.prototype = {
 
         x *= this.scale * 3.0; z *= this.scale * 3.0;
 
-        if(Input.IsJumpDown(gamepad)) {
+        if(global.debug && Input.IsJumpDown(gamepad)) {
           y = 2.0;
         }
 
         if(x != 0 || z != 0) {
           this.rotate = Math.atan2(x, z);
         }
+
+
+        var amount = 1.0;
+
+        var dx = Math.abs(x);
+        var dz = Math.abs(z);
+        var len = Math.sqrt(dx * dx + dz * dz);
+        dx = dx / len;
+        dz = dz / len;
+
+        if(dx > 0 || dz > 0) {
+            this.animation = this.walk;
+            amount = Math.sqrt(dx * dx + dz * dz);
+        } else {
+            this.animation = this.idle;
+        }
+
+        //console.log(amount);
+
+        var tmp = timer.elapsed;
+        timer.elapsed = timer.actualElapsed * global.animScale * amount;
+        OP.timer.SetElapsed(timer, timer.elapsed);
+
+        OP.skeletonAnimation.Update(this.animation, timer);
+        OP.skeletonAnimation.Apply(this.animation, this.skeleton);
+        OP.skeleton.Update(this.skeleton);
+
+        timer.elapsed = tmp;
+        OP.timer.SetElapsed(timer, timer.elapsed);
 
         this.move = [ x, y, z ];
 
@@ -118,8 +177,9 @@ Player.prototype = {
         if(!this.alive) return;
       	this.model.world.SetScl(this.scale);
       	this.model.world.RotY(this.rotate);
-      	this.model.world.Translate(this.FootPos.x, this.FootPos.y + Math.floor(this.mesh.voxelData.size.y * this.scale), this.FootPos.z);
-      	OP.model.Draw(this.model, material, camera);
+        // + Math.floor(this.height * this.scale)
+      	this.model.world.Translate(this.FootPos.x, this.FootPos.y, this.FootPos.z);
+      	OP.model.Draw(this.model, this.renderMaterial, camera);
     },
 
     DrawPos: function(pos, rot, scl, material, camera) {
@@ -128,7 +188,7 @@ Player.prototype = {
       	this.model.world.RotX(rot[0]);
       	this.model.world.RotY(rot[1]);
       	this.model.world.Translate(pos[0], pos[1], pos[2]);
-      	OP.model.Draw(this.model, material, camera);
+      	OP.model.Draw(this.model, this.renderMaterial, camera);
     }
 };
 

@@ -37,6 +37,7 @@ Character.prototype = {
     vec3_1: null,
     move: [ 0, 0, 0 ],
     rotate: 0.0,
+    height: 40,
     FootPos: {
       x: 0, y: 0, z: 0
     },
@@ -47,6 +48,8 @@ Character.prototype = {
 
         this.manager = OP.physXController.CreateManager(this.physXScene);
         this.controller = OP.physXController.Create(this.manager, this.material, this.mesh.voxelData.size.y * this.scale * 2.0, this.mesh.voxelData.size.x * this.scale * 0.75);
+
+        this.height = this.mesh.voxelData.size.y;
 
         var start = start || this.json.offset || [ -20, 0, 40 ];
 
@@ -87,13 +90,18 @@ Character.prototype = {
 
     Collisions: function(player) {
         if(!this.alive) return [];
+
+        var h = 20;
+
         var target = [
     			player.FootPos.x,
-    			player.FootPos.y + player.mesh.voxelData.size.y / 2.0,
+    			player.FootPos.y + h / 2.0,
     			player.FootPos.z
     		];
-    		this.vec3_1.Set(target[0], target[1], target[2]);
-    		this.vec3.Set(10, 10, 10);
+
+        console.log(this.name, target, h, player.FootPos);
+		this.vec3_1.Set(target[0], target[1], target[2]);
+		this.vec3.Set(10, 10, 10);
 
         this.mat4.SetTranslate(this.FootPos.x, this.FootPos.y, this.FootPos.z);
 

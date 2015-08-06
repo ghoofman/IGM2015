@@ -7,6 +7,7 @@ var AudioPlayer = require('./Utils/AudioPlayer.js');
 var Wallet = require('./Utils/Wallet.js');
 
 // Setup global values
+global.debug = true;
 
 try {
 
@@ -62,7 +63,7 @@ try {
 		OP.keyboard.Update();
 		OP.gamePad.Update();
 
-		if (OP.keyboard.WasReleased(OP.KEY.ESCAPE)) return 1;
+		if (global.debug && OP.keyboard.WasReleased(OP.KEY.ESCAPE)) return 1;
 
 		return OPgameState.Active.Update(timer);
 	}

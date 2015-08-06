@@ -14,9 +14,13 @@ function Bum(character) {
 	if(global.currentScene.name == 'Street' && global.win) {
 		var start = this.character.scene.FindPosition(99);
 		this.character.Setup(start);
+		this.Update = this.UpdateWin;
+		this.Interact = this.InteractWin;
 	} if(global.currentScene.name == 'Street' && global.memory.bum.hasSandwich) {
 		var start = this.character.scene.FindPosition(300);
 		this.character.Setup(start);
+		this.Update = this.UpdateStreet;
+		this.Interact = this.InteractStreet;
 	} else {
 
 		if(global.memory.bum.hasSandwich || global.currentScene.name != 'GLOBALBedroom' ) {
@@ -27,6 +31,8 @@ function Bum(character) {
 			var start = this.character.scene.FindPosition(4);
 			this.character.Setup(start);
 			this.character.rotate = -3.14 / 3.0;
+			this.Update = this.UpdateBedroom;
+			this.Interact = this.InteractBedroom;
 		}
 	}
 
@@ -39,13 +45,17 @@ function Bum(character) {
 Bum.prototype = {
 	interactions: [],
 
-	Update: function(timer, scene) {
+	UpdateBedroom: function(timer, scene) {
+	},
+
+	UpdateStreet: function(timer, scene) {
+	},
+
+	UpdateWin: function(timer, scene) {
 		if(global.win) {
 			this.character.rotate += 0.1;
 			return;
 		}
-		//if(this.character.dead) return;
-
 	},
 
 	AgreeToLeave: function() {
@@ -65,16 +75,28 @@ Bum.prototype = {
 		);
 	},
 
-	Interact: function() {
+	InteractBedroom: function() {
+		var self = this;
+
+		if(global.inventory.Has('sandwich')) {
+			return this.AskForSandwich();
+		}
+
+        return new Talk(this.character, 'Leave me alone.');
+	},
+
+	InteractWin: function() {
 		var self = this;
 
 		if(global.currentScene.name == 'Street' && global.memory.bum.hasSandwich) {
 			return new Talk(this.character, 'Sandwich was good.');
 		}
 
-		if(global.inventory.Has('sandwich')) {
-			return this.AskForSandwich();
-		}
+        return new Talk(this.character, 'Leave me alone.');
+	},
+
+	InteractStreet: function() {
+		var self = this;
 
         return new Talk(this.character, 'Leave me alone.');
 	}

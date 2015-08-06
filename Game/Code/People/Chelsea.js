@@ -11,6 +11,8 @@ function Chelsea(character) {
 	if(global.currentScene.name == 'Street' && global.win) {
 		var start = this.character.scene.FindPosition(101);
 		this.character.Setup(start);
+		this.Update = this.UpdateWin;
+		this.Interact = this.InteractWin;
 	} else {
 
 		if(global.currentScene.name != 'GLOBAL' ) {
@@ -18,6 +20,9 @@ function Chelsea(character) {
 			this.character.alive = false;
 			return;
 		}
+
+		this.Update = this.UpdateApartment;
+		this.Interact = this.InteractApartment;
 	}
 
 	this.state = 'FIND_REGISTER';
@@ -29,7 +34,7 @@ function Chelsea(character) {
 Chelsea.prototype = {
 	interactions: [],
 
-	Update: function(timer, scene) {
+	UpdateApartment: function(timer, scene) {
 		if(global.win) {
 			this.character.rotate += 0.1;
 			return;
@@ -120,7 +125,7 @@ Chelsea.prototype = {
 
 	},
 
-	Interact: function() {
+	InteractApartment: function() {
 		var self = this;
 
 		//global.AudioPlayer.PlayEffect('Audio/Speak.wav');
@@ -159,6 +164,11 @@ Chelsea.prototype = {
 				}
         	}
 		]);
+	},
+
+	InteractWin: function() {
+		var self = this;
+		return new Talk(self.character, 'You\'re a rock star!');
 	}
 };
 

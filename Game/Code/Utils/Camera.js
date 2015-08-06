@@ -30,9 +30,10 @@ Camera.prototype = {
 
       // We're not controlling the camera, so we're positioning
       // the camera to look at the player
+      //var height = player.mesh.voxelData.size.y;
       var target = [
         player.FootPos.x,
-        player.FootPos.y + player.mesh.voxelData.size.y / 2.0,
+        player.FootPos.y + player.height / 2.0,
         player.FootPos.z
       ];
 

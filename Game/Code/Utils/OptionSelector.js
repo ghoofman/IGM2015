@@ -1,9 +1,10 @@
 var OP = require('OPengine').OP;
 var Input = require('./Input.js');
 
-function OptionSelector(text, options) {
+function OptionSelector(text, options, completed) {
   this.text = text;
   this.options = options;
+  this.completed = completed;
 
       this.fontManager = OP.fontManager.Setup('pixel.opf');
       this.fontManager72 = OP.fontManager.Setup('pixel72.opf');
@@ -61,10 +62,13 @@ OptionSelector.prototype = {
           }
           this.selected = this.selected % this.options.length;
           if(Input.WasActionPressed(gamepad)) {
-              return this.options[this.selected].select && this.options[this.selected].select();
+              var result = this.options[this.selected].select && this.options[this.selected].select();
+              this.completed && this.completed();
+              return result;
           }
       } else {
           if(Input.WasActionPressed(gamepad)) {
+              this.completed && this.completed();
             return {
                 result: 1
             };
@@ -78,7 +82,7 @@ OptionSelector.prototype = {
 
   Render: function(fontManager) {
       fontManager = fontManager || this.fontManager;
-      
+
       OP.texture2D.Render(this.background);
 
       OP.spriteSystem.Render(this.spriteSystem, this.camera);
@@ -106,7 +110,7 @@ OptionSelector.prototype = {
 
 		OP.render.Depth(1);
 		OP.render.DepthWrite(1);
-		global.player.DrawPos([-150,400,-40], [0.3, -0.7], 6, this.material, this.camera);
+		global.player.DrawPos([-150,200,-40], [0.3, -0.7], 6, this.material, this.camera);
 
 		OP.fontRender.Begin(this.fontManager72);
         this.fontManager72.SetAlign(OP.FONTALIGN.LEFT);

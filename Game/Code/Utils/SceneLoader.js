@@ -288,12 +288,12 @@ SceneLoader.prototype = {
     Collisions: function(player) {
         var target = [
     			player.FootPos.x,
-    			player.FootPos.y + player.mesh.voxelData.size.y / 2.0,
+    			player.FootPos.y + player.height / 2.0,
     			player.FootPos.z
     		];
     		this.vec3_1.Set(target[0], target[1], target[2]);
     		this.vec3_0.Set(10, 10, 10);
-
+            console.log(target, player);
 
         var collisions = [];
     		for(var o = 0; o < this.objects.length; o++) {

@@ -11,6 +11,8 @@ function James(character) {
 	if(global.currentScene.name == 'Street' && global.win) {
 		var start = this.character.scene.FindPosition(104);
 		this.character.Setup(start);
+		this.Update = this.UpdateWin;
+		this.Interact = this.InteractWin;
 	} else {
 
 		if(global.currentScene.name != 'VillageApartments' ) {
@@ -18,6 +20,8 @@ function James(character) {
 			this.character.alive = false;
 			return;
 		}
+		this.Update = this.UpdateApartment;
+		this.Interact = this.InteractApartment;
 	}
 
 	this.state = 'FIND_REGISTER';
@@ -29,7 +33,7 @@ function James(character) {
 James.prototype = {
 	interactions: [],
 
-	Update: function(timer, scene) {
+	UpdateApartment: function(timer, scene) {
 
 			if(global.win) {
 				this.character.rotate += 0.1;
@@ -119,7 +123,7 @@ James.prototype = {
 
 	},
 
-	Interact: function() {
+	InteractApartment: function() {
 		var self = this;
 
 		global.AudioPlayer.PlayEffect('Audio/Speak.wav');
@@ -158,6 +162,11 @@ James.prototype = {
 				}
         	}
 		]);
+	},
+
+	InteractWin: function() {
+		var self = this;
+		return new Talk(self.character, '...');
 	}
 };
 

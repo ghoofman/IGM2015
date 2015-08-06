@@ -2,7 +2,7 @@ function Wallet() {
 	// this.AddIncome('Tips', 'tip', 4.00);
 	// this.AddExpense('Coffee', 'coffee', 2.00);
 	this.cash = 100;
-	this.loans = 80000;
+	this.loans = 40000;
 	this.target = this.cash;
 	this.TotalMoney = this.target;
 }
@@ -155,10 +155,10 @@ Wallet.prototype = {
 
 	AddWalletLines: function() {
 
-		var interest = this.loans * (0.04 / 365.0);
+		var interest = this.loans * (0.08 / 365.0);
 
-	    this.AddExpense('Student Loan Payment', 'loan', 10, 10, 'day', '$' + interest.toFixed(2) + ' of Interest');
-	    this.loans -= 10 - interest;
+	    this.AddExpense('Student Loan Payment', 'loan', 15, 10, 'day', '$' + interest.toFixed(2) + ' of Interest');
+	    this.loans -= 15 - interest;
 
 	    this.AddExpense('Cell Phone Plan', 'cell', 2, 60, 'mo');
 

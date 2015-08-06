@@ -153,6 +153,13 @@ SceneCreator.prototype = {
 
 			if(global.hunger.length == 2) {
 				this.Data.option = new OptionSelector('I\'m so hungry. I need to eat soon.', null);
+				global.lastAte = false;
+                global.tasks.push( {
+            		text: 'Eat some food.',
+            		complete: function() { return lastAte; },
+            		failed: function() { return false; },
+					time: -1000
+            	});
 			}
 
 			var pos = global.hunger.length - 1;
@@ -167,6 +174,7 @@ SceneCreator.prototype = {
 				global.AudioPlayer.PlayEffect('Audio/Denied.wav');
 				return false;
 			}
+			global.lastAte = true;
 			if(!init) {
 				global.AudioPlayer.PlayEffect('Audio/Nom.ogg');
 			}
@@ -223,13 +231,16 @@ SceneCreator.prototype = {
 
 			if(Input.IsSpeedDown(this.Data.gamePad0) || (global.job && global.job.clocked && aliveCharacters == 0)) { //
 				global.timeScale = 100;
+				global.animScale = 100;
 				timer.scaled = 8;
 			} else if(Input.IsSlowDown(this.Data.gamePad0)) { //
 				global.timeScale = 1;
 				timer.scaled = 1;
+				global.animScale = 2;
 			} else {
 				//if(global.tasks.length == 0) {
 					global.timeScale = 8;
+					global.animScale = 4;
 					timer.scaled = 2;
 				// } else {
 				// 	global.timeScale = 4;
@@ -279,6 +290,7 @@ SceneCreator.prototype = {
 
 			if(!global.win && global.days == global.EndDay) {
 				global.win = true;
+				global.tasks = [];
 				var SceneCreator = require('./SceneCreator.js');
 				OPgameState.Change(new SceneCreator('Scenes/Street.json', 110));
 				return 1;
@@ -318,7 +330,7 @@ SceneCreator.prototype = {
 				}
 
 				// Toggle between driving the character and driving the camera
-				if (this.Data.gamePad0.WasPressed(OP.gamePad.START) || OP.keyboard.WasPressed(OP.KEY.ENTER))  {
+				if (global.debug && (this.Data.gamePad0.WasPressed(OP.gamePad.START) || OP.keyboard.WasPressed(OP.KEY.ENTER)))  {
 					this.Data.camera.ToggleControl();
 				}
 
@@ -799,9 +811,6 @@ SceneCreator.prototype = {
 					OP.fontRender.End();
 
 				}
-
-
-
 
 				OP.render.Present();
 		},

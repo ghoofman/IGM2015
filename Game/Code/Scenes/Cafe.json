@@ -3,10 +3,10 @@
   "scale" : 1,
   "planes": {
     "useBlocking" : true,
-    "xNegative" : -200,
-    "xPositive" : 200,
-    "zNegative" : -100,
-    "zPositive" : 100,
+    "xNegative" : -190,
+    "xPositive" : 190,
+    "zNegative" : -90,
+    "zPositive" : 90,
     "yNegative" : 0
   },
   "camera": {

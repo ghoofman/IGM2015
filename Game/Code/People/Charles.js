@@ -51,6 +51,8 @@ Charles.prototype = {
 
 	UpdateCafe: function(timer, scene) {
 
+		console.log(this.state);
+
 		if(this.character.dead) {
 			return;
 		}
@@ -89,9 +91,10 @@ Charles.prototype = {
 			}
 			case 'REGISTER': {
 				var collisions = scene.Collisions(this.character);
+				console.log(collisions);
 				for(var i = 0; i < collisions.length; i++) {
 					if(collisions[i].type == 'register') {
-
+						console.log(collisions[i]);
 						if(collisions[i].Entity) {
 							collisions[i].Entity.CharacterInteract &&
 								collisions[i].Entity.CharacterInteract(this.character, collisions[i]);
@@ -147,6 +150,11 @@ Charles.prototype = {
 
 	},
 
+	InteractWin: function() {
+		var self = this;
+		return new Talk(self.character, 'Yay. You win. Get back to work slacker.');
+	},
+
 	InteractStreet: function() {
 		var self = this;
 		return new Talk(self.character, 'Get to work I\'m on a "smoke" break.');
@@ -196,7 +204,7 @@ Charles.prototype = {
 			{
 				text: 'A job please', select: function() {
 
-					return new Talk(self.character, 'Does the 9am to 1pm schedule work for you?',
+					return new Talk(self.character, 'Does the 9am to 12pm schedule work for you?',
 					[
 						{ text: 'I\'ll take it!', select: function() {
 							var key = JSON('Scenes/Items/CafeKey.json');
@@ -210,7 +218,7 @@ Charles.prototype = {
 
 							global.job.schedule = [{
 								start: 9,
-								end: 13
+								end: 12
 							}];
 
 		                    global.job.activeSchedule = global.job.schedule[0];

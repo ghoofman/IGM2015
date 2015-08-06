@@ -11,11 +11,15 @@ function Dad(character) {
 	if(global.currentScene.name == 'Street' && global.win) {
 		var start = this.character.scene.FindPosition(102);
 		this.character.Setup(start);
+		this.Update = this.UpdateWin;
+		this.Interact = this.InteractWin;
 	} else {
 
 		if(global.currentScene.name != 'TaxiCab' ) {
 			this.character.dead = true;
 			this.character.alive = false;
+			this.Update = this.UpdateTaxi;
+			this.Interact = this.InteractTaxi;
 			return;
 		}
 	}
@@ -29,7 +33,7 @@ function Dad(character) {
 Dad.prototype = {
 	interactions: [],
 
-	Update: function(timer, scene) {
+	UpdateTaxi: function(timer, scene) {
 		if(global.win) {
 			this.character.rotate += 0.1;
 			return;
@@ -44,7 +48,7 @@ Dad.prototype = {
 
 	},
 
-	Interact: function() {
+	InteractTaxi: function() {
 		var self = this;
 
         return new Talk(this.character, 'You get a job yet?', [
@@ -77,6 +81,11 @@ Dad.prototype = {
 				}
 			}
 		]);
+	},
+
+	InteractWin: function() {
+		var self = this;
+		return new Talk(self.character, 'Woo, one week. Go Mr. Art Degree.');
 	}
 };
 
