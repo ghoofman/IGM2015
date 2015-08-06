@@ -6,13 +6,16 @@ var OP = require('OPengine').OP,
 	BuildVoxelMesh = require('./Utils/BuildVoxelMesh.js'),
 	Camera = require('./Utils/Camera.js');
 	var Wallet = require('./Utils/Wallet.js');
+	var Inventory = require('./Utils/Inventory.js');
 
 
 function MainMenu() {
 }
 
 MainMenu.prototype = {
-	Data: {},
+	Data: {
+		selected: 0
+	},
 
 	Initialize: function() {
 
@@ -43,6 +46,9 @@ MainMenu.prototype = {
 			global.days = 1;
 			global.EndDay = 8;
 			global.announcement = null;
+
+			global.inventory = new Inventory();
+
 			// {
 			// 	text: 'TEST',
 			// 	time: 3000
@@ -53,6 +59,7 @@ MainMenu.prototype = {
 		this.Data.gamePad0 = OP.gamePad.Get(0);
 		this.Data.fontManager = OP.fontManager.Setup('pixel72.opf');
 		this.Data.fontManager36 = OP.fontManager.Setup('pixel36.opf');
+		this.Data.fontManager24 = OP.fontManager.Setup('pixel24.opf');
 
 	    this.mesh = BuildVoxelMesh('PersonGraduated.qb');
 	    this.model = OP.model.Create(this.mesh);
@@ -88,13 +95,20 @@ MainMenu.prototype = {
 			// 		return false;
 			// 	}
 			// });
+			this.background = OP.texture2D.Create(OP.cman.LoadGet('StartScreen.png'));
 
 		return 1;
 	},
 
 	Update: function(timer) {
 
+		if(Input.WasBackPressed(this.Data.gamePad0)) {
+			return 1;
+		}
+
 		if(Input.WasActionPressed(this.Data.gamePad0)) {
+			if(this.Data.selected == 1) return 1;
+
 			//global.win = true;
 			global.spawned = true;
 			var scene = new Difficulty();
@@ -102,25 +116,50 @@ MainMenu.prototype = {
 			return 0;
 		}
 
+		if(Input.WasUpPressed(this.Data.gamePad0)) {
+			this.Data.selected--;
+			if(this.Data.selected < 0) this.Data.selected = 1;
+			this.Data.selected = this.Data.selected % 2;
+		}
+
+		if(Input.WasDownPressed(this.Data.gamePad0)) {
+			this.Data.selected++;
+			this.Data.selected = this.Data.selected % 2;
+		}
+
 		OP.render.Clear(0.3,0.3,0.3);
+
+		OP.texture2D.Render(this.background);
 
 		this.model.world.SetScl(3);
 		this.model.world.RotY(-0.5);
 		//this.model.world.Translate(0, 0, 0);
 		OP.model.Draw(this.model, this.material, this.camera.Camera());
 
-		OP.fontRender.Begin(this.Data.fontManager);
-		this.Data.fontManager.SetAlign(OP.FONTALIGN.LEFT);
-		OP.fontRender.Color(1.0, 1.0, 1.0);
-		OP.fontRender("Degree", 200, 275);
-		OP.fontRender.End();
 		OP.fontRender.Begin(this.Data.fontManager36);
 		this.Data.fontManager36.SetAlign(OP.FONTALIGN.LEFT);
-		OP.fontRender.Color(0, 0.8, 0);
-		OP.fontRender("<", 220, 375);
-		OP.fontRender("Start Game", 250, 375);
+
+		if(this.Data.selected == 0) {
+			OP.fontRender.Color(0.0, 0.8, 0.0);
+		} else {
+			OP.fontRender.Color(1.0, 1.0, 1.0);
+		}
+		OP.fontRender("<", 420, 125);
+		OP.fontRender("Start Game", 450, 125);
+
+		if(this.Data.selected == 1) {
+			OP.fontRender.Color(0.0, 0.8, 0.0);
+		} else {
+			OP.fontRender.Color(1.0, 1.0, 1.0);
+		}
+		OP.fontRender("<", 420, 175);
+		OP.fontRender("Quit", 450, 175);
+
 		OP.fontRender.End();
 
+		OP.fontRender.Begin(this.Data.fontManager24);
+		OP.fontRender("Created by Garrett Hoofman with music by Matt Javanshir", 100, 720 - 40);
+		OP.fontRender.End();
 
 
 		OP.render.Present();

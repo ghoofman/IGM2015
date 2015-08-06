@@ -51,25 +51,11 @@ James.prototype = {
 			return;
 		}
 
-		this.base.Move(timer);
+		this.base.Move(timer, true);
+
+		console.log('JAMES STATE', this.state);
 
 		switch(this.state) {
-			case 'EXIT': {
-				var collisions = scene.Collisions(this.character);
-				for(var i = 0; i < collisions.length; i++) {
-					if(collisions[i].type == 'door') {
-						this.target = null;
-						this.character.dead = 1;
-						for(var i = 0; i < this.interactions.length; i++){
-							this.interactions[i].Leave && this.interactions[i].Leave(this.character);
-							this.interactions.splice(i, 1);
-							i--;
-						}
-						OP.physXScene.Remove(this.character.physXScene, this.character.controller.actor);
-					}
-				}
-				break;
-			}
 			case 'REGISTER': {
 				var collisions = scene.Collisions(this.character);
 				for(var i = 0; i < collisions.length; i++) {
@@ -87,17 +73,6 @@ James.prototype = {
 				}
 				break;
 			}
-			case 'FIND_EXIT': {
-				var doors = scene.FindType('door');
-				for(var i = 0; i < doors.length; i++) {
-					if(doors[i].data && !doors[i].data.customer) {
-						this.target = doors[i].position;
-						this.state = 'EXIT';
-						break;
-					}
-				}
-				break;
-			}
 			case 'FIND_REGISTER': {
 				this.state = 'REGISTER';
 				var registers = scene.FindType('register');
@@ -106,12 +81,6 @@ James.prototype = {
 						this.target = registers[i].position;
 						break;
 					}
-				}
-				break;
-			}
-			case 'WANDER': {
-				if(!this.target) {
-					this.state = null;
 				}
 				break;
 			}

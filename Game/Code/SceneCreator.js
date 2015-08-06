@@ -694,7 +694,6 @@ SceneCreator.prototype = {
 					this.Data.option.Render(this.Data.fontManager);
 				} else {
 					if(global.announcement) {
-						console.log('Announce', announcement);
 						OP.fontRender.Begin(this.Data.fontManager72);
 						this.Data.fontManager72.SetAlign(OP.FONTALIGN.CENTER);
 		      			OP.fontRender.Color(0.9, 0.9, 0.9);

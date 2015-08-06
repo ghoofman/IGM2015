@@ -7,7 +7,7 @@ var AudioPlayer = require('./Utils/AudioPlayer.js');
 var Wallet = require('./Utils/Wallet.js');
 
 // Setup global values
-global.debug = true;
+global.debug = false;
 
 try {
 
@@ -47,8 +47,6 @@ try {
 		global.AudioPlayer.AddBackground('Audio/Degree_BG.ogg');
 
 		MixPanel.Track("Application Initialized");
-
-		global.inventory = new Inventory();
 
 		OPgameState.Change(scene);
 	}

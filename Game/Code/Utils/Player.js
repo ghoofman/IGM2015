@@ -97,7 +97,6 @@ Player.prototype = {
           this.rotate = Math.atan2(x, z);
         }
 
-        //console.log(amount);
         this.move = [ x, y, z ];
 
         if(this.move[0] + this.FootPos.x < this.worldScene.xNegative || this.move[0] + this.FootPos.x > this.worldScene.xPositive) {

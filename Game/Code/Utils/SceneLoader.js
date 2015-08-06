@@ -296,7 +296,6 @@ SceneLoader.prototype = {
     		];
     		this.vec3_1.Set(target[0], target[1], target[2]);
     		this.vec3_0.Set(10, 10, 10);
-            console.log(target, player);
 
         var collisions = [];
     		for(var o = 0; o < this.objects.length; o++) {

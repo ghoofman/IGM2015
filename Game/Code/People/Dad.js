@@ -18,10 +18,10 @@ function Dad(character) {
 		if(global.currentScene.name != 'TaxiCab' ) {
 			this.character.dead = true;
 			this.character.alive = false;
-			this.Update = this.UpdateTaxi;
-			this.Interact = this.InteractTaxi;
 			return;
 		}
+		this.Update = this.UpdateTaxi;
+		this.Interact = this.InteractTaxi;
 	}
 	this.state = 'FIND_REGISTER';
 	this.target = null;
@@ -51,7 +51,7 @@ Dad.prototype = {
 	InteractTaxi: function() {
 		var self = this;
 
-        return new Talk(this.character, 'You get a job yet?', [
+        return new Talk(this.character, 'You get a job with your fancy art degree yet?', [
 			{
 				text: '( truth ) Not yet.',
 				select: function() {

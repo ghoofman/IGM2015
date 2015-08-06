@@ -10,6 +10,7 @@ function Character(json, scale, physXScene, material, scene) {
 
     this.name = this.data.name;
 
+    this.height = 80;
     this.scale = scale || 1.0;
     this.physXScene = physXScene;
     this.scene = scene;
@@ -99,7 +100,6 @@ Character.prototype = {
     			player.FootPos.z
     		];
 
-        console.log(this.name, target, h, player.FootPos);
 		this.vec3_1.Set(target[0], target[1], target[2]);
 		this.vec3.Set(10, 10, 10);
 

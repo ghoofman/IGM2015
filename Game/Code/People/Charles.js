@@ -51,8 +51,6 @@ Charles.prototype = {
 
 	UpdateCafe: function(timer, scene) {
 
-		console.log(this.state);
-
 		if(this.character.dead) {
 			return;
 		}
@@ -91,10 +89,8 @@ Charles.prototype = {
 			}
 			case 'REGISTER': {
 				var collisions = scene.Collisions(this.character);
-				console.log(collisions);
 				for(var i = 0; i < collisions.length; i++) {
 					if(collisions[i].type == 'register') {
-						console.log(collisions[i]);
 						if(collisions[i].Entity) {
 							collisions[i].Entity.CharacterInteract &&
 								collisions[i].Entity.CharacterInteract(this.character, collisions[i]);
