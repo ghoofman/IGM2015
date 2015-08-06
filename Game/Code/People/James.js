@@ -33,6 +33,9 @@ function James(character) {
 James.prototype = {
 	interactions: [],
 
+	UpdateWin: function(timer, scene) {
+		this.character.rotate += 0.1;
+	},
 	UpdateApartment: function(timer, scene) {
 
 			if(global.win) {

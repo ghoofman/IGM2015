@@ -34,6 +34,10 @@ function Chelsea(character) {
 Chelsea.prototype = {
 	interactions: [],
 
+	UpdateWin: function(timer, scene) {
+		this.character.rotate += 0.1;
+	},
+
 	UpdateApartment: function(timer, scene) {
 		if(global.win) {
 			this.character.rotate += 0.1;
@@ -53,7 +57,7 @@ Chelsea.prototype = {
 			return;
 		}
 
-		this.base.Move(timer);
+		this.base.Move(timer, true);
 
 		switch(this.state) {
 			case 'EXIT': {

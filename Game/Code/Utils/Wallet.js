@@ -1,7 +1,13 @@
 function Wallet() {
 	// this.AddIncome('Tips', 'tip', 4.00);
 	// this.AddExpense('Coffee', 'coffee', 2.00);
-	this.cash = 100;
+	this.cash = 90;
+	if(global.Difficulty == 'Extreme') {
+		this.cash = 70;
+	} else if(global.Difficulty == 'Easy') {
+		this.cash = 150;
+	}
+
 	this.loans = 40000;
 	this.target = this.cash;
 	this.TotalMoney = this.target;
@@ -165,6 +171,7 @@ Wallet.prototype = {
 	    if(global.apartment) {
 	        this.AddExpense('Apartment Rent', 'rent', global.apartment.rent, global.apartment.rent * 30, 'mo');
 	    }
+
 	    if(global.job) {
 	        var rate = global.job.rate || 8;
 	        var totalTime = global.job.time || 0;
@@ -174,8 +181,16 @@ Wallet.prototype = {
 	        this.AddIncome('Cafe Pay Check', 'pay', hours * rate, rate, 'hr', hours.toFixed(2) + ' hours @ $' + rate.toFixed(2) + ' / hr');
 	        this.AddExpense('Taxes', 'tax', (hours * rate) * 0.33, null, null, '33% of Pay Check');
 	    }
+
+		if(global.Difficulty == 'Extreme') {
+			this.AddExpense('Water Bill', 'bill', 2.00);
+			this.AddExpense('Electricity Bill', 'bill', 2.00);
+			this.AddExpense('Gas Bill', 'bill', 1.50);
+			this.AddExpense('Trash Service', 'bill', 0.50);
+		}
+
 		if(global.girlfriend) {
-			this.AddExpense('Girlfriend Expense', 'pay', 10);
+			this.AddExpense('Girlfriend Expense', 'pay', 6);
 		}
 	}
 };

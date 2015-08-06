@@ -2,6 +2,7 @@ var OP = require('OPengine').OP,
 	OPgameState = require('OPgameState'),
 	Input = require('./Utils/Input.js'),
 	SceneCreator = require('./SceneCreator.js');
+	var Wallet = require('./Utils/Wallet.js');
 
 function Difficulty() {
 	this.Data.game = require('./Games/DifficultySelector.js')();
@@ -22,10 +23,22 @@ Difficulty.prototype = {
 			if(result && result.result && this.Data.game.selectedSprite) {
 
 				global.EndDay = this.Data.game.selectedSprite.day;
+				global.Difficulty = 'Easy';
+				switch(global.EndDay) {
+					case 6:
+						global.Difficulty = 'Hard';
+						break;
+					case 8:
+						global.Difficulty = 'Extreme';
+						break;
+				}
 
-				var scene = new SceneCreator('/Scenes/TaxiCab.json', 1);
+
+				global.wallet = new Wallet();
+
+				//var scene = new SceneCreator('/Scenes/TaxiCab.json', 1);
 				//var scene = new SceneCreator('/Scenes/Street.json', 1);
-				//var scene = new SceneCreator('/Scenes/Cafe.json', 1);
+				var scene = new SceneCreator('/Scenes/Cafe.json', 1);
 				//var scene = new SceneCreator('/Scenes/Apartment.json', 1);
 				//var scene = new SceneCreator('/Scenes/GroceryStore.json', 1);
 				//var scene = new SceneCreator('/Scenes/Dumpster.json', 1);

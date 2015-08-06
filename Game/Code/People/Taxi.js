@@ -61,7 +61,7 @@ Taxi.prototype = {
 		// 	return;
 		}
 		//
-		this.base.Move(timer);
+		this.base.Move(timer, true);
 		//
 		//
 		// if(!global.player.alive) {

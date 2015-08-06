@@ -87,16 +87,16 @@ Bum.prototype = {
 
 	InteractWin: function() {
 		var self = this;
-
-		if(global.currentScene.name == 'Street' && global.memory.bum.hasSandwich) {
-			return new Talk(this.character, 'Sandwich was good.');
-		}
-
+		
         return new Talk(this.character, 'Leave me alone.');
 	},
 
 	InteractStreet: function() {
 		var self = this;
+
+		if(global.currentScene.name == 'Street' && global.memory.bum.hasSandwich) {
+			return new Talk(this.character, 'Sandwich was good.');
+		}
 
         return new Talk(this.character, 'Leave me alone.');
 	}

@@ -132,6 +132,11 @@ SceneCreator.prototype = {
 
 				this.Data.color = [ 1, 1, 1];
 
+				this.Data.jobTex = OP.texture2D.Create(OP.cman.LoadGet('CoffeeCup.png'));
+
+				this.Data.jobTex.Scale.Set(60.0 / 1280.0, 40.0 / 720.0);
+				this.Data.jobTex.Position.Set(0.9, 0.7);
+
 				return 1;
 		},
 
@@ -140,7 +145,15 @@ SceneCreator.prototype = {
 				OP.spriteSystem.Remove(global.spriteSystemFood, global.hunger[i]);
 			}
 			global.hunger = [];
-			for(var i = 0; i < 4; i++) {
+
+			var amount = 4;
+			if(global.Difficulty == 'Extreme') {
+				amount = 2;
+			} else if(global.Difficulty == 'Easy') {
+				amount = 8;
+			}
+
+			for(var i = 0; i < amount; i++) {
 				this.AddAHunger(true);
 			}
 		},
@@ -256,8 +269,12 @@ SceneCreator.prototype = {
                 global.job.time += timer.elapsed * global.timeScale * 10;
             }
 
-			if(global.job && global.time.getHours() >= global.job.activeSchedule.end) {
+			if(global.job && global.time.getHours() >= global.job.activeSchedule.end && global.job.clocked) {
 				global.job.clocked = false;
+				global.announcement = {
+					text: 'Clocked out',
+					time: 750
+				};
 			}
 
 			var beforeAddingHour = global.time.getHours();
@@ -314,6 +331,8 @@ SceneCreator.prototype = {
 
 			// Remove 1 every 3 hours
 			var hungerMax = 1000 * 60 * 6 * 3;
+			if(global.Difficulty == 'Easy') hungerMax *= 2;
+
 			if(global.hungerAmount > hungerMax) {
 				if(!this.removeAHunger()) {
 					var game = require('./Games/GameOver.js');
@@ -740,15 +759,17 @@ SceneCreator.prototype = {
 					OP.fontRender.End();
 
 					if(global.job && global.job.clocked) {
+						OP.texture2D.Render(this.Data.jobTex);
+
 						OP.fontRender.Begin(this.Data.fontManager24);
 						this.Data.fontManager24.SetAlign(OP.FONTALIGN.RIGHT);
 						OP.fontRender.Color(0, 0.8, 0);
-						OP.fontRender('Working', this.Data.size.ScaledWidth - 20, 80);
+						//OP.fontRender('Working', this.Data.size.ScaledWidth - 20, 80);
 
 						var seconds = global.job.time / 1000;
 						var minutes = seconds / 60;
 						var hours = minutes / 60;
-						OP.fontRender(hours.toFixed(2) + ' hours', this.Data.size.ScaledWidth - 20, 100);
+						OP.fontRender(hours.toFixed(2) + ' hours', this.Data.size.ScaledWidth - 20, 130);
 						OP.fontRender.End();
 					}
 

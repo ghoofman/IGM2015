@@ -102,7 +102,7 @@ MainMenu.prototype = {
 
 	Update: function(timer) {
 
-		if(Input.WasBackPressed(this.Data.gamePad0)) {
+		if(OP.keyboard.WasPressed(OP.KEY.ESCAPE) || this.Data.gamePad0.WasPressed(OP.gamePad.BACK)) {
 			return 1;
 		}
 

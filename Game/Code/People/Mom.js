@@ -40,6 +40,9 @@ function Mom(character) {
 Mom.prototype = {
 	interactions: [],
 
+		UpdateWin: function(timer, scene) {
+			this.character.rotate += 0.1;
+		},
 	UpdateTaxi: function(timer, scene) {
 
 			if(global.win) {

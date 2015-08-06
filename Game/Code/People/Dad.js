@@ -33,11 +33,14 @@ function Dad(character) {
 Dad.prototype = {
 	interactions: [],
 
-	UpdateTaxi: function(timer, scene) {
+	UpdateWin: function(timer, scene) {
 		if(global.win) {
 			this.character.rotate += 0.1;
 			return;
 		}
+	},
+
+	UpdateTaxi: function(timer, scene) {
 
 		if(this.character.dead) return;
 

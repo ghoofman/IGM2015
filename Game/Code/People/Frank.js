@@ -150,7 +150,7 @@ Frank.prototype = {
 				return;
 			}
 
-			this.base.Move(timer);
+			this.base.Move(timer, true);
 
 			switch(this.state) {
 				case 'EXIT': {
