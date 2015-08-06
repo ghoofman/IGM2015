@@ -54,6 +54,7 @@ Johnny.prototype = {
 
 		this.base.Move(timer);
 
+		console.log('JOHNNY', this.state);
 		switch(this.state) {
 			case 'EXIT': {
 				var collisions = scene.Collisions(this.character);

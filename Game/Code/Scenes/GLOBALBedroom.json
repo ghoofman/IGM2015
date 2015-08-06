@@ -61,7 +61,7 @@
             },
             "name" : "My Bed",
             "collide" : false,
-            "size" : [ 30, 30, 20 ],
+            "size" : [ 30, 60, 20 ],
             "offset" : [ 0, 0, 0 ]
           }
         ]

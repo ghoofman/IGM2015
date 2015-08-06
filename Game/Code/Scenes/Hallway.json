@@ -2,10 +2,10 @@
   "name" : "Hallway",
   "scale" : 1,
   "planes": {
-    "xNegative" : -300,
-    "xPositive" : 400,
+    "xNegative" : -290,
+    "xPositive" :400,
     "zNegative" : -100,
-    "zPositive" : 50,
+    "zPositive" : 40,
     "yNegative" : 0
   },
   "camera": {

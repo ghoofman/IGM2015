@@ -35,8 +35,9 @@ BaseAI.prototype = {
 
 				var moveX = (oldPos.x - this.ai.character.FootPos.x);
 				var moveZ = (oldPos.z - this.ai.character.FootPos.z);
+				console.log(moveX, moveZ);
 				// If we tried to move more than 0.1 but didn't on both axes, then it's time to wander
-				if(Math.abs(moveX) < 0.1 && Math.abs(diffX) > 0.1 && Math.abs(moveZ) < 0.1 && Math.abs(diffZ) > 0.1 ) {
+				if(Math.abs(moveX) < 0.1 && Math.abs(moveZ) < 0.1 ) {
 					if(this.ai.state == 'WANDER') {
 						this.ai.state = null;
 						this.ai.target = null;

@@ -5,7 +5,7 @@
     "xNegative" : -300,
     "xPositive" : 600,
     "zNegative" : -200,
-    "zPositive" : 150,
+    "zPositive" : 100,
     "yNegative" : 0
   },
   "camera": {

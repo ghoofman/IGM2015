@@ -44,7 +44,7 @@ Player.prototype = {
     vec3: null,
     move: [ 0, 0, 0 ],
     rotate: 0,
-    height: 40,
+    height: 80,
     FootPos: {
       x: 0, y: 0, z: 0
     },
@@ -97,11 +97,22 @@ Player.prototype = {
           this.rotate = Math.atan2(x, z);
         }
 
+        //console.log(amount);
+        this.move = [ x, y, z ];
+
+        if(this.move[0] + this.FootPos.x < this.worldScene.xNegative || this.move[0] + this.FootPos.x > this.worldScene.xPositive) {
+            this.move[0] = 0;
+        }
+
+        if(this.move[2] + this.FootPos.z < this.worldScene.zNegative || this.move[2] + this.FootPos.z > this.worldScene.zPositive) {
+            this.move[2] = 0;
+        }
+
 
         var amount = 1.0;
 
-        var dx = Math.abs(x);
-        var dz = Math.abs(z);
+        var dx = Math.abs(this.move[0]);
+        var dz = Math.abs(this.move[2]);
         var len = Math.sqrt(dx * dx + dz * dz);
         dx = dx / len;
         dz = dz / len;
@@ -112,8 +123,6 @@ Player.prototype = {
         } else {
             this.animation = this.idle;
         }
-
-        //console.log(amount);
 
         var tmp = timer.elapsed;
         timer.elapsed = timer.actualElapsed * global.animScale * amount;
@@ -126,15 +135,6 @@ Player.prototype = {
         timer.elapsed = tmp;
         OP.timer.SetElapsed(timer, timer.elapsed);
 
-        this.move = [ x, y, z ];
-
-        if(this.move[0] + this.FootPos.x < this.worldScene.xNegative || this.move[0] + this.FootPos.x > this.worldScene.xPositive) {
-            this.move[0] = 0;
-        }
-
-        if(this.move[2] + this.FootPos.z < this.worldScene.zNegative || this.move[2] + this.FootPos.z > this.worldScene.zPositive) {
-            this.move[2] = 0;
-        }
     },
 
     Move: function(timer) {

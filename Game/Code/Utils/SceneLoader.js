@@ -82,34 +82,37 @@ SceneLoader.prototype = {
       	var actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, 3.14 / 2.0, this.vec3_1);
       	OP.physX.AddPlaneShape(actor, this.material);
       	OP.physXScene.AddActor(this.scene, actor);
-        //
-        //
-     //  	this.vec3_0.Set(xNegative, 0, 0);
-     //  	this.vec3_1.Set(1, 0, 0);
-     //  	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0);
-     //  	OP.physX.AddPlaneShape(actor, this.material);
-     //  	OP.physXScene.AddActor(this.scene, actor);
-        //
-        //
-     //  	this.vec3_0.Set(xPositive, 0, 0);
-     //  	this.vec3_1.Set(0, 1, 0);
-     //  	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, -3.14, this.vec3_1);
-     //  	OP.physX.AddPlaneShape(actor, this.material);
-     //  	OP.physXScene.AddActor(this.scene, actor);
-        //
-        //
-     //  	this.vec3_0.Set(0, 0, zNegative);
-     //  	this.vec3_1.Set(0, 1, 0);
-     //  	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, -3.14 / 2.0, this.vec3_1);
-     //  	OP.physX.AddPlaneShape(actor, this.material);
-     //  	OP.physXScene.AddActor(this.scene, actor);
-        //
-        //
-     //  	this.vec3_0.Set(0, 0, zPositive);
-     //  	this.vec3_1.Set(0, 1, 0);
-     //  	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, 3.14 / 2.0, this.vec3_1);
-     //  	OP.physX.AddPlaneShape(actor, this.material);
-     //  	OP.physXScene.AddActor(this.scene, actor);
+
+        if(scene.planes && scene.planes.useBlocking) {
+
+
+      	this.vec3_0.Set(this.xNegative, 0, 0);
+      	this.vec3_1.Set(1, 0, 0);
+      	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0);
+      	OP.physX.AddPlaneShape(actor, this.material);
+      	OP.physXScene.AddActor(this.scene, actor);
+
+
+      	this.vec3_0.Set(this.xPositive, 0, 0);
+      	this.vec3_1.Set(0, 1, 0);
+      	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, -3.14, this.vec3_1);
+      	OP.physX.AddPlaneShape(actor, this.material);
+      	OP.physXScene.AddActor(this.scene, actor);
+
+
+      	this.vec3_0.Set(0, 0, this.zNegative);
+      	this.vec3_1.Set(0, 1, 0);
+      	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, -3.14 / 2.0, this.vec3_1);
+      	OP.physX.AddPlaneShape(actor, this.material);
+      	OP.physXScene.AddActor(this.scene, actor);
+
+
+      	this.vec3_0.Set(0, 0, this.zPositive);
+      	this.vec3_1.Set(0, 1, 0);
+      	actor = OP.physXScene.CreateStatic(this.scene, this.vec3_0, 3.14 / 2.0, this.vec3_1);
+      	OP.physX.AddPlaneShape(actor, this.material);
+      	OP.physXScene.AddActor(this.scene, actor);
+ }
 
         this.data = scene;
         this.objects = objects;
