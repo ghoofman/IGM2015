@@ -32,6 +32,9 @@ MainMenu.prototype = {
 			global.wallet = new Wallet();
 
 			global.time = new Date();
+			global.time.setYear(2015);
+			global.time.setMonth(5);
+			global.time.setDate(1);
 			global.time.setHours(8);
 			global.time.setMinutes(0);
 			global.time.setSeconds(0);
@@ -42,6 +45,7 @@ MainMenu.prototype = {
 			global.tasks = [ ];
 
 			global.journal = [ ];
+			global.spriteSystemFood = null;
 
 			global.days = 1;
 			global.EndDay = 8;
@@ -50,6 +54,8 @@ MainMenu.prototype = {
 			global.hints = {};
 
 			global.apartments = [];
+
+			global.girlfriend = false;
 
 			global.hint = {
 				text: 'Hint: If you remember a person\'s order before talking to them, they\'ll tip you better',

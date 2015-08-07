@@ -36,9 +36,9 @@ Difficulty.prototype = {
 
 				global.wallet = new Wallet();
 
-				//var scene = new SceneCreator('/Scenes/TaxiCab.json', 1);
+				var scene = new SceneCreator('/Scenes/TaxiCab.json', 1);
 				//var scene = new SceneCreator('/Scenes/Street.json', 1);
-				var scene = new SceneCreator('/Scenes/Cafe.json', 1);
+				//var scene = new SceneCreator('/Scenes/Cafe.json', 1);
 				//var scene = new SceneCreator('/Scenes/Apartment.json', 1);
 				//var scene = new SceneCreator('/Scenes/GroceryStore.json', 1);
 				//var scene = new SceneCreator('/Scenes/Dumpster.json', 1);
