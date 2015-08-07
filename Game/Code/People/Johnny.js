@@ -57,7 +57,6 @@ Johnny.prototype = {
 
 		this.base.Move(timer);
 
-		console.log('JOHNNY', this.state);
 		switch(this.state) {
 			case 'EXIT': {
 				var collisions = scene.Collisions(this.character);
@@ -220,6 +219,14 @@ Johnny.prototype = {
 		}
 
         global.ai.johnny.talked = true;
+
+		if(!global.hints.coffee) {
+			global.hints.coffee = true;
+			global.hint = {
+				text: 'Hint: If you remember a person\'s order before talking to them, they\'ll tip you better',
+				time: 5000
+			};
+		}
 
         return new Talk(this.character, 'I\'d like a Grande Bold Coffee.', null, function() {
 

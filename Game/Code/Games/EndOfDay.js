@@ -115,11 +115,21 @@ EndOfDay.prototype = {
                                     rotateZ: 0
                                 };
                             }
+                            if(global.currentScene.name == 'Cafe' && !global.job.clocked) {
+                                return {
+                                    pos: [-180, 40, 0],
+                                    startScale: 0.5,
+                                    scale: 1.0,
+                                    rotateY: 0,
+                                    rotateZ: 3.14
+                                };
+                            }
+
                             return null;
                         },
                         update: function() {
                             if(global.job && global.job.clocked) return;
-                            
+
                             // There is a job
                             if(global.job && global.job.activeSchedule) {
                                 // Check if we've passed the start time

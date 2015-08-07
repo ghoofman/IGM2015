@@ -56,8 +56,6 @@ James.prototype = {
 
 		this.base.Move(timer, true);
 
-		console.log('JAMES STATE', this.state);
-
 		switch(this.state) {
 			case 'REGISTER': {
 				var collisions = scene.Collisions(this.character);
@@ -101,24 +99,41 @@ James.prototype = {
 		global.AudioPlayer.PlayEffect('Audio/Speak.wav');
 
 		if(global.inventory.Has('apartment-key')) {
-			return new Talk(this.character, 'If there\'s anything I can do to help, let me know.');
+			return new Talk(this.character, 'If there\'s anything I can do to help, let me know.', [
+				{ text: 'I\'d like to give up my apartment', select: function() {
+					if(global.apartment) {
+						global.wallet.AddIncome('Apartment Deposit', 'rent', global.apartment.deposit);
+						global.inventory.Remove('apartment-key');
+						for(var i = 0; i < global.apartments.length; i++) {
+							if(global.apartments[i].key == 'apartment-key') {
+								global.apartments.splice(i, 1);
+								break;
+							}
+						}
+					}
+					return new Talk(self.character, 'Very well, thank you for the key. Have a nice day!');
+				}},{ text: 'Nothing for now'}
+			]);
 		}
 
         return new Talk(this.character, 'What would you like?', [
 			{ text: 'Nothing', select: function() {  } },
 			{ text: "A room please.", select: function() {
-					return new Talk(self.character, "It requires a $100 deposit and costs $15 / day. Does that work?", [
+					return new Talk(self.character, "It requires an $80 deposit and costs $15 / day. Does that work?", [
 						{ text: "I'll take it.", select: function() {
 
-							global.wallet.AddExpense('Apartment Deposit', 'rent', 100);
+							global.wallet.AddExpense('Village Apartment Deposit', 'rent', 80);
 
 								var key = JSON('Scenes/Items/Apartment3Key.json');
 								global.inventory.Add(key.key, key.data);
 
-								global.apartment = {
+								global.apartments.push({
+									name: 'Village',
 									rent: 15,
-									room: 3
-								};
+									room: 3,
+									deposit: 80,
+									key: 'apartment-key'
+								});
 
 								global.journal.unshift({
 									text: 'Got Apartment 3 at Village Apartments',

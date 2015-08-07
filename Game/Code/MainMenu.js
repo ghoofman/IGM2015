@@ -47,6 +47,17 @@ MainMenu.prototype = {
 			global.EndDay = 8;
 			global.announcement = null;
 
+			global.hints = {};
+
+			global.apartments = [];
+
+			global.hint = {
+				text: 'Hint: If you remember a person\'s order before talking to them, they\'ll tip you better',
+				time: 50000
+			};
+
+			global.hunger = null;
+
 			global.inventory = new Inventory();
 
 			// {
@@ -61,7 +72,7 @@ MainMenu.prototype = {
 		this.Data.fontManager36 = OP.fontManager.Setup('pixel36.opf');
 		this.Data.fontManager24 = OP.fontManager.Setup('pixel24.opf');
 
-	    this.mesh = BuildVoxelMesh('PersonGraduated.qb');
+	    this.mesh = BuildVoxelMesh('PersonGraduated.qb', false);
 	    this.model = OP.model.Create(this.mesh);
 
 		// The basic effect to use for all rendering (for now)
@@ -74,7 +85,7 @@ MainMenu.prototype = {
 		this.camera = new Camera();
 
 
-		this.camera.Look([-125, 150, 350], [ -125,0,0]);
+		this.camera.Look([-140, -40, 350], [ -140,-40,0]);
 
 
 			// global.tasks.push( {
@@ -131,8 +142,9 @@ MainMenu.prototype = {
 
 		OP.texture2D.Render(this.background);
 
+		OP.render.Depth(1);
 		this.model.world.SetScl(3);
-		this.model.world.RotY(-0.5);
+		this.model.world.RotY(-0.7);
 		//this.model.world.Translate(0, 0, 0);
 		OP.model.Draw(this.model, this.material, this.camera.Camera());
 

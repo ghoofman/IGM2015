@@ -648,6 +648,12 @@ SceneCreator.prototype = {
 					global.announcement.time -= timer.actualElapsed;
 				}
 
+				if(global.hint && global.hint.time <= 0) {
+					global.hint = null;
+				} else if(global.hint) {
+					global.hint.time -= timer.actualElapsed;
+				}
+
 				if(this.Data.nextOpt) {
 					this.Data.option = this.Data.nextOpt;
 					this.Data.nextOpt = null;
@@ -830,6 +836,14 @@ SceneCreator.prototype = {
 					}
 					OP.fontRender.End();
 
+
+					// if(global.hint) {
+					// 	OP.fontRender.Begin(this.Data.fontManager24);
+					// 	this.Data.fontManager24.SetAlign(OP.FONTALIGN.CENTER);
+					// 	OP.fontRender.Color(0.0, 0.8, 0.0);
+					// 	OP.fontRender(global.hint.text, 1280 / 2.0, 0);
+					// 	OP.fontRender.End();
+					// }
 				}
 
 				OP.render.Present();

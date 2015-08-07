@@ -135,24 +135,41 @@ Chelsea.prototype = {
 		//global.AudioPlayer.PlayEffect('Audio/Speak.wav');
 
 		if(global.inventory.Has('global-apartment-key-1-c')) {
-			return new Talk(this.character, 'If there\'s anything I can do to help, let me know.');
+			return new Talk(this.character, 'If there\'s anything I can do to help, let me know.', [
+				{ text: 'I\'d like to give up my apartment', select: function() {
+					if(global.apartment) {
+						global.wallet.AddIncome('Apartment Deposit', 'rent', global.apartment.deposit);
+						global.inventory.Remove('global-apartment-key-1-c');
+						for(var i = 0; i < global.apartments.length; i++) {
+							if(global.apartments[i].key == 'global-apartment-key-1-c') {
+								global.apartments.splice(i, 1);
+								break;
+							}
+						}
+					}
+					return new Talk(self.character, 'Very well, thank you for the key. Have a nice day!');
+				}},{ text: 'Nothing for now'}
+			]);
 		}
 
         return new Talk(this.character, 'What would you like?', [
 			{ text: 'Nothing', select: function() {  } },
 			{ text: "A room please.", select: function() {
-					return new Talk(self.character, "It requires a $30 deposit and costs $6 / day. Does that work?", [
+					return new Talk(self.character, "It requires a $30 deposit and costs $8 / day. Does that work?", [
 						{ text: "I'll take it.", select: function() {
 
-							global.wallet.AddExpense('Apartment Deposit', 'rent', 30);
+							global.wallet.AddExpense('GLOBAL Apartment Deposit', 'rent', 30);
 
 								var key = JSON('Scenes/Items/GLOBAL1CKey.json');
 								global.inventory.Add(key.key, key.data);
 
-								global.apartment = {
-									rent: 6,
-									room: '1C'
-								};
+								global.apartments.push({
+									name: 'GLOBAL',
+									rent: 8,
+									room: '1C',
+									deposit: 30,
+									key: 'global-apartment-key-1'
+								});
 
 								global.journal.unshift({
 									text: 'Got a room at GLOBAL Apartments',

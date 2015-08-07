@@ -1,16 +1,19 @@
 function Wallet() {
 	// this.AddIncome('Tips', 'tip', 4.00);
 	// this.AddExpense('Coffee', 'coffee', 2.00);
-	this.cash = 90;
+	this.cash = 80;
 	if(global.Difficulty == 'Extreme') {
 		this.cash = 70;
 	} else if(global.Difficulty == 'Easy') {
-		this.cash = 150;
+		this.cash = 90;
 	}
 
 	this.loans = 40000;
 	this.target = this.cash;
 	this.TotalMoney = this.target;
+	this.lines = [];
+	this.expenses = [];
+	this.Last = null;
 }
 
 Wallet.prototype = {
@@ -168,8 +171,8 @@ Wallet.prototype = {
 
 	    this.AddExpense('Cell Phone Plan', 'cell', 2, 60, 'mo');
 
-	    if(global.apartment) {
-	        this.AddExpense('Apartment Rent', 'rent', global.apartment.rent, global.apartment.rent * 30, 'mo');
+		for(var i = 0; i < global.apartments.length; i++) {
+	        this.AddExpense(global.apartments[i].name + ' Apartment Rent', 'rent', global.apartments[i].rent, global.apartments[i].rent * 30, 'mo');
 	    }
 
 	    if(global.job) {

@@ -2,6 +2,7 @@ var OP = require('OPengine').OP;
 var Talk = require('../Utils/Talk.js');
 var BaseAI = require('./BaseAI.js');
 var JSON = require('./../Utils/JSON.js');
+var OptionSelector = require('./../Utils/OptionSelector.js');
 
 function Charles(character) {
 	this.character = character;
@@ -219,25 +220,93 @@ Charles.prototype = {
 
 		                    global.job.activeSchedule = global.job.schedule[0];
 
-							if(global.job.activeSchedule.start - 1 > global.time.getHours() &&
-								global.job.activeSchedule.start < global.time.getHours()) {
+							var startingNow = true;
+							var currentHour = global.time.getHours();
+							var currentMinutes = global.time.getMinutes();
+							if(global.job.activeSchedule &&
+								global.job.activeSchedule.start > currentHour &&
+								global.job.activeSchedule.end > currentHour)
+							{
+								// Give the player at least 15 minutes (game time) to get to work
+								if((global.job.activeSchedule.start - 1) == currentHour && currentMinutes > 45) {
+									startingNow = false;
+								} else {
 
-			                    global.tasks.push( {
-			                		text: 'Get to work',
-			                		complete: function() { return global.job && global.job.clocked; },
-			                		failed: function() { return !global.job; },
-									time: -1000
-			                	});
+									global.tasks.push( {
+										text: 'Get to work',
+										location: function() {
+											if(global.currentScene.name == 'Street') {
+												return {
+													pos: [210, 40, -50],
+													startScale: 0.5,
+													scale: 1.0,
+													rotateY: 0,
+													rotateZ: 0
+												};
+											}
+				                            if(global.currentScene.name == 'Cafe' && !global.job.clocked) {
+				                                return {
+				                                    pos: [-180, 40, 0],
+				                                    startScale: 0.5,
+				                                    scale: 1.0,
+				                                    rotateY: 0,
+				                                    rotateZ: 3.14
+				                                };
+				                            }
+											return null;
+										},
+										update: function() {
+											if(global.job && global.job.clocked) return;
+
+											// There is a job
+											if(global.job && global.job.activeSchedule) {
+												// Check if we've passed the start time
+												if(global.time.getHours() >= global.job.activeSchedule.start) {
+													global.job = null;
+													global.inventory.Remove('cafe-key');
+
+
+													var game = require('./GameOver.js');
+													return {
+														result: 2,
+														next: game(global.currentScene, ['You couldn\'t even hold down a job.', 'Time to hide away in your parents basement for all of eternity.'])
+													};
+												}
+
+												if(global.time.getHours() == global.job.activeSchedule.start - 1 &&
+													global.time.getMinutes() == 50 && !this.alerted) {
+														this.alerted = true;
+														return {
+															result: 1,
+															next: new OptionSelector('If I don\'t hurry I\'m going to be late for work')
+														};
+												}
+
+											}
+
+											return {
+												result: 0
+											};
+										},
+										complete: function() { return global.job && global.job.clocked; },
+										failed: function() { return !global.job; },
+										time: -1000
+									});
 							}
+						}
 
 							global.journal.unshift({
 								text: 'Got a job at Cup a Joe',
 								dt: global.time
 							});
 
-							self.done = true;
-							self.state = 'FIND_EXIT';
-							return new Talk(self.character, [ "You got the job! Here's the key to the back door,", "you can start tomorrow morning."]);
+							if(startingNow) {
+								self.done = true;
+								self.state = 'FIND_EXIT';
+							}
+							return new Talk(self.character, [ "You got the job! Here's the key to the back door,", "you can start " + (startingNow ? "right now" : "tomorrow morning.")], null, function() {
+								return new Talk(self.character, ["By the way, if you remember someones order before", "talking to them, they tend to tip you better."]);
+							});
 						 }
 					 	},
 						{ text: 'No thanks.' }

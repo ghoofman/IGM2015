@@ -297,6 +297,14 @@ Frank.prototype = {
 
         global.ai.frank.talked = true;
 
+		if(!global.hints.coffee) {
+			global.hints.coffee = true;
+			global.hint = {
+				text: 'Hint: If you remember a person\'s order before talking to them, they\'ll tip you better',
+				time: 5000
+			};
+		}
+
         return new Talk(this.character, 'I want a Tall Bold Coffee. Right Now', null, function() {
 
                 global.tasks.push( {
